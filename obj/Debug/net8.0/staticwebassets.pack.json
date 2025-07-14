@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\REGISTROLEGAL.bundle.scp.css",
+      "PackagePath": "staticwebassets\\REGISTROLEGAL.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.REGISTROLEGAL.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.REGISTROLEGAL.props",
+      "PackagePath": "build\\REGISTROLEGAL.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.REGISTROLEGAL.props",
+      "PackagePath": "buildMultiTargeting\\REGISTROLEGAL.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.REGISTROLEGAL.props",
+      "PackagePath": "buildTransitive\\REGISTROLEGAL.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
