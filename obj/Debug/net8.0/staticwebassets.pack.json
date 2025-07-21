@@ -21,6 +21,10 @@
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\wwwroot\\logo-gob.png",
+      "PackagePath": "staticwebassets\\logo-gob.png"
+    },
+    {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.REGISTROLEGAL.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },

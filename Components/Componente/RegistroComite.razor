@@ -1,0 +1,139 @@
+﻿
+<EditForm Model="@registroComite" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <h4>Datos del Comité</h4>
+    <div class="form-group mb-3">
+        <label>Nombre del Comité</label>
+        <InputText class="form-control" @bind-Value="registroComite.NombreComiteSalud" />
+        <ValidationMessage For="@(() => registroComite.NombreComiteSalud)" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Comunidad</label>
+        <InputText class="form-control" @bind-Value="registroComite.Comunidad" />
+    </div>
+
+    <!-- UBICACIONES -->
+    <h5>Ubicación</h5>
+    <div class="row">
+        <div class="col-md-3">
+            <label>Región</label>
+            <InputSelect class="form-control" @bind-Value="registroComite.RegionSaludId" @onchange="CargarProvincias">
+                <option value="0">-- Seleccione --</option>
+                @foreach (var region in regiones)
+                {
+                    <option value="@region.RegionSaludId">@region.NombreRegion</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => registroComite.RegionSaludId)" />
+        </div>
+        <div class="col-md-3">
+            <label>Provincia</label>
+            <InputSelect class="form-control" @bind-Value="registroComite.ProvinciaId" @onchange="CargarDistritos">
+                <option value="0">-- Seleccione --</option>
+                @foreach (var provincia in provincias)
+                {
+                    <option value="@provincia.ProvinciaId">@provincia.NombreProvincia</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => registroComite.ProvinciaId)" />
+        </div>
+        <div class="col-md-3">
+            <label>Distrito</label>
+            <InputSelect class="form-control" @bind-Value="registroComite.DistritoId" @onchange="CargarCorregimientos">
+                <option value="0">-- Seleccione --</option>
+                @foreach (var distrito in distritos)
+                {
+                    <option value="@distrito.DistritoId">@distrito.NombreDistrito</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => registroComite.DistritoId)" />
+        </div>
+        <div class="col-md-3">
+            <label>Corregimiento</label>
+            <InputSelect class="form-control" @bind-Value="registroComite.CorregimientoId">
+                <option value="0">-- Seleccione --</option>
+                @foreach (var corregimiento in corregimientos)
+                {
+                    <option value="@corregimiento.CorregimientoId">@corregimiento.NombreCorregimiento</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => registroComite.CorregimientoId)" />
+        </div>
+    </div>
+    
+    <!--CARGA DE ARCHIVOS -->
+    <h5 class="mt-4">Cargar Archivos</h5>
+    <InputFile multiple OnChange="CargarArchivos" />
+
+
+    @if (registroComite.Archivos?.Count > 0)
+    {
+        <ul>
+            @foreach (var archivo in registroComite.Archivos)
+            {
+                <li>
+                    <a href="@archivo.Ruta" target="_blank">@archivo.NombreOriginal</a> - @archivo.Categoria
+                </li>
+            }
+        </ul>
+    }
+
+    <!-- TRÁMITE -->
+    <div class="form-group mt-4">
+        <label>Tipo de Trámite</label>
+        <InputSelect class="form-control" @bind-Value="registroComite.TramiteId" @onchange="OnTramiteChanged">
+            <option value="0">-- Seleccione --</option>
+            @foreach (var tramite in tramites)
+            {
+                <option value="@tramite.TramiteId">@tramite.NombreTramite</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => registroComite.TramiteId)" />
+    </div>
+
+    <!-- MIEMBROS -->
+    @if (registroComite.TramiteId == 1 || registroComite.TramiteId == 2 || registroComite.TramiteId == 3)
+    {
+        <h5 class="mt-4">Miembros del Comité</h5>
+        <div class="mb-3">
+            @for (int i = 0; i < registroComite.Miembros.Count; i++)
+            {
+                var miembro = registroComite.Miembros[i];
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Nombre</label>
+                                <InputText class="form-control" @bind-Value="miembro.Nombre" />
+                                <ValidationMessage For="@(() => miembro.Nombre)" />
+                            </div>
+                            <div class="col-md-4">
+                                <label>Cédula</label>
+                                <InputText class="form-control" @bind-Value="miembro.Cedula" />
+                                <ValidationMessage For="@(() => miembro.Cedula)" />
+                            </div>
+                            <div class="col-md-4">
+                                <label>Cargo</label>
+                                <InputSelect class="form-control" @bind-Value="miembro.CargoId">
+                                    @foreach (var cargo in GetCargosPorTramite())
+                                    {
+                                        <option value="@cargo.CargoId">@cargo.NombreCargo</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <button type="button" class="btn btn-secondary" @onclick="AddMiembro" disabled="@IsMaxMiembrosAlcanzado()">
+                Añadir Miembro
+            </button>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+</EditForm>

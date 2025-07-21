@@ -13,28 +13,32 @@ public class UserDataService : IUserData
 {
     private readonly IConfiguration _Configuration;
     private readonly UserManager<ApplicationUser> _UserManager;
-    private readonly IDbContextFactory<DbContextLegal> _Context;
+    private readonly DbContextLegal _context;
     private readonly string FakePassword = "";
     private readonly ActiveDirectoryApiModel ActiveDirectoryModel;
     private readonly HttpClient _HttpClient;
 
-    public UserDataService(UserManager<ApplicationUser> UserManager, IDbContextFactory<DbContextLegal> Context,
-        IConfiguration Configuration, HttpClient HttpClient)
+    public UserDataService(
+        UserManager<ApplicationUser> userManager,
+        DbContextLegal context,
+        IConfiguration configuration,
+        HttpClient httpClient)
     {
-        _UserManager = UserManager;
-        _Context = Context;
-        _Configuration = Configuration;
+        _UserManager = userManager;
+        _context = context;
+        _Configuration = configuration;
         FakePassword = _Configuration["FakePass"] ?? "";
         ActiveDirectoryModel = new ActiveDirectoryApiModel()
         {
             BaseUrl = _Configuration["API_INFO:URL"] ?? "",
             Token = _Configuration["API_INFO:Token"] ?? "",
         };
-        _HttpClient = HttpClient;
+        _HttpClient = httpClient;
         _HttpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", ActiveDirectoryModel.Token);
         _HttpClient.DefaultRequestHeaders.Add("Accept", "application/json");
     }
+
 
     public async Task<FullUserModel> GetUser(string UserName)
     {
