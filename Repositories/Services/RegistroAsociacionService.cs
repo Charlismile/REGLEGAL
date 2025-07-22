@@ -1,102 +1,58 @@
-﻿// using Microsoft.EntityFrameworkCore;
-// using REGISTROLEGAL.Models.Entities.BdSisLegal;
-// using SISTEMALEGAL.DTOs;
-// using SISTEMALEGAL.Repositories.Interfaces;
-//
-// namespace SISTEMALEGAL.Repositories.Services
-// {
-//     public class RegistroAsociacionService : IRegistroAsociacionService
-//     {
-//         private readonly DbContextLegal _context;
-//
-//         public RegistroAsociacionService(DbContextLegal context)
-//         {
-//             _context = context;
-//         }
-//
-//         public async Task<ResultadoOperacion<int>> RegistrarAsociacion(RegistroAsociacionDTO dto, string usuarioId)
-//         {
-//             var resultado = new ResultadoOperacion<int>();
-//
-//             using var transaction = await _context.Database.BeginTransactionAsync();
-//
-//             try
-//             {
-//                 // Registrar apoderado legal
-//                 var apoderado = new TbApoderadoLegal
-//                 {
-//                     NombreApoAbogado = dto.Apoderado.NombreApoAbogado,
-//                     CedulaApoAbogado = dto.Apoderado.CedulaApoAbogado,
-//                     TelefonoApoAbogado = dto.Apoderado.TelefonoApoAbogado,
-//                     CorreoApoAbogado = dto.Apoderado.CorreoApoAbogado,
-//                     DireccionApoAbogado = dto.Apoderado.DireccionApoAbogado
-//                 };
-//                 await _context.TbApoderadoLegal.AddAsync(apoderado);
-//                 await _context.SaveChangesAsync();
-//
-//                 // Registrar representante legal
-//                 var representante = new TbRepresentanteLegal
-//                 {
-//                     NombreRepLegal = dto.Representante.NombreRepLegal,
-//                     CedulaRepLegal = dto.Representante.CedulaRepLegal,
-//                     CargoRepLegal = dto.Representante.CargoRepLegal,
-//                     TelefonoRepLegal = dto.Representante.TelefonoRepLegal,
-//                     DireccionRepLegal = dto.Representante.DireccionRepLegal
-//                 };
-//                 await _context.TbRepresentanteLegal.AddAsync(representante);
-//                 await _context.SaveChangesAsync();
-//
-//                 // Registrar asociación
-//                 var asociacion = new TbAsociacion
-//                 {
-//                     NombreAsociacion = dto.NombreAsociacion,
-//                     Folio = dto.Folio,
-//                     Actividad = dto.Actividad,
-//                     ApoderadoLegalId = apoderado.ApoAbogadoId,
-//                     RepresentanteLegalId = representante.RepLegalId
-//                 };
-//                 await _context.TbAsociacion.AddAsync(asociacion);
-//                 await _context.SaveChangesAsync();
-//
-//                 // Registrar detalle del registro
-//                 const int TIPO_TRAMITE_ID = 4; // Asegúrate de tener un servicio o DTO para esto
-//
-//                 var detalle = new TbDetalleRegAsociacion
-//                 {
-//                     AsociacionId = asociacion.AsociacionId,
-//                     CreadaPor = usuarioId,
-//                     NumRegAsecuencia = await GetNextSecuencia(), // Correcto: minúscula
-//                     NomRegAanio = DateTime.Now.Year,            // Correcto: minúscula
-//                     NumRegAmes = DateTime.Now.Month             // Correcto: minúscula
-//                 };
-//
-//                 await _context.TbDetalleRegAsociacion.AddAsync(detalle);
-//                 await _context.SaveChangesAsync();
-//
-//                 await transaction.CommitAsync();
-//
-//                 resultado.Exito = true;
-//                 resultado.Data = asociacion.AsociacionId;
-//             }
-//             catch (Exception ex)
-//             {
-//                 await transaction.RollbackAsync();
-//                 resultado.Exito = false;
-//                 resultado.Errores.Add(ex.Message);
-//             }
-//
-//             return resultado;
-//         }
-//
-//         private async Task<int> GetNextSecuencia()
-//         {
-//             var anio = DateTime.Now.Year;
-//             var secuencia = await _context.TbRegSecuencia
-//                 .Where(s => s.Anio == anio && s.Activo)
-//                 .OrderByDescending(s => s.Numeracion)
-//                 .FirstOrDefaultAsync();
-//
-//             return secuencia?.Numeracion + 1 ?? 1;
-//         }
-//     }
-// }
+﻿using Microsoft.AspNetCore.Components.Forms;
+
+namespace REGISTROLEGAL.Services
+{
+    public class RegistroAsociacionService : IRegistroAsociacionService
+    {
+        private readonly HttpClient _http;
+
+        public RegistroAsociacionService(HttpClient http)
+        {
+            _http = http;
+        }
+
+        public async Task<RegistroAsociacionDTO> ObtenerPorIdAsync(int id)
+        {
+            var response = await _http.GetAsync($"/api/registroasociacion/{id}");
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"No se pudo cargar el registro. Código: {response.StatusCode}");
+
+            var result = await response.Content.ReadFromJsonAsync<RegistroAsociacionDTO>();
+            if (result == null)
+                throw new Exception("Respuesta vacía del servidor.");
+
+            return result;
+        }
+
+        public async Task ActualizarAsync(RegistroAsociacionDTO model, List<IBrowserFile> nuevosArchivos)
+        {
+            var formData = new MultipartFormDataContent();
+
+            // Agregar todos los campos del modelo
+            var properties = typeof(RegistroAsociacionDTO).GetProperties();
+            foreach (var prop in properties)
+            {
+                if (prop.Name == nameof(model.Documentos) || prop.Name == nameof(model.DocumentoSubida))
+                    continue; // Saltar listas de archivos
+
+                var value = prop.GetValue(model)?.ToString() ?? string.Empty;
+                formData.Add(new StringContent(value), prop.Name);
+            }
+
+            // Subir nuevos archivos
+            foreach (var file in nuevosArchivos)
+            {
+                var streamContent = new StreamContent(file.OpenReadStream(maxAllowedSize: 10_000_000)); // 10 MB
+                streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+                formData.Add(streamContent, "ArchivosSubida", file.Name);
+            }
+
+            var response = await _http.PutAsync("/api/registroasociacion", formData);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al actualizar: {error}");
+            }
+        }
+    }
+}

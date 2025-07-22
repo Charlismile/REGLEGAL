@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="REGISTROLEGAL.styles.css"/>
     <link rel="stylesheet" href="fontawesome/css/all.min.css"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css " rel="stylesheet" />
     <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet"/>
     <link rel="icon" type="image/png" href="favicon.png"/>
     <HeadOutlet @rendermode="RenderModeForPage"/>
@@ -17,10 +18,16 @@
 
 <body>
 <Routes @rendermode="RenderModeForPage"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js "></script>
 <script src="_framework/blazor.web.js"></script>
 <script src="bootstrap/js/blazor.reconnect.js"></script>
 <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+<script>
+    window.toastrSuccess = (message) => toastr.success(message);
+    window.toastrError = (message) => toastr.error(message);
+    window.toastrInfo = (message) => toastr.info(message);
+</script>
 </body>
 
 </html>

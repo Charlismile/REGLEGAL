@@ -174,8 +174,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGISTROLEGAL/REGISTROLEGAL/Components/Componente/EditRegistroAsociacionContent.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21wb25lbnRlXEVkaXRSZWdpc3Ryb0Fzb2NpYWNpb25Db250ZW50LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGISTROLEGAL/REGISTROLEGAL/Components/Componente/RegistroAsociacion.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21wb25lbnRlXFJlZ2lzdHJvQXNvY2lhY2lvbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGISTROLEGAL/REGISTROLEGAL/Components/Componente/RegistroComite.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21wb25lbnRlXFJlZ2lzdHJvQ29taXRlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGISTROLEGAL/REGISTROLEGAL/Components/Pages/Admin/EditarRegistro.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxFZGl0YXJSZWdpc3Ryby5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGISTROLEGAL/REGISTROLEGAL/Components/Pages/Auth.razor]
@@ -192,6 +204,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGISTROLEGAL/REGISTROLEGAL/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGISTROLEGAL/REGISTROLEGAL/Components/Pages/Public/SolicitudAsociacion.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQdWJsaWNcU29saWNpdHVkQXNvY2lhY2lvbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGISTROLEGAL/REGISTROLEGAL/Components/Pages/Public/SolicitudComite.razor]

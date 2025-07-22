@@ -1,6 +1,6 @@
 ﻿using REGISTROLEGAL.DTOs;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
-using SISTEMALEGAL.DTOs;
+
 
 namespace SISTEMALEGAL.Repositories.Interfaces;
 

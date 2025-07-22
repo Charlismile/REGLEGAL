@@ -1,0 +1,185 @@
+﻿
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit" class="p-5">
+    <DataAnnotationsValidator />
+    <ValidationSummary Class="alert alert-danger mb-3" />
+
+    <h3 class="mb-4 text-primary">Formulario de Registro de Asociación</h3>
+
+    <!-- ASOCIACIÓN -->
+    <fieldset class="border p-3 mb-4 bg-light">
+        <legend class="w-auto px-2">Información de la Asociación</legend>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="nombreAsociacion" class="form-label">Nombre de la Asociación *</label>
+                <InputText id="nombreAsociacion" @bind-Value="Model.NombreAsociacion" class="form-control" />
+                <ValidationMessage For="@(() => Model.NombreAsociacion)" class="text-danger small" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="folio" class="form-label">Folio *</label>
+                <InputNumber id="folio" @bind-Value="Model.Folio" class="form-control" />
+                <ValidationMessage For="@(() => Model.Folio)" class="text-danger small" />
+            </div>
+
+            <div class="col-12 mb-3">
+                <label for="actividad" class="form-label">Actividad *</label>
+                <InputText id="actividad" @bind-Value="Model.Actividad" class="form-control" />
+                <ValidationMessage For="@(() => Model.Actividad)" class="text-danger small" />
+            </div>
+        </div>
+    </fieldset>
+
+    <!-- REPRESENTANTE LEGAL -->
+    <fieldset class="border p-3 mb-4 bg-light">
+        <legend class="w-auto px-2">Representante Legal</legend>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="nombreRepLegal" class="form-label">Nombre *</label>
+                <InputText id="nombreRepLegal" @bind-Value="Model.NombreRepLegal" class="form-control" />
+                <ValidationMessage For="@(() => Model.NombreRepLegal)" class="text-danger small" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="cedulaRepLegal" class="form-label">Cédula *</label>
+                <InputText id="cedulaRepLegal" @bind-Value="Model.CedulaRepLegal" class="form-control" placeholder="1-123456-7" />
+                <ValidationMessage For="@(() => Model.CedulaRepLegal)" class="text-danger small" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="cargoRepLegal" class="form-label">Cargo *</label>
+                <InputText id="cargoRepLegal" @bind-Value="Model.CargoRepLegal" class="form-control" />
+                <ValidationMessage For="@(() => Model.CargoRepLegal)" class="text-danger small" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="telefonoRepLegal" class="form-label">Teléfono *</label>
+                <InputText id="telefonoRepLegal" @bind-Value="Model.TelefonoRepLegal" class="form-control" />
+                <ValidationMessage For="@(() => Model.TelefonoRepLegal)" class="text-danger small" />
+            </div>
+
+            <div class="col-12 mb-3">
+                <label for="direccionRepLegal" class="form-label">Dirección *</label>
+                <InputText id="direccionRepLegal" @bind-Value="Model.DireccionRepLegal" class="form-control" />
+                <ValidationMessage For="@(() => Model.DireccionRepLegal)" class="text-danger small" />
+            </div>
+        </div>
+    </fieldset>
+
+    <!-- APODERADO ABGADO -->
+    <fieldset class="border p-3 mb-4 bg-light">
+        <legend class="w-auto px-2">Apoderado Abogado</legend>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="nombreApoAbogado" class="form-label">Nombre *</label>
+                <InputText id="nombreApoAbogado" @bind-Value="Model.NombreApoAbogado" class="form-control" />
+                <ValidationMessage For="@(() => Model.NombreApoAbogado)" class="text-danger small" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="cedulaApoAbogado" class="form-label">Cédula *</label>
+                <InputText id="cedulaApoAbogado" @bind-Value="Model.CedulaApoAbogado" class="form-control" placeholder="1-123456-7" />
+                <ValidationMessage For="@(() => Model.CedulaApoAbogado)" class="text-danger small" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="telefonoApoAbogado" class="form-label">Teléfono *</label>
+                <InputText id="telefonoApoAbogado" @bind-Value="Model.TelefonoApoAbogado" class="form-control" />
+                <ValidationMessage For="@(() => Model.TelefonoApoAbogado)" class="text-danger small" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="correoApoAbogado" class="form-label">Correo Electrónico *</label>
+                <InputText id="correoApoAbogado" @bind-Value="Model.CorreoApoAbogado" class="form-control" type="email" />
+                <ValidationMessage For="@(() => Model.CorreoApoAbogado)" class="text-danger small" />
+            </div>
+
+            <div class="col-12 mb-3">
+                <label for="direccionApoAbogado" class="form-label">Dirección *</label>
+                <InputText id="direccionApoAbogado" @bind-Value="Model.DireccionApoAbogado" class="form-control" />
+                <ValidationMessage For="@(() => Model.DireccionApoAbogado)" class="text-danger small" />
+            </div>
+        </div>
+    </fieldset>
+
+    <!-- FIRMA DE ABOGADOS -->
+    <fieldset class="border p-3 mb-4 bg-light">
+        <legend class="w-auto px-2">Firma de Abogados</legend>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="nombreFirma" class="form-label">Nombre de la Firma *</label>
+                <InputText id="nombreFirma" @bind-Value="Model.NombreFirma" class="form-control" />
+                <ValidationMessage For="@(() => Model.NombreFirma)" class="text-danger small" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="telefonoFirma" class="form-label">Teléfono *</label>
+                <InputText id="telefonoFirma" @bind-Value="Model.TelefonoFirma" class="form-control" />
+                <ValidationMessage For="@(() => Model.TelefonoFirma)" class="text-danger small" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="correoFirma" class="form-label">Correo Electrónico *</label>
+                <InputText id="correoFirma" @bind-Value="Model.CorreoFirma" class="form-control" type="email" />
+                <ValidationMessage For="@(() => Model.CorreoFirma)" class="text-danger small" />
+            </div>
+
+            <div class="col-12 mb-3">
+                <label for="direccionFirma" class="form-label">Dirección *</label>
+                <InputText id="direccionFirma" @bind-Value="Model.DireccionFirma" class="form-control" />
+                <ValidationMessage For="@(() => Model.DireccionFirma)" class="text-danger small" />
+            </div>
+        </div>
+    </fieldset>
+
+    <!-- ARCHIVOS -->
+    <fieldset class="border p-3 mb-4 bg-light">
+        <legend class="w-auto px-2">Archivos</legend>
+
+        <!-- Archivos existentes -->
+        @if (Model.Documentos?.Count > 0)
+        {
+            <h6>Archivos subidos:</h6>
+            <ul class="list-group mb-3">
+                @foreach (var archivo in Model.Documentos)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>@archivo.Nombre</span>
+                        <a href="@archivo.URL" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-download"></i> Descargar
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+
+        <!-- Nuevos archivos a subir -->
+        <div class="mb-3">
+            <label class="form-label">Subir nuevos archivos</label>
+            <InputFile OnChange="@CargarNuevosArchivos" multiple class="form-control" />
+            <small class="text-muted">Puedes adjuntar más archivos.</small>
+        </div>
+
+        <!-- Vista previa de nuevos archivos seleccionados -->
+        @if (Model.DocumentoSubida?.Count > 0)
+        {
+            <h6>Nuevos archivos seleccionados:</h6>
+            <ul class="list-group">
+                @for (int i = 0; i < Model.DocumentoSubida.Count; i++)
+                {
+                    var archivo = Model.DocumentoSubida[i];
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>@archivo.Name (@(Math.Round(archivo.Size / 1024.0, 2)) KB)</span>
+                        <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoverNuevoArchivo(archivo)">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </li>
+                }
+            </ul>
+        }
+    </fieldset>
+
+    <div class="d-flex justify-content-end gap-2">
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+    </div>
+</EditForm>
