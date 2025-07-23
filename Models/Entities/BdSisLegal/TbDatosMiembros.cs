@@ -13,7 +13,9 @@ public partial class TbDatosMiembros
 
     public int CargoId { get; set; }
 
+    public int? DcomiteId { get; set; }
+
     public virtual TbCargosMiembrosComite Cargo { get; set; } = null!;
 
-    public virtual ICollection<TbDatosComite> TbDatosComite { get; set; } = new List<TbDatosComite>();
+    public virtual TbDatosComite? Dcomite { get; set; }
 }

@@ -1,7 +1,7 @@
-﻿
-using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using REGISTROLEGAL.DTOs;
 
-namespace REGISTROLEGAL.Services
+namespace REGISTROLEGAL.Repositories.Interfaces
 {
     public interface IRegistroAsociacionService
     {

@@ -1,0 +1,347 @@
+﻿@* @page "/comites/editar/{id:int}" *@
+@* *@
+@* <div class="container-fluid"> *@
+@*     <div class="row"> *@
+@*         <div class="col-12"> *@
+@*             <div class="card"> *@
+@*                 <div class="card-header d-flex justify-content-between align-items-center"> *@
+@*                     <h3 class="mb-0"> *@
+@*                         <i class="fas fa-edit"></i> Editar Registro del Comité *@
+@*                     </h3> *@
+@*                     <div> *@
+@*                         <button type="button" class="btn btn-outline-secondary me-2" @onclick="Cancelar"> *@
+@*                             <i class="fas fa-times"></i> Cancelar *@
+@*                         </button> *@
+@*                         <button type="button" class="btn btn-danger" @onclick="() => MostrarModalEliminar = true"> *@
+@*                             <i class="fas fa-trash"></i> Eliminar *@
+@*                         </button> *@
+@*                     </div> *@
+@*                 </div> *@
+@* *@
+@*                 <div class="card-body"> *@
+@*                     @if (cargando) *@
+@*                     { *@
+@*                         <div class="text-center p-5"> *@
+@*                             <div class="spinner-border text-primary" role="status"> *@
+@*                                 <span class="visually-hidden">Cargando...</span> *@
+@*                             </div> *@
+@*                             <p class="mt-2">Cargando datos del comité...</p> *@
+@*                         </div> *@
+@*                     } *@
+@*                     else if (registroComite == null) *@
+@*                     { *@
+@*                         <div class="alert alert-warning"> *@
+@*                             <i class="fas fa-exclamation-triangle"></i> *@
+@*                             No se pudo cargar el registro del comité. *@
+@*                         </div> *@
+@*                     } *@
+@*                     else *@
+@*                     { *@
+@*                         <EditForm Model="@registroComite" OnValidSubmit="@HandleValidSubmit" class="needs-validation" novalidate> *@
+@*                             <DataAnnotationsValidator /> *@
+@*                              *@
+@*                             @if (!string.IsNullOrEmpty(mensajeError)) *@
+@*                             { *@
+@*                                 <div class="alert alert-danger alert-dismissible fade show" role="alert"> *@
+@*                                     <i class="fas fa-exclamation-circle"></i> *@
+@*                                     @mensajeError *@
+@*                                     <button type="button" class="btn-close" @onclick="() => mensajeError = string.Empty"></button> *@
+@*                                 </div> *@
+@*                             } *@
+@* *@
+@*                             @if (!string.IsNullOrEmpty(mensajeExito)) *@
+@*                             { *@
+@*                                 <div class="alert alert-success alert-dismissible fade show" role="alert"> *@
+@*                                     <i class="fas fa-check-circle"></i> *@
+@*                                     @mensajeExito *@
+@*                                     <button type="button" class="btn-close" @onclick="() => mensajeExito = string.Empty"></button> *@
+@*                                 </div> *@
+@*                             } *@
+@* *@
+@*                             <!-- Información General --> *@
+@*                             <div class="row mb-4"> *@
+@*                                 <div class="col-12"> *@
+@*                                     <h5 class="border-bottom pb-2 mb-3"> *@
+@*                                         <i class="fas fa-info-circle text-primary"></i> Datos del Comité *@
+@*                                     </h5> *@
+@*                                 </div> *@
+@*                             </div> *@
+@* *@
+@*                             <div class="row mb-3"> *@
+@*                                 <div class="col-md-6"> *@
+@*                                     <label class="form-label fw-bold">Nombre del Comité <span class="text-danger">*</span></label> *@
+@*                                     <InputText class="form-control" @bind-Value="registroComite.NombreComiteSalud" placeholder="Ingrese el nombre del comité" /> *@
+@*                                     <ValidationMessage For="@(() => registroComite.NombreComiteSalud)" class="text-danger small" /> *@
+@*                                 </div> *@
+@*                                 <div class="col-md-6"> *@
+@*                                     <label class="form-label fw-bold">Comunidad</label> *@
+@*                                     <InputText class="form-control" @bind-Value="registroComite.Comunidad" placeholder="Ingrese la comunidad" /> *@
+@*                                 </div> *@
+@*                             </div> *@
+@* *@
+@*                             <!-- Ubicación --> *@
+@*                             <div class="row mb-4"> *@
+@*                                 <div class="col-12"> *@
+@*                                     <h5 class="border-bottom pb-2 mb-3"> *@
+@*                                         <i class="fas fa-map-marker-alt text-primary"></i> Ubicación *@
+@*                                     </h5> *@
+@*                                 </div> *@
+@*                             </div> *@
+@* *@
+@*                             <div class="row mb-3"> *@
+@*                                 <div class="col-md-3"> *@
+@*                                     <label class="form-label fw-bold">Región <span class="text-danger">*</span></label> *@
+@*                                     <InputSelect class="form-select" @bind-Value="registroComite.RegionSaludId" @onchange="CargarProvincias"> *@
+@*                                         <option value="0">-- Seleccione Región --</option> *@
+@*                                         @foreach (var region in regiones) *@
+@*                                         { *@
+@*                                             <option value="@region.RegionSaludId">@region.NombreRegion</option> *@
+@*                                         } *@
+@*                                     </InputSelect> *@
+@*                                     <ValidationMessage For="@(() => registroComite.RegionSaludId)" class="text-danger small" /> *@
+@*                                 </div> *@
+@*                                  *@
+@*                                 <div class="col-md-3"> *@
+@*                                     <label class="form-label fw-bold">Provincia <span class="text-danger">*</span></label> *@
+@*                                     <InputSelect class="form-select" @bind-Value="registroComite.ProvinciaId" @onchange="CargarDistritos" disabled="@(provincias.Count == 0)"> *@
+@*                                         <option value="0">-- Seleccione Provincia --</option> *@
+@*                                         @foreach (var provincia in provincias) *@
+@*                                         { *@
+@*                                             <option value="@provincia.ProvinciaId">@provincia.NombreProvincia</option> *@
+@*                                         } *@
+@*                                     </InputSelect> *@
+@*                                     <ValidationMessage For="@(() => registroComite.ProvinciaId)" class="text-danger small" /> *@
+@*                                 </div> *@
+@*                                  *@
+@*                                 <div class="col-md-3"> *@
+@*                                     <label class="form-label fw-bold">Distrito <span class="text-danger">*</span></label> *@
+@*                                     <InputSelect class="form-select" @bind-Value="registroComite.DistritoId" @onchange="CargarCorregimientos" disabled="@(distritos.Count == 0)"> *@
+@*                                         <option value="0">-- Seleccione Distrito --</option> *@
+@*                                         @foreach (var distrito in distritos) *@
+@*                                         { *@
+@*                                             <option value="@distrito.DistritoId">@distrito.NombreDistrito</option> *@
+@*                                         } *@
+@*                                     </InputSelect> *@
+@*                                     <ValidationMessage For="@(() => registroComite.DistritoId)" class="text-danger small" /> *@
+@*                                 </div> *@
+@*                                  *@
+@*                                 <div class="col-md-3"> *@
+@*                                     <label class="form-label fw-bold">Corregimiento <span class="text-danger">*</span></label> *@
+@*                                     <InputSelect class="form-select" @bind-Value="registroComite.CorregimientoId" disabled="@(corregimientos.Count == 0)"> *@
+@*                                         <option value="0">-- Seleccione Corregimiento --</option> *@
+@*                                         @foreach (var corregimiento in corregimientos) *@
+@*                                         { *@
+@*                                             <option value="@corregimiento.CorregimientoId">@corregimiento.NombreCorregimiento</option> *@
+@*                                         } *@
+@*                                     </InputSelect> *@
+@*                                     <ValidationMessage For="@(() => registroComite.CorregimientoId)" class="text-danger small" /> *@
+@*                                 </div> *@
+@*                             </div> *@
+@* *@
+@*                             <!-- Tipo de Trámite --> *@
+@*                             <div class="row mb-4"> *@
+@*                                 <div class="col-12"> *@
+@*                                     <h5 class="border-bottom pb-2 mb-3"> *@
+@*                                         <i class="fas fa-file-alt text-primary"></i> Tipo de Trámite *@
+@*                                     </h5> *@
+@*                                 </div> *@
+@*                             </div> *@
+@* *@
+@*                             <div class="row mb-3"> *@
+@*                                 <div class="col-md-6"> *@
+@*                                     <label class="form-label fw-bold">Trámite <span class="text-danger">*</span></label> *@
+@*                                     <InputSelect class="form-select" @bind-Value="registroComite.TramiteId" @onchange="OnTramiteChanged"> *@
+@*                                         <option value="0">-- Seleccione Trámite --</option> *@
+@*                                         @foreach (var tramite in tramites) *@
+@*                                         { *@
+@*                                             <option value="@tramite.TramiteId">@tramite.NombreTramite</option> *@
+@*                                         } *@
+@*                                     </InputSelect> *@
+@*                                     <ValidationMessage For="@(() => registroComite.TramiteId)" class="text-danger small" /> *@
+@*                                 </div> *@
+@*                             </div> *@
+@* *@
+@*                             <!-- Archivos Adjuntos --> *@
+@*                             <div class="row mb-4"> *@
+@*                                 <div class="col-12"> *@
+@*                                     <h5 class="border-bottom pb-2 mb-3"> *@
+@*                                         <i class="fas fa-paperclip text-primary"></i> Archivos Adjuntos *@
+@*                                     </h5> *@
+@*                                 </div> *@
+@*                             </div> *@
+@* *@
+@*                             <div class="row mb-3"> *@
+@*                                 <div class="col-12"> *@
+@*                                     <div class="mb-3"> *@
+@*                                         <label class="form-label fw-bold">Cargar Nuevos Archivos</label> *@
+@*                                         <InputFile multiple OnChange="CargarArchivos" class="form-control" accept=".pdf,.jpg,.jpeg,.png" /> *@
+@*                                         <div class="form-text"> *@
+@*                                             <i class="fas fa-info-circle"></i> *@
+@*                                             Formatos permitidos: PDF, JPG, JPEG, PNG. Tamaño máximo: 10MB por archivo. *@
+@*                                         </div> *@
+@*                                     </div> *@
+@* *@
+@*                                     @if (registroComite.Archivos?.Count > 0) *@
+@*                                     { *@
+@*                                         <div class="card"> *@
+@*                                             <div class="card-header"> *@
+@*                                                 <h6 class="mb-0">Archivos Actuales</h6> *@
+@*                                             </div> *@
+@*                                             <div class="card-body"> *@
+@*                                                 <div class="row"> *@
+@*                                                     @foreach (var archivo in registroComite.Archivos) *@
+@*                                                     { *@
+@*                                                         <div class="col-md-4 mb-2"> *@
+@*                                                             <div class="d-flex align-items-center justify-content-between p-2 border rounded"> *@
+@*                                                                 <div> *@
+@*                                                                     <a href="@archivo.Ruta" target="_blank" class="text-decoration-none"> *@
+@*                                                                         <i class="fas fa-file"></i> @archivo.NombreOriginal *@
+@*                                                                     </a> *@
+@*                                                                     <small class="d-block text-muted">@archivo.Categoria</small> *@
+@*                                                                 </div> *@
+@*                                                                 <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => EliminarArchivo(archivo)"> *@
+@*                                                                     <i class="fas fa-times"></i> *@
+@*                                                                 </button> *@
+@*                                                             </div> *@
+@*                                                         </div> *@
+@*                                                     } *@
+@*                                                 </div> *@
+@*                                             </div> *@
+@*                                         </div> *@
+@*                                     } *@
+@*                                 </div> *@
+@*                             </div> *@
+@* *@
+@*                             <!-- Miembros del Comité --> *@
+@*                             @if (registroComite.TramiteId == 1 || registroComite.TramiteId == 2 || registroComite.TramiteId == 3) *@
+@*                             { *@
+@*                                 <div class="row mb-4"> *@
+@*                                     <div class="col-12"> *@
+@*                                         <h5 class="border-bottom pb-2 mb-3"> *@
+@*                                             <i class="fas fa-users text-primary"></i> Miembros del Comité *@
+@*                                         </h5> *@
+@*                                     </div> *@
+@*                                 </div> *@
+@* *@
+@*                                 <div class="mb-3"> *@
+@*                                     @for (int i = 0; i < registroComite.Miembros.Count; i++) *@
+@*                                     { *@
+@*                                         var miembro = registroComite.Miembros[i]; *@
+@*                                         var index = i; *@
+@*                                          *@
+@*                                         <div class="card mb-3"> *@
+@*                                             <div class="card-header d-flex justify-content-between align-items-center"> *@
+@*                                                 <h6 class="mb-0">Miembro @(i + 1)</h6> *@
+@*                                                 @if (registroComite.Miembros.Count > 1) *@
+@*                                                 { *@
+@*                                                     <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => EliminarMiembro(index)"> *@
+@*                                                         <i class="fas fa-trash"></i> Eliminar *@
+@*                                                     </button> *@
+@*                                                 } *@
+@*                                             </div> *@
+@*                                             <div class="card-body"> *@
+@*                                                 <div class="row"> *@
+@*                                                     <div class="col-md-4"> *@
+@*                                                         <label class="form-label fw-bold">Nombre <span class="text-danger">*</span></label> *@
+@*                                                         <InputText class="form-control" @bind-Value="miembro.Nombre" placeholder="Nombre completo" /> *@
+@*                                                         <ValidationMessage For="@(() => miembro.Nombre)" class="text-danger small" /> *@
+@*                                                     </div> *@
+@*                                                     <div class="col-md-4"> *@
+@*                                                         <label class="form-label fw-bold">Cédula <span class="text-danger">*</span></label> *@
+@*                                                         <InputText class="form-control" @bind-Value="miembro.Cedula" placeholder="0-0000-0000" /> *@
+@*                                                         <ValidationMessage For="@(() => miembro.Cedula)" class="text-danger small" /> *@
+@*                                                     </div> *@
+@*                                                     <div class="col-md-4"> *@
+@*                                                         <label class="form-label fw-bold">Cargo <span class="text-danger">*</span></label> *@
+@*                                                         <InputSelect class="form-select" @bind-Value="miembro.CargoId"> *@
+@*                                                             <option value="0">-- Seleccione Cargo --</option> *@
+@*                                                             @foreach (var cargo in GetCargosPorTramite()) *@
+@*                                                             { *@
+@*                                                                 <option value="@cargo.CargoId">@cargo.NombreCargo</option> *@
+@*                                                             } *@
+@*                                                         </InputSelect> *@
+@*                                                     </div> *@
+@*                                                 </div> *@
+@*                                             </div> *@
+@*                                         </div> *@
+@*                                     } *@
+@* *@
+@*                                     <div class="text-center"> *@
+@*                                         <button type="button" class="btn btn-outline-primary" @onclick="AddMiembro" disabled="@IsMaxMiembrosAlcanzado()"> *@
+@*                                             <i class="fas fa-plus"></i> Añadir Miembro (@registroComite.Miembros.Count/@GetMaxMiembros()) *@
+@*                                         </button> *@
+@*                                     </div> *@
+@*                                 </div> *@
+@*                             } *@
+@* *@
+@*                             <!-- Botones de Acción --> *@
+@*                             <div class="row mt-4"> *@
+@*                                 <div class="col-12"> *@
+@*                                     <hr /> *@
+@*                                     <div class="d-flex justify-content-end gap-2"> *@
+@*                                         <button type="button" class="btn btn-outline-secondary" @onclick="Cancelar"> *@
+@*                                             <i class="fas fa-times"></i> Cancelar *@
+@*                                         </button> *@
+@*                                         <button type="submit" class="btn btn-primary" disabled="@guardando"> *@
+@*                                             @if (guardando) *@
+@*                                             { *@
+@*                                                 <span class="spinner-border spinner-border-sm me-2" role="status"></span> *@
+@*                                             } *@
+@*                                             else *@
+@*                                             { *@
+@*                                                 <i class="fas fa-save"></i> *@
+@*                                             } *@
+@*                                             Actualizar Registro *@
+@*                                         </button> *@
+@*                                     </div> *@
+@*                                 </div> *@
+@*                             </div> *@
+@*                         </EditForm> *@
+@*                     } *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
+@* *@
+@* <!-- Modal de Confirmación de Eliminación --> *@
+@* @if (MostrarModalEliminar) *@
+@* { *@
+@*     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);"> *@
+@*         <div class="modal-dialog modal-dialog-centered"> *@
+@*             <div class="modal-content"> *@
+@*                 <div class="modal-header bg-danger text-white"> *@
+@*                     <h5 class="modal-title"> *@
+@*                         <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación *@
+@*                     </h5> *@
+@*                 </div> *@
+@*                 <div class="modal-body"> *@
+@*                     <p class="mb-3">¿Está seguro que desea eliminar este registro del comité?</p> *@
+@*                     <div class="alert alert-warning"> *@
+@*                         <strong>Advertencia:</strong> Esta acción no se puede deshacer. Se eliminarán todos los datos del comité incluyendo sus miembros y archivos adjuntos. *@
+@*                     </div> *@
+@*                     <div class="bg-light p-3 rounded"> *@
+@*                         <strong>Comité:</strong> @registroComite?.NombreComiteSalud<br> *@
+@*                         <strong>Comunidad:</strong> @registroComite?.Comunidad *@
+@*                     </div> *@
+@*                 </div> *@
+@*                 <div class="modal-footer"> *@
+@*                     <button type="button" class="btn btn-secondary" @onclick="() => MostrarModalEliminar = false"> *@
+@*                         <i class="fas fa-times"></i> Cancelar *@
+@*                     </button> *@
+@*                     <button type="button" class="btn btn-danger" @onclick="ConfirmarEliminacion" disabled="@eliminando"> *@
+@*                         @if (eliminando) *@
+@*                         { *@
+@*                             <span class="spinner-border spinner-border-sm me-2" role="status"></span> *@
+@*                         } *@
+@*                         else *@
+@*                         { *@
+@*                             <i class="fas fa-trash"></i> *@
+@*                         } *@
+@*                         Eliminar Registro *@
+@*                     </button> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* } *@

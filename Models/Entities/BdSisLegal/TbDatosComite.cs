@@ -19,15 +19,11 @@ public partial class TbDatosComite
 
     public int CorregimientoId { get; set; }
 
-    public int MiembroId { get; set; }
-
     public virtual TbCorregimiento Corregimiento { get; set; } = null!;
 
     public virtual TbDistrito Distrito { get; set; } = null!;
 
-    public virtual TbDatosMiembros Miembro { get; set; } = null!;
-
     public virtual TbProvincia Provincia { get; set; } = null!;
 
-    public virtual TbRegionSalud RegionSalud { get; set; } = null!;
+    public virtual ICollection<TbDatosMiembros> TbDatosMiembros { get; set; } = new List<TbDatosMiembros>();
 }

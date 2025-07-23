@@ -1,61 +1,109 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using REGISTROLEGAL.DTOs;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
-using SISTEMALEGAL.Repositories.Interfaces;
+using REGISTROLEGAL.Repositories.Interfaces;
 
 namespace REGISTROLEGAL.Repositories.Services;
 
 public class RegistroComiteService : IRegistroComiteService
 {
     private readonly DbContextLegal _context;
+    private readonly ILogger<RegistroComiteService> _logger;
 
-    public RegistroComiteService(DbContextLegal context)
+    public RegistroComiteService(DbContextLegal context, ILogger<RegistroComiteService> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
-    public async Task<List<TbRegionSalud>> GetRegionesAsync() =>
-        await _context.TbRegionSalud.ToListAsync();
+    // --- CATÁLOGOS ---
+    public async Task<List<RegistroComiteDTO>> GetRegionesAsync()
+    {
+        return await _context.TbRegionSalud
+            .Select(r => new RegistroComiteDTO
+            {
+                RegionSaludId = r.RegionSaludId,
+                NombreRegion = r.NombreRegion
+            })
+            .ToListAsync();
+    }
 
-    public async Task<List<TbProvincia>> GetProvinciasAsync(int regionId) =>
-        await _context.TbProvincia
+    public async Task<List<RegistroComiteDTO>> GetProvinciasAsync(int regionId)
+    {
+        return await _context.TbProvincia
             .Where(p => p.RegionSaludId == regionId)
+            .Select(p => new RegistroComiteDTO
+            {
+                ProvinciaId = p.ProvinciaId,
+                NombreProvincia = p.NombreProvincia
+            })
             .ToListAsync();
+    }
 
-    public async Task<List<TbDistrito>> GetDistritosAsync(int provinciaId) =>
-        await _context.TbDistrito
+    public async Task<List<RegistroComiteDTO>> GetDistritosAsync(int provinciaId)
+    {
+        return await _context.TbDistrito
             .Where(d => d.ProvinciaId == provinciaId)
+            .Select(d => new RegistroComiteDTO
+            {
+                DistritoId = d.DistritoId,
+                NombreDistrito = d.NombreDistrito
+            })
             .ToListAsync();
+    }
 
-    public async Task<List<TbCorregimiento>> GetCorregimientosAsync(int distritoId) =>
-        await _context.TbCorregimiento
+    public async Task<List<RegistroComiteDTO>> GetCorregimientosAsync(int distritoId)
+    {
+        return await _context.TbCorregimiento
             .Where(c => c.DistritoId == distritoId)
+            .Select(c => new RegistroComiteDTO
+            {
+                CorregimientoId = c.CorregimientoId,
+                CorregimientoNombre = c.NombreCorregimiento
+            })
             .ToListAsync();
+    }
 
-    public async Task<List<TbTipoTramite>> GetTramitesAsync() =>
-        await _context.TbTipoTramite
+    public async Task<List<RegistroComiteDTO>> GetTiposTramiteAsync()
+    {
+        return await _context.TbTipoTramite
             .Where(t => t.IsActivo)
+            .Select(t => new RegistroComiteDTO
+            {
+                TramiteId = t.TramiteId,
+                NombreTramite = t.NombreTramite
+            })
             .ToListAsync();
+    }
 
-    public async Task<List<TbCargosMiembrosComite>> GetCargosAsync() =>
-        await _context.TbCargosMiembrosComite
+    public async Task<List<MiembroComiteDTO>> GetCargosAsync()
+    {
+        return await _context.TbCargosMiembrosComite
             .Where(c => c.IsActivo)
+            .Select(c => new MiembroComiteDTO
+            {
+                CargoId = c.CargoId,
+                NombreCargo = c.NombreCargo
+            })
             .ToListAsync();
+    }
 
+    // --- CRUD COMITÉ ---
     public async Task<RegistroComiteDTO> GetComitePorIdAsync(int id)
     {
         var comite = await _context.TbDatosComite
-            .Include(c => c.Corregimiento)
-                .ThenInclude(cor => cor.Distrito)
-                    .ThenInclude(dist => dist.Provincia)
-                        .ThenInclude(prov => prov.RegionSalud)
-            .Include(c => c.Miembro)
-            .Include(c => c.Distrito)
-            .Include(c => c.Provincia)
             .Include(c => c.RegionSalud)
+            .Include(c => c.Provincia)
+            .Include(c => c.Distrito)
+            .Include(c => c.Corregimiento)
             .FirstOrDefaultAsync(c => c.DcomiteId == id);
 
         if (comite == null) return null;
+
+        var miembros = await _context.TbDatosMiembros
+            .Include(m => m.Cargo)
+            .Where(m => m.DcomiteId == id)
+            .ToListAsync();
 
         var detalle = await _context.TbDetalleRegComite
             .Include(d => d.TipoTramite)
@@ -63,186 +111,303 @@ public class RegistroComiteService : IRegistroComiteService
 
         var archivos = await _context.TbArchivos
             .Where(a => a.DetRegComiteId == id)
-            .Select(a => new ArchivoDTO
-            {
-                NombreOriginal = a.NombreOriginal,
-                Ruta = a.Url,
-                Categoria = a.Categoria
-            }).ToListAsync();
+            .ToListAsync();
 
         return new RegistroComiteDTO
         {
             Id = comite.DcomiteId,
             NombreComiteSalud = comite.NombreComiteSalud,
             Comunidad = comite.Comunidad,
-
             RegionSaludId = comite.RegionSaludId,
             NombreRegion = comite.RegionSalud?.NombreRegion,
-
             ProvinciaId = comite.ProvinciaId,
-            NombreProvicnicia = comite.Provincia?.NombreProvincia,
-
+            NombreProvincia = comite.Provincia?.NombreProvincia,
             DistritoId = comite.DistritoId,
             NombreDistrito = comite.Distrito?.NombreDistrito,
-
             CorregimientoId = comite.CorregimientoId,
             CorregimientoNombre = comite.Corregimiento?.NombreCorregimiento,
-
-            NombreMiembro = comite.Miembro?.NombreMiembro,
-            CedulaMiembro = comite.Miembro?.CedulaMiembro,
-            CargoId = comite.Miembro?.CargoId ?? 0,
-
             TramiteId = detalle?.TipoTramiteId ?? 0,
             NombreTramite = detalle?.TipoTramite?.NombreTramite,
-
             CreadaEn = detalle?.CreadaEn,
             CreadaPor = detalle?.CreadaPor,
-
-            Archivos = archivos,
-
+            Miembros = miembros.Select(m => new MiembroComiteDTO
+            {
+                Nombre = m.NombreMiembro,
+                Cedula = m.CedulaMiembro,
+                CargoId = m.CargoId
+            }).ToList(),
+            Archivos = archivos.Select(a => new ArchivoDTO
+            {
+                Categoria = a.Categoria,
+                Archivo = a.NombreOriginal,
+                Url = a.Url
+            }).ToList(),
             EditMode = true
         };
     }
 
-    public async Task<bool> GuardarComiteAsync(RegistroComiteDTO model)
+    public async Task<List<RegistroComiteDTO>> GetAllAsync()
     {
+        var comites = await _context.TbDatosComite
+            .Include(c => c.RegionSalud)
+            .Include(c => c.Provincia)
+            .Include(c => c.Distrito)
+            .Include(c => c.Corregimiento)
+            .Select(c => new RegistroComiteDTO
+            {
+                Id = c.DcomiteId,
+                NombreComiteSalud = c.NombreComiteSalud,
+                Comunidad = c.Comunidad,
+                NombreRegion = c.RegionSalud.NombreRegion,
+                NombreProvincia = c.Provincia.NombreProvincia,
+                NombreDistrito = c.Distrito.NombreDistrito,
+                CorregimientoNombre = c.Corregimiento.NombreCorregimiento,
+                CreadaEn = c.TbDetalleRegComite.FirstOrDefault().CreadaEn
+            })
+            .ToListAsync();
+
+        return comites;
+    }
+
+    public async Task<List<RegistroComiteDTO>> SearchAsync(string? termino = null, int? regionId = null, int? provinciaId = null)
+    {
+        var query = _context.TbDatosComite
+            .Include(c => c.RegionSalud)
+            .Include(c => c.Provincia)
+            .Include(c => c.Distrito)
+            .Include(c => c.Corregimiento)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(termino))
+        {
+            query = query.Where(c => c.NombreComiteSalud.Contains(termino) || c.Comunidad.Contains(termino));
+        }
+
+        if (regionId.HasValue)
+        {
+            query = query.Where(c => c.RegionSaludId == regionId.Value);
+        }
+
+        if (provinciaId.HasValue)
+        {
+            query = query.Where(c => c.ProvinciaId == provinciaId.Value);
+        }
+
+        return await query
+            .Select(c => new RegistroComiteDTO
+            {
+                Id = c.DcomiteId,
+                NombreComiteSalud = c.NombreComiteSalud,
+                Comunidad = c.Comunidad,
+                NombreRegion = c.RegionSalud.NombreRegion,
+                NombreProvincia = c.Provincia.NombreProvincia,
+                NombreDistrito = c.Distrito.NombreDistrito,
+                CorregimientoNombre = c.Corregimiento.NombreCorregimiento,
+                CreadaEn = c.TbDetalleRegComite.FirstOrDefault().CreadaEn
+            })
+            .ToListAsync();
+    }
+
+    public async Task<bool> SaveAsync(RegistroComiteDTO dto)
+    {
+        if (dto.Id == 0)
+            return await CreateAsync(dto);
+        else
+            return await UpdateAsync(dto);
+    }
+
+    public async Task<bool> UpdateAsync(RegistroComiteDTO dto)
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            int comiteId;
+            var comite = await _context.TbDatosComite.FindAsync(dto.Id);
+            if (comite == null) return false;
 
-            if (model.EditMode)
+            comite.NombreComiteSalud = dto.NombreComiteSalud;
+            comite.Comunidad = dto.Comunidad;
+            comite.RegionSaludId = dto.RegionSaludId;
+            comite.ProvinciaId = dto.ProvinciaId;
+            comite.DistritoId = dto.DistritoId;
+            comite.CorregimientoId = dto.CorregimientoId;
+
+            var detalle = await _context.TbDetalleRegComite.FindAsync(dto.Id);
+            if (detalle != null)
             {
-                await ActualizarComite(model);
-                comiteId = model.Id;
-            }
-            else
-            {
-                comiteId = await CrearComite(model);
+                detalle.TipoTramiteId = dto.TramiteId;
             }
 
-            // ✅ Guardar archivos después de tener el comiteId
-            if (model.Archivos?.Count > 0)
+            // Miembros
+            var miembrosExistentes = await _context.TbDatosMiembros.Where(m => m.DcomiteId == dto.Id).ToListAsync();
+            _context.TbDatosMiembros.RemoveRange(miembrosExistentes);
+
+            foreach (var m in dto.Miembros)
             {
-                await GuardarArchivos(comiteId, model.Archivos);
+                _context.TbDatosMiembros.Add(new TbDatosMiembros
+                {
+                    NombreMiembro = m.Nombre,
+                    CedulaMiembro = m.Cedula,
+                    CargoId = m.CargoId,
+                    DcomiteId = dto.Id
+                });
+            }
+
+            // Archivos
+            var archivosExistentes = await _context.TbArchivos.Where(a => a.DetRegComiteId == dto.Id).ToListAsync();
+            foreach (var a in archivosExistentes)
+            {
+                var ruta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", a.Url.TrimStart('/'));
+                if (File.Exists(ruta)) File.Delete(ruta);
+            }
+            _context.TbArchivos.RemoveRange(archivosExistentes);
+
+            foreach (var a in dto.Archivos)
+            {
+                _context.TbArchivos.Add(new TbArchivos
+                {
+                    DetRegComiteId = dto.Id,
+                    Categoria = a.Categoria,
+                    NombreOriginal = a.Archivo,
+                    Url = a.Url,
+                    IsActivo = true,
+                    Version = 1
+                });
             }
 
             await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
             return true;
         }
         catch (Exception ex)
         {
-            // Aquí puedes loguear ex.Message o usar ILogger
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, $"Error al actualizar comité: {dto.Id}");
             return false;
         }
     }
 
-    private async Task<int> CrearComite(RegistroComiteDTO model)
+    private async Task<bool> CreateAsync(RegistroComiteDTO dto)
     {
-        var miembro = new TbDatosMiembros
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            NombreMiembro = model.NombreMiembro,
-            CedulaMiembro = model.CedulaMiembro,
-            CargoId = model.CargoId
-        };
-
-        _context.TbDatosMiembros.Add(miembro);
-        await _context.SaveChangesAsync();
-
-        var comite = new TbDatosComite
-        {
-            NombreComiteSalud = model.NombreComiteSalud,
-            Comunidad = model.Comunidad,
-            RegionSaludId = model.RegionSaludId,
-            ProvinciaId = model.ProvinciaId,
-            DistritoId = model.DistritoId,
-            CorregimientoId = model.CorregimientoId,
-            MiembroId = miembro.DmiembroId
-        };
-
-        _context.TbDatosComite.Add(comite);
-        await _context.SaveChangesAsync();
-
-        var detalle = new TbDetalleRegComite
-        {
-            ComiteId = comite.DcomiteId,
-            TipoTramiteId = model.TramiteId,
-            CreadaEn = model.CreadaEn ?? DateTime.Now,
-            CreadaPor = model.CreadaPor
-        };
-
-        _context.TbDetalleRegComite.Add(detalle);
-        await _context.SaveChangesAsync();
-
-        return comite.DcomiteId; // Retornamos el ID para usarlo con los archivos
-    }
-
-    private async Task ActualizarComite(RegistroComiteDTO model)
-    {
-        var comite = await _context.TbDatosComite
-            .Include(c => c.Miembro)
-            .FirstOrDefaultAsync(c => c.DcomiteId == model.Id);
-
-        if (comite == null) return;
-
-        // Actualizar datos del comité
-        comite.NombreComiteSalud = model.NombreComiteSalud;
-        comite.Comunidad = model.Comunidad;
-        comite.RegionSaludId = model.RegionSaludId;
-        comite.ProvinciaId = model.ProvinciaId;
-        comite.DistritoId = model.DistritoId;
-        comite.CorregimientoId = model.CorregimientoId;
-
-        // Actualizar miembro
-        if (comite.Miembro != null)
-        {
-            comite.Miembro.NombreMiembro = model.NombreMiembro;
-            comite.Miembro.CedulaMiembro = model.CedulaMiembro;
-            comite.Miembro.CargoId = model.CargoId;
-        }
-
-        _context.TbDatosComite.Update(comite);
-        await _context.SaveChangesAsync();
-
-        // Actualizar o crear detalle del trámite
-        var detalle = await _context.TbDetalleRegComite
-            .FirstOrDefaultAsync(d => d.ComiteId == model.Id);
-
-        if (detalle != null)
-        {
-            detalle.TipoTramiteId = model.TramiteId;
-            detalle.CreadaEn = model.CreadaEn;
-            detalle.CreadaPor = model.CreadaPor;
-            _context.TbDetalleRegComite.Update(detalle);
-        }
-        else
-        {
-            _context.TbDetalleRegComite.Add(new TbDetalleRegComite
+            var comite = new TbDatosComite
             {
-                ComiteId = model.Id,
-                TipoTramiteId = model.TramiteId,
-                CreadaEn = model.CreadaEn ?? DateTime.Now,
-                CreadaPor = model.CreadaPor
-            });
-        }
-    }
-
-    private async Task GuardarArchivos(int comiteId, List<ArchivoDTO> archivos)
-    {
-        foreach (var archivo in archivos)
-        {
-            var entidad = new TbArchivos
-            {
-                DetRegComiteId = comiteId,
-                Categoria = archivo.Categoria,
-                NombreOriginal = archivo.NombreOriginal,
-                NombreArchivoGuardado = Path.GetFileName(archivo.Ruta),
-                Url = archivo.Ruta,
-                FechaSubida = DateTime.Now,
-                Version = 1,
-                IsActivo = true
+                NombreComiteSalud = dto.NombreComiteSalud,
+                Comunidad = dto.Comunidad,
+                RegionSaludId = dto.RegionSaludId,
+                ProvinciaId = dto.ProvinciaId,
+                DistritoId = dto.DistritoId,
+                CorregimientoId = dto.CorregimientoId
             };
+            _context.TbDatosComite.Add(comite);
+            await _context.SaveChangesAsync();
 
-            _context.TbArchivos.Add(entidad);
+            var secuencia = await _context.TbRegSecuencia.FirstOrDefaultAsync(s => s.Anio == DateTime.Now.Year && s.Activo);
+            if (secuencia == null)
+            {
+                secuencia = new TbRegSecuencia { Anio = DateTime.Now.Year, Numeracion = 0, Activo = true };
+                _context.TbRegSecuencia.Add(secuencia);
+                await _context.SaveChangesAsync();
+            }
+
+            secuencia.Numeracion++;
+            await _context.SaveChangesAsync();
+
+            var detalle = new TbDetalleRegComite
+            {
+                ComiteId = comite.DcomiteId,
+                TipoTramiteId = dto.TramiteId,
+                CreadaPor = dto.CreadaPor ?? "Sistema",
+                NumRegCoSecuencia = secuencia.Numeracion,
+                NomRegCoAnio = DateTime.Now.Year,
+                NumRegCoMes = DateTime.Now.Month
+            };
+            _context.TbDetalleRegComite.Add(detalle);
+
+            foreach (var m in dto.Miembros)
+            {
+                _context.TbDatosMiembros.Add(new TbDatosMiembros
+                {
+                    NombreMiembro = m.Nombre,
+                    CedulaMiembro = m.Cedula,
+                    CargoId = m.CargoId,
+                    DcomiteId = comite.DcomiteId
+                });
+            }
+
+            foreach (var a in dto.Archivos)
+            {
+                _context.TbArchivos.Add(new TbArchivos
+                {
+                    DetRegComiteId = comite.DcomiteId,
+                    Categoria = a.Categoria,
+                    NombreOriginal = a.Archivo,
+                    Url = a.Url,
+                    IsActivo = true,
+                    Version = 1
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return true;
         }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Error al crear comité");
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var comite = await _context.TbDatosComite.FindAsync(id);
+            if (comite == null) return false;
+
+            var detalle = await _context.TbDetalleRegComite.FindAsync(id);
+            var miembros = await _context.TbDatosMiembros.Where(m => m.DcomiteId == id).ToListAsync();
+            var archivos = await _context.TbArchivos.Where(a => a.DetRegComiteId == id).ToListAsync();
+
+            foreach (var a in archivos)
+            {
+                var ruta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", a.Url.TrimStart('/'));
+                if (File.Exists(ruta)) File.Delete(ruta);
+            }
+
+            _context.TbArchivos.RemoveRange(archivos);
+            _context.TbDatosMiembros.RemoveRange(miembros);
+            if (detalle != null) _context.TbDetalleRegComite.Remove(detalle);
+            _context.TbDatosComite.Remove(comite);
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, $"Error al eliminar comité: {id}");
+            return false;
+        }
+    }
+
+    public async Task<bool> ExistsByIdAsync(int id)
+    {
+        return await _context.TbDatosComite.AnyAsync(c => c.DcomiteId == id);
+    }
+
+    public async Task<bool> IsCedulaUniqueAsync(string cedula, int? comiteId = null)
+    {
+        var query = _context.TbDatosMiembros.Where(m => m.CedulaMiembro == cedula);
+        if (comiteId.HasValue)
+        {
+            query = query.Where(m => m.DcomiteId != comiteId);
+        }
+        return !await query.AnyAsync();
     }
 }

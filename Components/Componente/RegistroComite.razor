@@ -63,7 +63,7 @@
             <ValidationMessage For="@(() => registroComite.CorregimientoId)" />
         </div>
     </div>
-    
+
     <!--CARGA DE ARCHIVOS -->
     <h5 class="mt-4">Cargar Archivos</h5>
     <InputFile multiple OnChange="CargarArchivos" />
@@ -75,7 +75,7 @@
             @foreach (var archivo in registroComite.Archivos)
             {
                 <li>
-                    <a href="@archivo.Ruta" target="_blank">@archivo.NombreOriginal</a> - @archivo.Categoria
+                    <a href="@archivo.Url" target="_blank">@archivo.Archivo</a> - @archivo.Categoria
                 </li>
             }
         </ul>

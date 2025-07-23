@@ -51,7 +51,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<IRegistroComiteService, RegistroComiteService>();
+// builder.Services.AddScoped<IRegistroComiteService, RegistroComiteService>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 //carga de archivos 

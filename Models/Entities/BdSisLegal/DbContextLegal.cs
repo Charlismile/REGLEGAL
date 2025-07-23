@@ -180,25 +180,17 @@ public partial class DbContextLegal : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DatosComite_Distrito");
 
-            entity.HasOne(d => d.Miembro).WithMany(p => p.TbDatosComite)
-                .HasForeignKey(d => d.MiembroId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DatosComite_Miembro");
-
             entity.HasOne(d => d.Provincia).WithMany(p => p.TbDatosComite)
                 .HasForeignKey(d => d.ProvinciaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DatosComite_Provincia");
-
-            entity.HasOne(d => d.RegionSalud).WithMany(p => p.TbDatosComite)
-                .HasForeignKey(d => d.RegionSaludId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DatosComite_RegionSalud");
         });
 
         modelBuilder.Entity<TbDatosMiembros>(entity =>
         {
             entity.HasKey(e => e.DmiembroId).HasName("PK__TbDatosM__E71F412FE58100EB");
+
+            entity.HasIndex(e => e.DcomiteId, "IX_TbDatosMiembros_DcomiteId");
 
             entity.Property(e => e.DmiembroId).HasColumnName("DMiembroId");
             entity.Property(e => e.CedulaMiembro)
@@ -210,6 +202,11 @@ public partial class DbContextLegal : DbContext
                 .HasForeignKey(d => d.CargoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DatosMiembros_CargosMiembros");
+
+            entity.HasOne(d => d.Dcomite).WithMany(p => p.TbDatosMiembros)
+                .HasForeignKey(d => d.DcomiteId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_DatosMiembros_Comite");
         });
 
         modelBuilder.Entity<TbDetalleRegAsociacion>(entity =>
@@ -322,11 +319,6 @@ public partial class DbContextLegal : DbContext
             entity.HasKey(e => e.ProvinciaId).HasName("PK__TbProvin__F7CBC777111E15E1");
 
             entity.Property(e => e.NombreProvincia).HasMaxLength(100);
-
-            entity.HasOne(d => d.RegionSalud).WithMany(p => p.TbProvincia)
-                .HasForeignKey(d => d.RegionSaludId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Provincia_RegionSalud");
         });
 
         modelBuilder.Entity<TbRegSecuencia>(entity =>

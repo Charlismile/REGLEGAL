@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using REGISTROLEGAL.DTOs;
+using REGISTROLEGAL.Repositories.Interfaces;
 
-namespace REGISTROLEGAL.Services
+namespace REGISTROLEGAL.Repositories.Services
 {
     public class RegistroAsociacionService : IRegistroAsociacionService
     {

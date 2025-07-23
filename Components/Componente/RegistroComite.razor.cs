@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using REGISTROLEGAL.DTOs;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
+using REGISTROLEGAL.Repositories.Interfaces;
 using SISTEMALEGAL.Repositories.Interfaces;
 
 namespace REGISTROLEGAL.Components.Componente;
@@ -149,8 +150,8 @@ public partial class RegistroComite : ComponentBase
 
             registroComite.Archivos.Add(new ArchivoDTO
             {
-                NombreOriginal = archivo.Name,
-                Ruta = rutaRelativa,
+                Archivo = archivo.Name,
+                Url = rutaRelativa,
                 Categoria = "Documento General"
             });
         }

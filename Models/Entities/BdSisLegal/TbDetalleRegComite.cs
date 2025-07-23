@@ -9,7 +9,7 @@ public partial class TbDetalleRegComite
 
     public int TipoTramiteId { get; set; }
 
-    public DateTime? CreadaEn { get; set; } 
+    public DateTime CreadaEn { get; set; }
 
     public string CreadaPor { get; set; } = null!;
 

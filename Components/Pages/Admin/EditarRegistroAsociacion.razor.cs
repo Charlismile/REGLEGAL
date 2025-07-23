@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using REGISTROLEGAL.Components.Componente;
+using REGISTROLEGAL.DTOs;
 
 namespace REGISTROLEGAL.Components.Pages.Admin;
 
-public partial class EditarRegistro : ComponentBase
+public partial class EditarRegistroAsociacion : ComponentBase
 {
     [Parameter] public int Id { get; set; }
 
