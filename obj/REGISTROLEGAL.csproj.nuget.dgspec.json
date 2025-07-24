@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\REGISTROLEGAL.csproj": {}
+    "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\REGISTROLEGAL.csproj": {}
   },
   "projects": {
-    "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\REGISTROLEGAL.csproj": {
+    "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\REGISTROLEGAL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\REGISTROLEGAL.csproj",
+        "projectUniqueName": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\REGISTROLEGAL.csproj",
         "projectName": "REGISTROLEGAL",
-        "projectPath": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\REGISTROLEGAL.csproj",
+        "projectPath": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\REGISTROLEGAL.csproj",
         "packagesPath": "C:\\Users\\cabernalo\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\obj\\",
+        "outputPath": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -43,7 +43,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -52,6 +53,14 @@
             "Blazor.Bootstrap": {
               "target": "Package",
               "version": "[3.4.0, )"
+            },
+            "Mapster": {
+              "target": "Package",
+              "version": "[7.4.0, )"
+            },
+            "Mapster.DependencyInjection": {
+              "target": "Package",
+              "version": "[1.0.1, )"
             },
             "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": {
               "target": "Package",
@@ -91,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.405/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

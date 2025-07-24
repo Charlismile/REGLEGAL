@@ -1,28 +1,32 @@
 {
   "Files": [
     {
-      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\REGISTROLEGAL.bundle.scp.css",
-      "PackagePath": "staticwebassets\\REGISTROLEGAL.bundle.scp.css"
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\REGISTROLEGAL.bundle.scp.css",
+      "PackagePath": "staticwebassets\\REGISTROLEGAL.xx1pdzb8px.bundle.scp.css"
     },
     {
-      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\wwwroot\\app.css",
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\app.css",
       "PackagePath": "staticwebassets\\app.css"
     },
     {
-      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\bootstrap\\bootstrap.min.css",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
     },
     {
-      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\bootstrap\\bootstrap.min.css.map",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
     },
     {
-      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\wwwroot\\favicon.png",
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\favicon.png",
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
-      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGISTROLEGAL\\REGISTROLEGAL\\wwwroot\\logo-gob.png",
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\logo-gob.png",
       "PackagePath": "staticwebassets\\logo-gob.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.REGISTROLEGAL.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.REGISTROLEGAL.Microsoft.AspNetCore.StaticWebAssets.props",

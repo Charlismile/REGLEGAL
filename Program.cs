@@ -1,3 +1,4 @@
+using Mapster;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,6 @@ using REGISTROLEGAL.Data;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Repositories.Interfaces;
 using REGISTROLEGAL.Repositories.Services;
-using SISTEMALEGAL.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +23,8 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 
 // Register your services
 builder.Services.AddScoped<IUserData, UserDataService>();
+builder.Services.AddScoped<IRegistroNumeracionService, RegistroNumeracionService>();
+
 
 // Add Authentication and Identity
 builder.Services.AddAuthentication(options =>
@@ -45,6 +47,17 @@ builder.Services.AddDbContext<DbContextLegal>(options =>
 // ✅ Register HttpClient
 builder.Services.AddHttpClient();
 
+builder.Services.AddMapster();
+
+
+builder.Services.AddScoped<IRegistroService, RegistroService>();
+builder.Services.AddScoped<IRegistroNumeracionService, RegistroNumeracionService>();
+builder.Services.AddScoped<IDocumentoService, DocumentoService>();
+builder.Services.AddScoped<IUbicacionService, UbicacionService>();
+builder.Services.AddScoped<IFirmaService, FirmaService>();
+builder.Services.AddScoped<IConsultaService, ConsultaService>();
+
+
 // Identity Core
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -61,6 +74,7 @@ builder.Services.Configure<IISServerOptions>(options =>
 });
 
 var app = builder.Build();
+
 
 // Configure the HTTP pipeline
 if (app.Environment.IsDevelopment())

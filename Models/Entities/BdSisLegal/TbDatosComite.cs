@@ -25,5 +25,7 @@ public partial class TbDatosComite
 
     public virtual TbProvincia Provincia { get; set; } = null!;
 
+    public virtual TbRegionSalud RegionSalud { get; set; } = null!;
+
     public virtual ICollection<TbDatosMiembros> TbDatosMiembros { get; set; } = new List<TbDatosMiembros>();
 }

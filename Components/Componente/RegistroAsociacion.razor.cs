@@ -1,34 +1,69 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using REGISTROLEGAL.DTOs;
+using REGISTROLEGAL.Models.Entities.BdSisLegal;
 
 namespace REGISTROLEGAL.Components.Componente;
 
 public partial class RegistroAsociacion : ComponentBase
 {
-    [Parameter] public RegistroAsociacionDTO Model { get; set; } = new();
-    [Parameter] public EventCallback OnValidSubmit { get; set; }
-    [Parameter] public EventCallback Cancelar { get; set; }
+    private RegistroAsociacionDto Model = new();
+    private List<TbApoderadoFirma> Firmas = new();
+    private bool IsSubmitting = false;
+    private string MensajeExito = "";
+    private string MensajeError = "";
 
-    private async Task CargarNuevosArchivos(InputFileChangeEventArgs e)
+    protected override async Task OnInitializedAsync()
     {
-        var archivos = e.GetMultipleFiles(10);
-        foreach (var archivo in archivos)
+        Firmas = await FirmaService.ObtenerFirmasAsync();
+    }
+
+    private async Task CargarDocumentos(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
         {
-            if (!Model.DocumentoSubida.Any(a => a.Name == archivo.Name))
-            {
-                Model.DocumentoSubida.Add(archivo);
-            }
+            Model.DocumentosSubir.Add(file);
         }
     }
 
-    private void RemoverNuevoArchivo(IBrowserFile archivo)
+    private void RemoverDocumento(int index)
     {
-        Model.DocumentoSubida.Remove(archivo);
+        if (index >= 0 && index < Model.DocumentosSubir.Count)
+        {
+            Model.DocumentosSubir.RemoveAt(index);
+        }
     }
 
-    private async Task Guardar()
+    private async Task HandleValidSubmit()
     {
-        if (OnValidSubmit.HasDelegate)
-            await OnValidSubmit.InvokeAsync();
+        IsSubmitting = true;
+        MensajeError = "";
+        MensajeExito = "";
+
+        try
+        {
+            var resultado = await RegistroService.RegistrarAsociacionAsync(Model);
+            
+            if (resultado.Exitoso)
+            {
+                MensajeExito = resultado.Mensaje;
+                Model = new RegistroAsociacionDto();
+                Navigation.NavigateTo("/asociaciones");
+            }
+            else
+            {
+                MensajeError = resultado.Mensaje;
+            }
+        }
+        catch (Exception ex)
+        {
+            MensajeError = "Error inesperado: " + ex.Message;
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
     }
+
+    private void Cancelar() => Navigation.NavigateTo("/asociaciones");
 }

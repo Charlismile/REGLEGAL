@@ -1,29 +1,45 @@
-﻿
-<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit" class="p-5">
+﻿@page "/asociaciones/registrar"
+@using REGISTROLEGAL.Repositories.Interfaces
+@inject IRegistroService RegistroService
+@inject IUbicacionService UbicacionService
+@inject IFirmaService FirmaService
+@inject NavigationManager Navigation
+
+<EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary Class="alert alert-danger mb-3" />
 
-    <h3 class="mb-4 text-primary">Formulario de Registro de Asociación</h3>
+    @if (!string.IsNullOrEmpty(MensajeExito))
+    {
+        <div class="alert alert-success">@MensajeExito</div>
+    }
+
+    @if (!string.IsNullOrEmpty(MensajeError))
+    {
+        <div class="alert alert-danger">@MensajeError</div>
+    }
+
+    <h3 class="mb-4 text-primary">Registro de Asociación</h3>
 
     <!-- ASOCIACIÓN -->
     <fieldset class="border p-3 mb-4 bg-light">
-        <legend class="w-auto px-2">Información de la Asociación</legend>
+        <legend class="w-auto px-2">Datos de la Asociación</legend>
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="nombreAsociacion" class="form-label">Nombre de la Asociación *</label>
-                <InputText id="nombreAsociacion" @bind-Value="Model.NombreAsociacion" class="form-control" />
+                <label>Nombre *</label>
+                <InputText @bind-Value="Model.NombreAsociacion" class="form-control" />
                 <ValidationMessage For="@(() => Model.NombreAsociacion)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
-                <label for="folio" class="form-label">Folio *</label>
-                <InputNumber id="folio" @bind-Value="Model.Folio" class="form-control" />
+                <label>Folio *</label>
+                <InputNumber @bind-Value="Model.Folio" class="form-control" />
                 <ValidationMessage For="@(() => Model.Folio)" class="text-danger small" />
             </div>
 
             <div class="col-12 mb-3">
-                <label for="actividad" class="form-label">Actividad *</label>
-                <InputText id="actividad" @bind-Value="Model.Actividad" class="form-control" />
+                <label>Actividad *</label>
+                <InputText @bind-Value="Model.Actividad" class="form-control" />
                 <ValidationMessage For="@(() => Model.Actividad)" class="text-danger small" />
             </div>
         </div>
@@ -34,68 +50,68 @@
         <legend class="w-auto px-2">Representante Legal</legend>
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="nombreRepLegal" class="form-label">Nombre *</label>
-                <InputText id="nombreRepLegal" @bind-Value="Model.NombreRepLegal" class="form-control" />
+                <label>Nombre *</label>
+                <InputText @bind-Value="Model.NombreRepLegal" class="form-control" />
                 <ValidationMessage For="@(() => Model.NombreRepLegal)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
-                <label for="cedulaRepLegal" class="form-label">Cédula *</label>
-                <InputText id="cedulaRepLegal" @bind-Value="Model.CedulaRepLegal" class="form-control" placeholder="1-123456-7" />
+                <label>Cédula *</label>
+                <InputText @bind-Value="Model.CedulaRepLegal" class="form-control" />
                 <ValidationMessage For="@(() => Model.CedulaRepLegal)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
-                <label for="cargoRepLegal" class="form-label">Cargo *</label>
-                <InputText id="cargoRepLegal" @bind-Value="Model.CargoRepLegal" class="form-control" />
+                <label>Cargo *</label>
+                <InputText @bind-Value="Model.CargoRepLegal" class="form-control" />
                 <ValidationMessage For="@(() => Model.CargoRepLegal)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
-                <label for="telefonoRepLegal" class="form-label">Teléfono *</label>
-                <InputText id="telefonoRepLegal" @bind-Value="Model.TelefonoRepLegal" class="form-control" />
+                <label>Teléfono *</label>
+                <InputText @bind-Value="Model.TelefonoRepLegal" class="form-control" />
                 <ValidationMessage For="@(() => Model.TelefonoRepLegal)" class="text-danger small" />
             </div>
 
             <div class="col-12 mb-3">
-                <label for="direccionRepLegal" class="form-label">Dirección *</label>
-                <InputText id="direccionRepLegal" @bind-Value="Model.DireccionRepLegal" class="form-control" />
+                <label>Dirección *</label>
+                <InputText @bind-Value="Model.DireccionRepLegal" class="form-control" />
                 <ValidationMessage For="@(() => Model.DireccionRepLegal)" class="text-danger small" />
             </div>
         </div>
     </fieldset>
 
-    <!-- APODERADO ABGADO -->
+    <!-- APODERADO LEGAL -->
     <fieldset class="border p-3 mb-4 bg-light">
-        <legend class="w-auto px-2">Apoderado Abogado</legend>
+        <legend class="w-auto px-2">Apoderado Legal</legend>
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="nombreApoAbogado" class="form-label">Nombre *</label>
-                <InputText id="nombreApoAbogado" @bind-Value="Model.NombreApoAbogado" class="form-control" />
+                <label>Nombre *</label>
+                <InputText @bind-Value="Model.NombreApoAbogado" class="form-control" />
                 <ValidationMessage For="@(() => Model.NombreApoAbogado)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
-                <label for="cedulaApoAbogado" class="form-label">Cédula *</label>
-                <InputText id="cedulaApoAbogado" @bind-Value="Model.CedulaApoAbogado" class="form-control" placeholder="1-123456-7" />
+                <label>Cédula *</label>
+                <InputText @bind-Value="Model.CedulaApoAbogado" class="form-control" />
                 <ValidationMessage For="@(() => Model.CedulaApoAbogado)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
-                <label for="telefonoApoAbogado" class="form-label">Teléfono *</label>
-                <InputText id="telefonoApoAbogado" @bind-Value="Model.TelefonoApoAbogado" class="form-control" />
+                <label>Teléfono *</label>
+                <InputText @bind-Value="Model.TelefonoApoAbogado" class="form-control" />
                 <ValidationMessage For="@(() => Model.TelefonoApoAbogado)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
-                <label for="correoApoAbogado" class="form-label">Correo Electrónico *</label>
-                <InputText id="correoApoAbogado" @bind-Value="Model.CorreoApoAbogado" class="form-control" type="email" />
+                <label>Correo *</label>
+                <InputText @bind-Value="Model.CorreoApoAbogado" class="form-control" type="email" />
                 <ValidationMessage For="@(() => Model.CorreoApoAbogado)" class="text-danger small" />
             </div>
 
             <div class="col-12 mb-3">
-                <label for="direccionApoAbogado" class="form-label">Dirección *</label>
-                <InputText id="direccionApoAbogado" @bind-Value="Model.DireccionApoAbogado" class="form-control" />
+                <label>Dirección *</label>
+                <InputText @bind-Value="Model.DireccionApoAbogado" class="form-control" />
                 <ValidationMessage For="@(() => Model.DireccionApoAbogado)" class="text-danger small" />
             </div>
         </div>
@@ -104,82 +120,83 @@
     <!-- FIRMA DE ABOGADOS -->
     <fieldset class="border p-3 mb-4 bg-light">
         <legend class="w-auto px-2">Firma de Abogados</legend>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="nombreFirma" class="form-label">Nombre de la Firma *</label>
-                <InputText id="nombreFirma" @bind-Value="Model.NombreFirma" class="form-control" />
-                <ValidationMessage For="@(() => Model.NombreFirma)" class="text-danger small" />
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="telefonoFirma" class="form-label">Teléfono *</label>
-                <InputText id="telefonoFirma" @bind-Value="Model.TelefonoFirma" class="form-control" />
-                <ValidationMessage For="@(() => Model.TelefonoFirma)" class="text-danger small" />
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="correoFirma" class="form-label">Correo Electrónico *</label>
-                <InputText id="correoFirma" @bind-Value="Model.CorreoFirma" class="form-control" type="email" />
-                <ValidationMessage For="@(() => Model.CorreoFirma)" class="text-danger small" />
-            </div>
-
-            <div class="col-12 mb-3">
-                <label for="direccionFirma" class="form-label">Dirección *</label>
-                <InputText id="direccionFirma" @bind-Value="Model.DireccionFirma" class="form-control" />
-                <ValidationMessage For="@(() => Model.DireccionFirma)" class="text-danger small" />
-            </div>
+        <div class="form-check mb-3">
+            <InputCheckbox @bind-Value="Model.UsaFirmaExistente" />
+            <label class="form-check-label">¿El apoderado pertenece a una firma existente?</label>
         </div>
+
+        @if (Model.UsaFirmaExistente)
+        {
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label>Firma Existente</label>
+                    <InputSelect @bind-Value="Model.ApoderadoFirmaId" class="form-control">
+                        <option value="">-- Seleccione --</option>
+                        @foreach (var firma in Firmas)
+                        {
+                            <option value="@firma.FirmaId">@firma.NombreFirma</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Nombre de la Firma</label>
+                    <InputText @bind-Value="Model.NombreFirma" class="form-control" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Teléfono</label>
+                    <InputText @bind-Value="Model.TelefonoFirma" class="form-control" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Correo</label>
+                    <InputText @bind-Value="Model.CorreoFirma" class="form-control" type="email" />
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label>Dirección</label>
+                    <InputText @bind-Value="Model.DireccionFirma" class="form-control" />
+                </div>
+            </div>
+        }
     </fieldset>
 
-    <!-- ARCHIVOS -->
+    <!-- DOCUMENTOS -->
     <fieldset class="border p-3 mb-4 bg-light">
-        <legend class="w-auto px-2">Archivos</legend>
-
-        <!-- Archivos existentes -->
-        @if (Model.Documentos?.Count > 0)
-        {
-            <h6>Archivos subidos:</h6>
-            <ul class="list-group mb-3">
-                @foreach (var archivo in Model.Documentos)
-                {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>@archivo.Nombre</span>
-                        <a href="@archivo.URL" target="_blank" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-download"></i> Descargar
-                        </a>
-                    </li>
-                }
-            </ul>
-        }
-
-        <!-- Nuevos archivos a subir -->
+        <legend class="w-auto px-2">Documentos</legend>
         <div class="mb-3">
-            <label class="form-label">Subir nuevos archivos</label>
-            <InputFile OnChange="@CargarNuevosArchivos" multiple class="form-control" />
-            <small class="text-muted">Puedes adjuntar más archivos.</small>
+            <label>Subir documentos</label>
+            <InputFile OnChange="@CargarDocumentos" multiple class="form-control" />
         </div>
 
-        <!-- Vista previa de nuevos archivos seleccionados -->
-        @if (Model.DocumentoSubida?.Count > 0)
+        @if (Model.DocumentosSubir?.Count > 0)
         {
-            <h6>Nuevos archivos seleccionados:</h6>
             <ul class="list-group">
-                @for (int i = 0; i < Model.DocumentoSubida.Count; i++)
+                @for (int i = 0; i < Model.DocumentosSubir.Count; i++)
                 {
-                    var archivo = Model.DocumentoSubida[i];
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                    var archivo = Model.DocumentosSubir[i];
+                    <li class="list-group-item d-flex justify-content-between">
                         <span>@archivo.Name (@(Math.Round(archivo.Size / 1024.0, 2)) KB)</span>
-                        <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoverNuevoArchivo(archivo)">
-                            <i class="bi bi-trash"></i> Eliminar
-                        </button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => RemoverDocumento(i)">Eliminar</button>
                     </li>
                 }
             </ul>
         }
     </fieldset>
 
-    <div class="d-flex justify-content-end gap-2">
-        <button type="submit" class="btn btn-success">Guardar Cambios</button>
-        <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
+            @(IsSubmitting ? "Guardando..." : "Guardar")
+        </button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancelar" disabled="@IsSubmitting">Cancelar</button>
     </div>
 </EditForm>
+
+@code {
+
+}
