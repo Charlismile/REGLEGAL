@@ -11,24 +11,24 @@ namespace REGISTROLEGAL.Mapper
         public static void RegisterMappings()
         {
             // 🔹 Asociación
-            TypeAdapterConfig<RegistroAsociacionDto, TbRepresentanteLegal>
+            TypeAdapterConfig<RegistroDto, TbRepresentanteLegal>
                 .NewConfig()
                 .Map(dest => dest.RepLegalId, src => src.RepLegalId)
                 .IgnoreNullValues(true);
 
-            TypeAdapterConfig<RegistroAsociacionDto, TbApoderadoLegal>
+            TypeAdapterConfig<RegistroDto, TbApoderadoLegal>
                 .NewConfig()
                 .Map(dest => dest.ApoAbogadoId, src => src.ApoAbogadoId)
                 .Map(dest => dest.ApoderadoFirmaId, src => src.ApoderadoFirmaId)
                 .IgnoreNullValues(true);
 
-            TypeAdapterConfig<RegistroAsociacionDto, TbApoderadoFirma>
+            TypeAdapterConfig<RegistroDto, TbApoderadoFirma>
                 .NewConfig()
                 .Map(dest => dest.FirmaId, src => src.ApoderadoFirmaId)
-                .IgnoreNullValues(true)
-                .Condition((src, dest) => !src.UsaFirmaExistente && !string.IsNullOrEmpty(src.NombreFirma));
+                .IgnoreNullValues(true);
 
-            TypeAdapterConfig<RegistroAsociacionDto, TbAsociacion>
+
+            TypeAdapterConfig<RegistroDto, TbAsociacion>
                 .NewConfig()
                 .Map(dest => dest.AsociacionId, src => src.AsociacionId)
                 .Map(dest => dest.RepresentanteLegalId, src => src.RepLegalId)
@@ -36,22 +36,22 @@ namespace REGISTROLEGAL.Mapper
                 .IgnoreNullValues(true);
 
             // 🔹 Comité
-            TypeAdapterConfig<RegistroComiteDto, TbDatosComite>
+            TypeAdapterConfig<RegistroDto, TbDatosComite>
                 .NewConfig()
                 .Map(dest => dest.DcomiteId, src => src.DComiteId)
                 .IgnoreNullValues(true);
 
-            TypeAdapterConfig<RegistroComiteDto, TbDetalleRegComite>
+            TypeAdapterConfig<RegistroDto, TbDetalleRegComite>
                 .NewConfig()
-                .Map(dest => dest.ComiteId, src => src.ComiteId)
+                .Map(dest => dest.ComiteId, src => src.ComiteId) // Asegúrate que 'ComiteId' existe en el DTO
                 .Map(dest => dest.TipoTramiteId, src => src.TipoTramiteId)
                 .Map(dest => dest.CreadaEn, src => DateTime.Now)
                 .Map(dest => dest.CreadaPor, src => "UsuarioActual")
                 .IgnoreNullValues(true);
 
-            TypeAdapterConfig<MiembroComiteDTO, TbDatosMiembros>
+            TypeAdapterConfig<RegistroDto, TbDatosMiembros>
                 .NewConfig()
-                .Map(dest => dest.DmiembroId, src => src.DMiembroId)
+                .Map(dest => dest.DmiembroId, src => src.DMiembroId) // Asegúrate que 'DMiembroId' existe en el DTO
                 .Map(dest => dest.NombreMiembro, src => src.Nombre)
                 .Map(dest => dest.CedulaMiembro, src => src.Cedula)
                 .IgnoreNullValues(true);

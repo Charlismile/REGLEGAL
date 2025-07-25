@@ -3,8 +3,82 @@ using Microsoft.AspNetCore.Components.Forms;
 
 namespace REGISTROLEGAL.DTOs;
 
-public class RegistroAsociacionDto
+public class RegistroDto
 {
+    #region Comites
+    // DATOS DEL COMITÉ (TbDatosComite)
+    public int ComiteId { get; set; }
+    
+    [Required(ErrorMessage = "El nombre del comité es obligatorio")]
+    [StringLength(200, ErrorMessage = "Máximo 200 caracteres")]
+    public string NombreComiteSalud { get; set; } = "";
+
+    [StringLength(200, ErrorMessage = "Máximo 200 caracteres")]
+    public string Comunidad { get; set; } = "";
+
+    // FECHA DE CREACIÓN DEL COMITÉ
+    public DateTime? FechaCreacionComite { get; set; }
+
+    // UBICACIÓN GEOGRÁFICA
+    [Required(ErrorMessage = "La región de salud es obligatoria")]
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccione una región válida")]
+    public int RegionSaludId { get; set; }
+
+    [Required(ErrorMessage = "La provincia es obligatoria")]
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccione una provincia válida")]
+    public int ProvinciaId { get; set; }
+
+    [Required(ErrorMessage = "El distrito es obligatorio")]
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccione un distrito válido")]
+    public int DistritoId { get; set; }
+
+    [Required(ErrorMessage = "El corregimiento es obligatorio")]
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccione un corregimiento válido")]
+    public int CorregimientoId { get; set; }
+
+    // TRÁMITE
+    [Required(ErrorMessage = "El tipo de trámite es obligatorio")]
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccione un tipo de trámite válido")]
+    public int TipoTramiteId { get; set; }
+
+    // MIEMBROS DEL COMITÉ
+    public int DMiembroId { get; set; }
+    
+    [MinLength(1, ErrorMessage = "Debe registrar al menos un miembro del comité")]
+    public List<RegistroDto> Miembros { get; set; } = new();
+
+    // DOCUMENTOS
+    public List<RegistroDto> Documentos { get; set; } = new();
+
+    // ID Y ESTADO
+    public int DComiteId { get; set; } = 0;
+
+    //Miembros
+    public int CargoId { get; set; }
+
+    [Required(ErrorMessage = "El nombre del miembro es obligatorio")]
+    [StringLength(150, ErrorMessage = "Máximo 150 caracteres")]
+    public string Nombre { get; set; } = "";
+
+    [Required(ErrorMessage = "El cargo del miembro es obligatorio")]
+    [StringLength(100, ErrorMessage = "Máximo 100 caracteres")]
+    public string NombreCargo { get; set; } = "";
+
+    [Required(ErrorMessage = "El número de cédula es obligatorio")]
+    [StringLength(20, ErrorMessage = "Máximo 20 caracteres")]
+    public string Cedula { get; set; } = "";
+
+    [Required(ErrorMessage = "El número de teléfono es obligatorio")]
+    [Phone(ErrorMessage = "Número de teléfono no válido")]
+    public string Telefono { get; set; } = "";
+
+    [EmailAddress(ErrorMessage = "Correo electrónico no válido")]
+    public string? Correo { get; set; }
+    
+
+    #endregion
+    
+    #region Asociaciones
     // ===============================
     // DATOS DE LA ASOCIACIÓN (TbAsociacion)
     // ===============================
@@ -84,7 +158,7 @@ public class RegistroAsociacionDto
     // FIRMA LEGAL (TbApoderadoFirma)
     // ===============================
 
-    public bool UsaFirmaExistente { get; set; } = false;
+    public bool PerteneceAFirma { get; set; } = false;
 
     public int? ApoderadoFirmaId { get; set; }
 
@@ -113,12 +187,7 @@ public class RegistroAsociacionDto
     public int NumRegAmes { get; set; }
 
     public string? NumRegAcompleta { get; set; }
-
-    // ===============================
-    // HISTORIAL ESTADOS (TbDetalleRegAsociacionHistorial)
-    // ===============================
-
-    public List<HistorialAsociacionDto> HistorialEstados { get; set; } = new();
+    
 
     // ===============================
     // TRÁMITE / ESTADO / AUDITORÍA
@@ -126,36 +195,39 @@ public class RegistroAsociacionDto
 
     [Required(ErrorMessage = "El tipo de trámite es obligatorio")]
     [Range(1, int.MaxValue)]
-    public int TipoTramiteId { get; set; }
+    // public int TipoTramiteId { get; set; }
 
     public bool EditMode { get; set; } = false;
 
     public DateTime? CreadaEn { get; set; }
 
     public string CreadaPor { get; set; } = "";
+    
 
-    // ===============================
-    // DOCUMENTOS
-    // ===============================
+    #endregion
+    
+    #region Documentos
+    [Required(ErrorMessage = "La categoría es obligatoria")]
+    public string Categoria { get; set; } = "";
 
-    public List<DocumentoDTO> Documentos { get; set; } = new();
+    [Required(ErrorMessage = "El nombre original es obligatorio")]
+    [StringLength(500)]
+    public string NombreOriginal { get; set; } = "";
+
+    [Required(ErrorMessage = "La URL es obligatoria")]
+    [StringLength(1000)]
+    public string Url { get; set; } = "";
+
+    public string NombreArchivoGuardado { get; set; } = "";
+    public DateTime FechaSubida { get; set; } = DateTime.Now;
+    public int Version { get; set; } = 1;
+    public bool IsActivo { get; set; } = true;
+
+    // Para carga de archivos
+    public IBrowserFile ArchivoFisico { get; set; }
 
     public List<IBrowserFile> DocumentosSubir { get; set; } = new();
-}
 
-public class HistorialAsociacionDto
-{
-    public int RegAsociacionSolId { get; set; }
-
-    public int AsociacionId { get; set; }
-
-    public int AsEstadoSolicitudId { get; set; }
-
-    public string? ComentarioAso { get; set; }
-
-    public string UsuarioRevisorAso { get; set; } = "";
-
-    public DateTime FechaCambioAso { get; set; }
-
-    public string EstadoDescripcion { get; set; } = "";
+    #endregion
+    
 }

@@ -1,8 +1,6 @@
-﻿@page "/comites/registrar"
-@using REGISTROLEGAL.DTOs
+﻿
 @using REGISTROLEGAL.Repositories.Interfaces
 @inject IRegistroService RegistroService
-@inject IUbicacionService UbicacionService
 @inject NavigationManager Navigation
 
 <EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit">
@@ -19,42 +17,30 @@
         <div class="alert alert-danger">@MensajeError</div>
     }
 
-    @if (IsLoading)
-    {
-        <div class="alert alert-info">Cargando...</div>
-    }
-
-    <h3 class="mb-4 text-primary">Registro de Comité</h3>
+    <h3 class="mb-4">Registro de Comité de Salud</h3>
 
     <!-- DATOS DEL COMITÉ -->
-    <fieldset class="border p-3 mb-4 bg-light">
+    <fieldset class="border p-3 mb-4">
         <legend class="w-auto px-2">Información del Comité</legend>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label>Nombre del Comité *</label>
-                <InputText @bind="Model.NombreComiteSalud" class="form-control" />
-                <ValidationMessage For="@(() => Model.NombreComiteSalud)" class="text-danger small" />
-            </div>
+        <div class="mb-3">
+            <label class="form-label">Nombre del Comité de Salud *</label>
+            <InputText @bind="Model.NombreComiteSalud" class="form-control" />
+            <ValidationMessage For="@(() => Model.NombreComiteSalud)" class="text-danger small" />
+        </div>
 
-            <div class="col-md-6 mb-3">
-                <label>Comunidad</label>
-                <InputText @bind="Model.Comunidad" class="form-control" />
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label>Fecha de Creación</label>
-                <InputDate @bind="Model.FechaCreacionComite" class="form-control" />
-            </div>
+        <div class="mb-3">
+            <label class="form-label">Comunidad</label>
+            <InputText @bind="Model.Comunidad" class="form-control" />
         </div>
     </fieldset>
 
-    <!-- UBICACIÓN -->
-    <fieldset class="border p-3 mb-4 bg-light">
+    <!-- UBICACIÓN GEOGRÁFICA -->
+    <fieldset class="border p-3 mb-4">
         <legend class="w-auto px-2">Ubicación Geográfica</legend>
         <div class="row">
             <div class="col-md-3 mb-3">
-                <label>Región *</label>
-                <InputSelect @bind="Model.RegionSaludId" @onchange="@(async e => await CargarProvincias(e))" class="form-control">
+                <label class="form-label">Región de Salud *</label>
+                <InputSelect @bind="Model.RegionSaludId" @onchange="@(async e => await CargarProvincias(e))" class="form-select">
                     <option value="0">-- Seleccione --</option>
                     @foreach (var region in Regiones)
                     {
@@ -65,8 +51,8 @@
             </div>
 
             <div class="col-md-3 mb-3">
-                <label>Provincia *</label>
-                <InputSelect @bind="Model.ProvinciaId" @onchange="@(async e => await CargarDistritos(e))" class="form-control">
+                <label class="form-label">Provincia *</label>
+                <InputSelect @bind="Model.ProvinciaId" @onchange="@(async e => await CargarDistritos(e))" class="form-select">
                     <option value="0">-- Seleccione --</option>
                     @foreach (var provincia in Provincias)
                     {
@@ -77,8 +63,8 @@
             </div>
 
             <div class="col-md-3 mb-3">
-                <label>Distrito *</label>
-                <InputSelect @bind="Model.DistritoId" @onchange="@(async e => await CargarCorregimientos(e))" class="form-control">
+                <label class="form-label">Distrito *</label>
+                <InputSelect @bind="Model.DistritoId" @onchange="@(async e => await CargarCorregimientos(e))" class="form-select">
                     <option value="0">-- Seleccione --</option>
                     @foreach (var distrito in Distritos)
                     {
@@ -89,8 +75,8 @@
             </div>
 
             <div class="col-md-3 mb-3">
-                <label>Corregimiento *</label>
-                <InputSelect @bind="Model.CorregimientoId" class="form-control">
+                <label class="form-label">Corregimiento *</label>
+                <InputSelect @bind="Model.CorregimientoId" class="form-select">
                     <option value="0">-- Seleccione --</option>
                     @foreach (var corregimiento in Corregimientos)
                     {
@@ -102,10 +88,10 @@
         </div>
     </fieldset>
 
-    <!-- TRÁMITE -->
+    <!-- TIPO DE TRÁMITE -->
     <div class="form-group mb-4">
-        <label>Tipo de Trámite *</label>
-        <InputSelect @bind="Model.TipoTramiteId" @onchange="@(async e => await OnTramiteChanged(e))" class="form-control">
+        <label class="form-label">Tipo de Trámite *</label>
+        <InputSelect @bind="Model.TipoTramiteId" @onchange="@(async e => await OnTramiteChanged(e))" class="form-select">
             <option value="0">-- Seleccione --</option>
             @foreach (var tramite in TipoTramites)
             {
@@ -118,37 +104,39 @@
     <!-- MIEMBROS -->
     @if (Model.TipoTramiteId > 0)
     {
-        <fieldset class="border p-3 mb-4 bg-light">
+        <fieldset class="border p-3 mb-4">
             <legend class="w-auto px-2">Miembros del Comité</legend>
-
+            
             @if (Model.TipoTramiteId == 3)
             {
-                <div class="alert alert-info">
-                    Solo se permiten 2 miembros: Presidente y Tesorero.
+                <div class="alert alert-info mb-3">
+                    Para Junta Interventora, solo se permiten 2 miembros: Presidente y Tesorero.
                 </div>
             }
 
             @for (int i = 0; i < Model.Miembros.Count; i++)
             {
                 var miembro = Model.Miembros[i];
-                <div class="card mb-2" @key="miembro">
+                <div class="card mb-3" @key="miembro">
                     <div class="card-body">
+                        <h5 class="card-title">Miembro @(i + 1)</h5>
                         <div class="row">
-                            <div class="col-md-4">
-                                <label>Nombre *</label>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Nombre *</label>
                                 <InputText @bind="miembro.Nombre" class="form-control" />
                                 <ValidationMessage For="@(() => miembro.Nombre)" class="text-danger small" />
                             </div>
 
-                            <div class="col-md-4">
-                                <label>Cédula *</label>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Cédula *</label>
                                 <InputText @bind="miembro.Cedula" class="form-control" />
                                 <ValidationMessage For="@(() => miembro.Cedula)" class="text-danger small" />
                             </div>
 
-                            <div class="col-md-4">
-                                <label>Cargo *</label>
-                                <InputSelect @bind="miembro.CargoId" class="form-control">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Cargo *</label>
+                                <InputSelect @bind="miembro.CargoId" class="form-select">
+                                    <option value="0">-- Seleccione --</option>
                                     @foreach (var cargo in CargosDisponibles)
                                     {
                                         <option value="@cargo.CargoId">@cargo.NombreCargo</option>
@@ -160,43 +148,60 @@
                 </div>
             }
 
-            <button type="button" class="btn btn-secondary btn-sm" @onclick="AddMiembro" disabled="@IsMaxMiembros()">
-                + Añadir Miembro
-            </button>
+            @if (Model.TipoTramiteId == 1 && Model.Miembros.Count < 7)
+            {
+                <button type="button" class="btn btn-primary" @onclick="AddMiembro">
+                    + Añadir Miembro
+                </button>
+            }
+            else if (Model.TipoTramiteId == 3 && Model.Miembros.Count < 2)
+            {
+                <button type="button" class="btn btn-primary" @onclick="AddMiembro">
+                    + Añadir Miembro
+                </button>
+            }
         </fieldset>
     }
 
     <!-- DOCUMENTOS -->
-    <fieldset class="border p-3 mb-4 bg-light">
-        <legend class="w-auto px-2">Documentos</legend>
+    <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">Documentos Legales</legend>
         <div class="mb-3">
-            <label>Subir documentos</label>
-            <InputFile @ref="fileInput" OnChange="@CargarDocumentos" multiple class="form-control" />
+            <label class="form-label">Subir documentos</label>
+            <InputFile OnChange="@CargarDocumentos" multiple class="form-control" />
+            <small class="form-text text-muted">Puede subir múltiples documentos (PDF, DOCX, JPG, PNG)</small>
         </div>
 
         @if (Model.DocumentosSubir?.Count > 0)
         {
-            <ul class="list-group">
-                @for (int i = 0; i < Model.DocumentosSubir.Count; i++)
-                {
-                    var archivo = Model.DocumentosSubir[i];
-                    <li class="list-group-item d-flex justify-content-between" @key="archivo.Name">
-                        <span>@archivo.Name (@(Math.Round(archivo.Size / 1024.0, 2)) KB)</span>
-                        <button class="btn btn-sm btn-danger" @onclick="() => RemoverDocumento(i)">Eliminar</button>
-                    </li>
-                }
-            </ul>
+            <div class="mt-3">
+                <h6>Archivos seleccionados:</h6>
+                <ul class="list-group">
+                    @for (int i = 0; i < Model.DocumentosSubir.Count; i++)
+                    {
+                        var archivo = Model.DocumentosSubir[i];
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>@archivo.Name (@(Math.Round(archivo.Size / 1024.0, 2)) KB)</span>
+                            <button class="btn btn-sm btn-danger" @onclick="() => RemoverDocumento(i)">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </li>
+                    }
+                </ul>
+            </div>
         }
     </fieldset>
 
-    <div class="d-flex gap-2">
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
         <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
-            @(IsSubmitting ? "Guardando..." : "Guardar")
+            @(IsSubmitting ? "Registrando..." : "Registrar Comité")
         </button>
-        <button type="button" class="btn btn-secondary" @onclick="Cancelar" disabled="@IsSubmitting">Cancelar</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancelar" disabled="@IsSubmitting">
+            Cancelar
+        </button>
     </div>
 </EditForm>
 
 @code {
-
+    
 }

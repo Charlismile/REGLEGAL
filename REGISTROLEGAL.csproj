@@ -26,7 +26,6 @@
 
     <ItemGroup>
       <Folder Include="Components\Pages\Admin\" />
-      <Folder Include="Components\Pages\Public\" />
       <Folder Include="wwwroot\uploads\documentos-legales\" />
     </ItemGroup>
 

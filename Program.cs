@@ -23,8 +23,6 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 
 // Register your services
 builder.Services.AddScoped<IUserData, UserDataService>();
-builder.Services.AddScoped<IRegistroNumeracionService, RegistroNumeracionService>();
-
 
 // Add Authentication and Identity
 builder.Services.AddAuthentication(options =>
@@ -48,15 +46,7 @@ builder.Services.AddDbContext<DbContextLegal>(options =>
 builder.Services.AddHttpClient();
 
 builder.Services.AddMapster();
-
-
 builder.Services.AddScoped<IRegistroService, RegistroService>();
-builder.Services.AddScoped<IRegistroNumeracionService, RegistroNumeracionService>();
-builder.Services.AddScoped<IDocumentoService, DocumentoService>();
-builder.Services.AddScoped<IUbicacionService, UbicacionService>();
-builder.Services.AddScoped<IFirmaService, FirmaService>();
-builder.Services.AddScoped<IConsultaService, ConsultaService>();
-
 
 // Identity Core
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

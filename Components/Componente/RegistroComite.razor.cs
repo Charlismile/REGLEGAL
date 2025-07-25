@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.EntityFrameworkCore;
 using REGISTROLEGAL.DTOs;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
 
@@ -8,8 +7,7 @@ namespace REGISTROLEGAL.Components.Componente;
 
 public partial class RegistroComite : ComponentBase
 {
-    private readonly DbContextLegal _context;
-    private RegistroComiteDto Model = new();
+    private RegistroDto Model = new();
     private List<TbRegionSalud> Regiones = new();
     private List<TbProvincia> Provincias = new();
     private List<TbDistrito> Distritos = new();
@@ -17,75 +15,40 @@ public partial class RegistroComite : ComponentBase
     private List<TbTipoTramite> TipoTramites = new();
     private List<TbCargosMiembrosComite> Cargos = new();
     private bool IsSubmitting = false;
-    private bool IsLoading = false;
     private string MensajeExito = "";
     private string MensajeError = "";
-    private InputFile fileInput;
 
+    // Cargos disponibles según el tipo de trámite
     private List<TbCargosMiembrosComite> CargosDisponibles => 
         Model.TipoTramiteId == 3 ? 
-            Cargos.Where(c => c.NombreCargo == "Presidente" || c.NombreCargo == "Tesorero").ToList() : 
+            Cargos.Where(c => c.NombreCargo == "Presidente" || c.NombreCargo == "Tesorero(a)").ToList() : 
             Cargos;
 
     protected override async Task OnInitializedAsync()
     {
-        IsLoading = true;
-        try
-        {
-            await Task.WhenAll(
-                CargarRegiones(),
-                CargarTipoTramites(),
-                CargarCargos()
-            );
-        }
-        catch (Exception ex)
-        {
-            MensajeError = "Error al cargar datos: " + ex.Message;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    private async Task CargarRegiones()
-    {
-        Regiones = await UbicacionService.ObtenerRegionesAsync();
-    }
-
-    private async Task CargarTipoTramites()
-    {
-        TipoTramites = await _context.TbTipoTramite.Where(t => t.IsActivo).ToListAsync();
-    }
-
-    private async Task CargarCargos()
-    {
-        Cargos = await _context.TbCargosMiembrosComite.Where(c => c.IsActivo).ToListAsync();
+        // Cargar datos iniciales
+        Regiones = await RegistroService.ObtenerRegionesAsync();
+        TipoTramites = await RegistroService.ObtenerTipoTramitesAsync();
+        Cargos = await RegistroService.ObtenerCargosMiembrosAsync();
     }
 
     private async Task CargarProvincias(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value?.ToString(), out int regionId) && regionId > 0)
         {
-            IsLoading = true;
-            try
-            {
-                Provincias = await UbicacionService.ObtenerProvinciasPorRegionAsync(regionId);
-                Distritos.Clear(); Corregimientos.Clear();
-                Model.ProvinciaId = 0; Model.DistritoId = 0; Model.CorregimientoId = 0;
-            }
-            catch (Exception ex)
-            {
-                MensajeError = "Error al cargar provincias: " + ex.Message;
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+            // ✅ CORRECTO: Usar await con métodos asincrónicos
+            Provincias = await RegistroService.ObtenerProvinciasPorRegionAsync(regionId);
+            Distritos.Clear(); 
+            Corregimientos.Clear();
+            Model.ProvinciaId = 0; 
+            Model.DistritoId = 0; 
+            Model.CorregimientoId = 0;
         }
         else
         {
-            Provincias.Clear(); Distritos.Clear(); Corregimientos.Clear();
+            Provincias.Clear(); 
+            Distritos.Clear(); 
+            Corregimientos.Clear();
         }
     }
 
@@ -93,25 +56,16 @@ public partial class RegistroComite : ComponentBase
     {
         if (int.TryParse(e.Value?.ToString(), out int provinciaId) && provinciaId > 0)
         {
-            IsLoading = true;
-            try
-            {
-                Distritos = await UbicacionService.ObtenerDistritosPorProvinciaAsync(provinciaId);
-                Corregimientos.Clear();
-                Model.DistritoId = 0; Model.CorregimientoId = 0;
-            }
-            catch (Exception ex)
-            {
-                MensajeError = "Error al cargar distritos: " + ex.Message;
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+            // ✅ CORRECTO: Usar await con métodos asincrónicos
+            Distritos = await RegistroService.ObtenerDistritosPorProvinciaAsync(provinciaId);
+            Corregimientos.Clear();
+            Model.DistritoId = 0; 
+            Model.CorregimientoId = 0;
         }
         else
         {
-            Distritos.Clear(); Corregimientos.Clear();
+            Distritos.Clear(); 
+            Corregimientos.Clear();
         }
     }
 
@@ -119,20 +73,9 @@ public partial class RegistroComite : ComponentBase
     {
         if (int.TryParse(e.Value?.ToString(), out int distritoId) && distritoId > 0)
         {
-            IsLoading = true;
-            try
-            {
-                Corregimientos = await UbicacionService.ObtenerCorregimientosPorDistritoAsync(distritoId);
-                Model.CorregimientoId = 0;
-            }
-            catch (Exception ex)
-            {
-                MensajeError = "Error al cargar corregimientos: " + ex.Message;
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+            // ✅ CORRECTO: Usar await con métodos asincrónicos
+            Corregimientos = await RegistroService.ObtenerCorregimientosPorDistritoAsync(distritoId);
+            Model.CorregimientoId = 0;
         }
         else
         {
@@ -142,32 +85,50 @@ public partial class RegistroComite : ComponentBase
 
     private async Task OnTramiteChanged(ChangeEventArgs e)
     {
-        Model.Miembros.Clear();
-        if (Model.TipoTramiteId == 3)
+        if (int.TryParse(e.Value?.ToString(), out int tramiteId))
         {
-            AddMiembro(); AddMiembro();
+            Model.TipoTramiteId = tramiteId;
+            Model.Miembros.Clear();
+            
+            // Configurar miembros según el tipo de trámite
+            if (tramiteId == 1) // Personería
+            {
+                for (int i = 0; i < 7; i++)
+                {
+                    Model.Miembros.Add(new RegistroDto());
+                }
+            }
+            else if (tramiteId == 3) // Junta Interventora
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Model.Miembros.Add(new RegistroDto());
+                }
+            }
         }
     }
 
-    private bool IsMaxMiembros() => Model.Miembros.Count >= 7;
-
     private void AddMiembro()
     {
-        if (IsMaxMiembros()) return;
-        Model.Miembros.Add(new MiembroComiteDTO());
+        if ((Model.TipoTramiteId == 1 && Model.Miembros.Count < 7) || 
+            (Model.TipoTramiteId == 3 && Model.Miembros.Count < 2))
+        {
+            Model.Miembros.Add(new RegistroDto());
+        }
     }
 
     private async Task CargarDocumentos(InputFileChangeEventArgs e)
     {
         foreach (var file in e.GetMultipleFiles())
         {
-            // Validaciones
+            // Validar tamaño (máximo 10 MB)
             if (file.Size > 10 * 1024 * 1024)
             {
                 MensajeError = $"El archivo {file.Name} excede el tamaño máximo de 10 MB.";
                 continue;
             }
 
+            // Validar tipo
             var extension = Path.GetExtension(file.Name).ToLower();
             var permitidas = new[] { ".pdf", ".docx", ".jpg", ".png", ".jpeg" };
             if (!permitidas.Contains(extension))
@@ -196,49 +157,66 @@ public partial class RegistroComite : ComponentBase
 
         try
         {
-            if (Model.Miembros.Count == 0)
+            // Validaciones adicionales
+            if (Model.Miembros.Any(m => string.IsNullOrWhiteSpace(m.Nombre)))
             {
-                MensajeError = "Debe agregar al menos un miembro.";
+                MensajeError = "Todos los miembros deben tener un nombre.";
                 return;
             }
 
-            if (!ValidarCargosUnicos())
+            if (Model.Miembros.Any(m => string.IsNullOrWhiteSpace(m.Cedula)))
             {
-                MensajeError = "No se pueden duplicar cargos clave como Presidente o Tesorero.";
+                MensajeError = "Todos los miembros deben tener una cédula.";
                 return;
             }
 
-            var resultado = await RegistroService.RegistrarComiteAsync(Model);
+            if (Model.Miembros.Any(m => m.CargoId == 0))
+            {
+                MensajeError = "Todos los miembros deben tener un cargo asignado.";
+                return;
+            }
+
+            // Validar cargos únicos para los tipos de trámite que lo requieren
+            if (Model.TipoTramiteId == 1 || Model.TipoTramiteId == 3)
+            {
+                var cargosRepetidos = Model.Miembros
+                    .GroupBy(m => m.CargoId)
+                    .Where(g => g.Count() > 1)
+                    .Select(g => g.First().CargoId)
+                    .ToList();
+
+                if (cargosRepetidos.Any())
+                {
+                    var nombresCargos = Cargos
+                        .Where(c => cargosRepetidos.Contains(c.CargoId))
+                        .Select(c => c.NombreCargo);
+                    
+                    MensajeError = $"Los siguientes cargos no pueden repetirse: {string.Join(", ", nombresCargos)}";
+                    return;
+                }
+            }
+
+            // Registrar el comité
+            var resultado = await RegistroService.CrearComiteAsync(Model);
             
-            if (resultado.Exitoso)
+            if (resultado)
             {
-                MensajeExito = resultado.Mensaje;
-                Model = new RegistroComiteDto();
+                MensajeExito = "Comité registrado con éxito.";
                 Navigation.NavigateTo("/comites");
             }
             else
             {
-                MensajeError = resultado.Mensaje;
+                MensajeError = "Error al registrar el comité. Por favor, intente nuevamente.";
             }
         }
         catch (Exception ex)
         {
-            MensajeError = "Error inesperado: " + ex.Message;
+            MensajeError = $"Error inesperado: {ex.Message}";
         }
         finally
         {
             IsSubmitting = false;
         }
-    }
-
-    private bool ValidarCargosUnicos()
-    {
-        var cargosClave = new[] { 1, 2, 4, 5 };
-        var duplicados = Model.Miembros
-            .Where(m => cargosClave.Contains(m.CargoId))
-            .GroupBy(m => m.CargoId)
-            .Any(g => g.Count() > 1);
-        return !duplicados;
     }
 
     private void Cancelar() => Navigation.NavigateTo("/comites");
