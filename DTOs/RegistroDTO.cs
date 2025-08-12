@@ -18,23 +18,7 @@ public class RegistroDto
 
     // FECHA DE CREACIÓN DEL COMITÉ
     public DateTime? FechaCreacionComite { get; set; }
-
-    // UBICACIÓN GEOGRÁFICA
-    [Required(ErrorMessage = "La región de salud es obligatoria")]
-    [Range(1, int.MaxValue, ErrorMessage = "Seleccione una región válida")]
-    public int RegionSaludId { get; set; }
-
-    [Required(ErrorMessage = "La provincia es obligatoria")]
-    [Range(1, int.MaxValue, ErrorMessage = "Seleccione una provincia válida")]
-    public int ProvinciaId { get; set; }
-
-    [Required(ErrorMessage = "El distrito es obligatorio")]
-    [Range(1, int.MaxValue, ErrorMessage = "Seleccione un distrito válido")]
-    public int DistritoId { get; set; }
-
-    [Required(ErrorMessage = "El corregimiento es obligatorio")]
-    [Range(1, int.MaxValue, ErrorMessage = "Seleccione un corregimiento válido")]
-    public int CorregimientoId { get; set; }
+    
 
     // TRÁMITE
     [Required(ErrorMessage = "El tipo de trámite es obligatorio")]
@@ -229,5 +213,29 @@ public class RegistroDto
     public List<IBrowserFile> DocumentosSubir { get; set; } = new();
 
     #endregion
-    
+
+    #region Ubicaciones
+
+    // UBICACIÓN GEOGRÁFICA
+    [Required(ErrorMessage = "La región de salud es obligatoria")]
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccione una región válida")]
+    public int RId { get; set; }
+    public string? NombreRegion { get; set; }
+
+    [Required(ErrorMessage = "La provincia es obligatoria")]
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccione una provincia válida")]
+    public int PId { get; set; }
+    public string? NombreProvincia { get; set; }
+
+    [Required(ErrorMessage = "El distrito es obligatorio")]
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccione un distrito válido")]
+    public int DId { get; set; }
+    public string? NombreDistrito { get; set; }
+
+    [Required(ErrorMessage = "El corregimiento es obligatorio")]
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccione un corregimiento válido")]
+    public int CId { get; set; }
+    public string? NombreCorregimiento { get; set; }
+
+    #endregion
 }

@@ -21,20 +21,20 @@
         <div class="row">
             <div class="col-md-8 mb-3">
                 <label class="form-label">Nombre de la Asociación *</label>
-                <InputText @bind="Model.NombreAsociacion" class="form-control" />
+                <InputText @bind-Value="Model.NombreAsociacion" class="form-control" />
                 <ValidationMessage For="@(() => Model.NombreAsociacion)" class="text-danger small" />
             </div>
 
             <div class="col-md-4 mb-3">
                 <label class="form-label">Folio *</label>
-                <InputNumber @bind="Model.Folio" class="form-control" />
+                <InputNumber @bind-Value="Model.Folio" class="form-control" TValue="int"/>
                 <ValidationMessage For="@(() => Model.Folio)" class="text-danger small" />
             </div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Actividad de la Asociación *</label>
-            <InputText @bind="Model.Actividad" class="form-control" />
+            <InputText @bind-Value="Model.Actividad" class="form-control" />
             <small class="form-text text-muted">Describa brevemente la actividad que realiza la asociación</small>
             <ValidationMessage For="@(() => Model.Actividad)" class="text-danger small" />
         </div>
@@ -46,31 +46,31 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Nombre *</label>
-                <InputText @bind="Model.NombreRepLegal" class="form-control" />
+                <InputText @bind-Value="Model.NombreRepLegal" class="form-control" />
                 <ValidationMessage For="@(() => Model.NombreRepLegal)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Cédula *</label>
-                <InputText @bind="Model.CedulaRepLegal" class="form-control" />
+                <InputText @bind-Value="Model.CedulaRepLegal" class="form-control" />
                 <ValidationMessage For="@(() => Model.CedulaRepLegal)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Cargo *</label>
-                <InputText @bind="Model.CargoRepLegal" class="form-control" value="Presidente" readonly />
+                <InputText @bind-Value="Model.CargoRepLegal" class="form-control" readonly />
                 <small class="form-text text-muted">El cargo del representante legal siempre es Presidente</small>
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Teléfono *</label>
-                <InputText @bind="Model.TelefonoRepLegal" class="form-control" />
+                <InputText @bind-Value="Model.TelefonoRepLegal" class="form-control" />
                 <ValidationMessage For="@(() => Model.TelefonoRepLegal)" class="text-danger small" />
             </div>
 
             <div class="col-12 mb-3">
                 <label class="form-label">Dirección *</label>
-                <InputText @bind="Model.DireccionRepLegal" class="form-control" />
+                <InputText @bind-Value="Model.DireccionRepLegal" class="form-control" />
                 <ValidationMessage For="@(() => Model.DireccionRepLegal)" class="text-danger small" />
             </div>
         </div>
@@ -82,37 +82,37 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Nombre *</label>
-                <InputText @bind="Model.NombreApoAbogado" class="form-control" />
+                <InputText @bind-Value="Model.NombreApoAbogado" class="form-control" />
                 <ValidationMessage For="@(() => Model.NombreApoAbogado)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Cédula *</label>
-                <InputText @bind="Model.CedulaApoAbogado" class="form-control" />
+                <InputText @bind-Value="Model.CedulaApoAbogado" class="form-control" />
                 <ValidationMessage For="@(() => Model.CedulaApoAbogado)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Teléfono *</label>
-                <InputText @bind="Model.TelefonoApoAbogado" class="form-control" />
+                <InputText @bind-Value="Model.TelefonoApoAbogado" class="form-control" />
                 <ValidationMessage For="@(() => Model.TelefonoApoAbogado)" class="text-danger small" />
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">Correo *</label>
-                <InputText @bind="Model.CorreoApoAbogado" class="form-control" type="email" />
+                <InputText @bind-Value="Model.CorreoApoAbogado" class="form-control" type="email" />
                 <ValidationMessage For="@(() => Model.CorreoApoAbogado)" class="text-danger small" />
             </div>
 
             <div class="col-12 mb-3">
                 <label class="form-label">Dirección *</label>
-                <InputText @bind="Model.DireccionApoAbogado" class="form-control" />
+                <InputText @bind-Value="Model.DireccionApoAbogado" class="form-control" />
                 <ValidationMessage For="@(() => Model.DireccionApoAbogado)" class="text-danger small" />
             </div>
 
             <div class="col-12 mb-3">
                 <div class="form-check">
-                    <InputCheckbox @bind="Model.PerteneceAFirma" class="form-check-input" />
+                    <InputCheckbox @bind-Value="Model.PerteneceAFirma" class="form-check-input" />
                     <label class="form-check-label">¿El apoderado pertenece a una firma de abogados?</label>
                 </div>
             </div>
@@ -125,25 +125,25 @@
                 <div class="row mt-3">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Nombre de la Firma *</label>
-                        <InputText @bind="Model.NombreFirma" class="form-control" />
+                        <InputText @bind-Value="Model.NombreFirma" class="form-control" />
                         <ValidationMessage For="@(() => Model.NombreFirma)" class="text-danger small" />
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Correo de la Firma *</label>
-                        <InputText @bind="Model.CorreoFirma" class="form-control" type="email" />
+                        <InputText @bind-Value="Model.CorreoFirma" class="form-control" type="email" />
                         <ValidationMessage For="@(() => Model.CorreoFirma)" class="text-danger small" />
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Teléfono de la Firma *</label>
-                        <InputText @bind="Model.TelefonoFirma" class="form-control" />
+                        <InputText @bind-Value="Model.TelefonoFirma" class="form-control" />
                         <ValidationMessage For="@(() => Model.TelefonoFirma)" class="text-danger small" />
                     </div>
 
                     <div class="col-12 mb-3">
                         <label class="form-label">Dirección de la Firma *</label>
-                        <InputText @bind="Model.DireccionFirma" class="form-control" />
+                        <InputText @bind-Value="Model.DireccionFirma" class="form-control" />
                         <ValidationMessage For="@(() => Model.DireccionFirma)" class="text-danger small" />
                     </div>
                 </div>

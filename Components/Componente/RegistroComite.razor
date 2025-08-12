@@ -1,207 +1,419 @@
-﻿
-@using REGISTROLEGAL.Repositories.Interfaces
-@inject IRegistroService RegistroService
-@inject NavigationManager Navigation
-
-<EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary Class="alert alert-danger mb-3" />
-
-    @if (!string.IsNullOrEmpty(MensajeExito))
-    {
-        <div class="alert alert-success">@MensajeExito</div>
-    }
-
-    @if (!string.IsNullOrEmpty(MensajeError))
-    {
-        <div class="alert alert-danger">@MensajeError</div>
-    }
-
-    <h3 class="mb-4">Registro de Comité de Salud</h3>
-
-    <!-- DATOS DEL COMITÉ -->
-    <fieldset class="border p-3 mb-4">
-        <legend class="w-auto px-2">Información del Comité</legend>
-        <div class="mb-3">
-            <label class="form-label">Nombre del Comité de Salud *</label>
-            <InputText @bind="Model.NombreComiteSalud" class="form-control" />
-            <ValidationMessage For="@(() => Model.NombreComiteSalud)" class="text-danger small" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Comunidad</label>
-            <InputText @bind="Model.Comunidad" class="form-control" />
-        </div>
-    </fieldset>
-
-    <!-- UBICACIÓN GEOGRÁFICA -->
-    <fieldset class="border p-3 mb-4">
-        <legend class="w-auto px-2">Ubicación Geográfica</legend>
-        <div class="row">
-            <div class="col-md-3 mb-3">
-                <label class="form-label">Región de Salud *</label>
-                <InputSelect @bind="Model.RegionSaludId" @onchange="@(async e => await CargarProvincias(e))" class="form-select">
-                    <option value="0">-- Seleccione --</option>
-                    @foreach (var region in Regiones)
-                    {
-                        <option value="@region.RegionSaludId">@region.NombreRegion</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="@(() => Model.RegionSaludId)" class="text-danger small" />
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <label class="form-label">Provincia *</label>
-                <InputSelect @bind="Model.ProvinciaId" @onchange="@(async e => await CargarDistritos(e))" class="form-select">
-                    <option value="0">-- Seleccione --</option>
-                    @foreach (var provincia in Provincias)
-                    {
-                        <option value="@provincia.ProvinciaId">@provincia.NombreProvincia</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="@(() => Model.ProvinciaId)" class="text-danger small" />
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <label class="form-label">Distrito *</label>
-                <InputSelect @bind="Model.DistritoId" @onchange="@(async e => await CargarCorregimientos(e))" class="form-select">
-                    <option value="0">-- Seleccione --</option>
-                    @foreach (var distrito in Distritos)
-                    {
-                        <option value="@distrito.DistritoId">@distrito.NombreDistrito</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="@(() => Model.DistritoId)" class="text-danger small" />
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <label class="form-label">Corregimiento *</label>
-                <InputSelect @bind="Model.CorregimientoId" class="form-select">
-                    <option value="0">-- Seleccione --</option>
-                    @foreach (var corregimiento in Corregimientos)
-                    {
-                        <option value="@corregimiento.CorregimientoId">@corregimiento.NombreCorregimiento</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="@(() => Model.CorregimientoId)" class="text-danger small" />
-            </div>
-        </div>
-    </fieldset>
-
-    <!-- TIPO DE TRÁMITE -->
-    <div class="form-group mb-4">
-        <label class="form-label">Tipo de Trámite *</label>
-        <InputSelect @bind="Model.TipoTramiteId" @onchange="@(async e => await OnTramiteChanged(e))" class="form-select">
-            <option value="0">-- Seleccione --</option>
-            @foreach (var tramite in TipoTramites)
-            {
-                <option value="@tramite.TramiteId">@tramite.NombreTramite</option>
-            }
-        </InputSelect>
-        <ValidationMessage For="@(() => Model.TipoTramiteId)" class="text-danger small" />
-    </div>
-
-    <!-- MIEMBROS -->
-    @if (Model.TipoTramiteId > 0)
-    {
-        <fieldset class="border p-3 mb-4">
-            <legend class="w-auto px-2">Miembros del Comité</legend>
-            
-            @if (Model.TipoTramiteId == 3)
-            {
-                <div class="alert alert-info mb-3">
-                    Para Junta Interventora, solo se permiten 2 miembros: Presidente y Tesorero.
-                </div>
-            }
-
-            @for (int i = 0; i < Model.Miembros.Count; i++)
-            {
-                var miembro = Model.Miembros[i];
-                <div class="card mb-3" @key="miembro">
-                    <div class="card-body">
-                        <h5 class="card-title">Miembro @(i + 1)</h5>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Nombre *</label>
-                                <InputText @bind="miembro.Nombre" class="form-control" />
-                                <ValidationMessage For="@(() => miembro.Nombre)" class="text-danger small" />
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Cédula *</label>
-                                <InputText @bind="miembro.Cedula" class="form-control" />
-                                <ValidationMessage For="@(() => miembro.Cedula)" class="text-danger small" />
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Cargo *</label>
-                                <InputSelect @bind="miembro.CargoId" class="form-select">
-                                    <option value="0">-- Seleccione --</option>
-                                    @foreach (var cargo in CargosDisponibles)
-                                    {
-                                        <option value="@cargo.CargoId">@cargo.NombreCargo</option>
-                                    }
-                                </InputSelect>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            @if (Model.TipoTramiteId == 1 && Model.Miembros.Count < 7)
-            {
-                <button type="button" class="btn btn-primary" @onclick="AddMiembro">
-                    + Añadir Miembro
-                </button>
-            }
-            else if (Model.TipoTramiteId == 3 && Model.Miembros.Count < 2)
-            {
-                <button type="button" class="btn btn-primary" @onclick="AddMiembro">
-                    + Añadir Miembro
-                </button>
-            }
-        </fieldset>
-    }
-
-    <!-- DOCUMENTOS -->
-    <fieldset class="border p-3 mb-4">
-        <legend class="w-auto px-2">Documentos Legales</legend>
-        <div class="mb-3">
-            <label class="form-label">Subir documentos</label>
-            <InputFile OnChange="@CargarDocumentos" multiple class="form-control" />
-            <small class="form-text text-muted">Puede subir múltiples documentos (PDF, DOCX, JPG, PNG)</small>
-        </div>
-
-        @if (Model.DocumentosSubir?.Count > 0)
-        {
-            <div class="mt-3">
-                <h6>Archivos seleccionados:</h6>
-                <ul class="list-group">
-                    @for (int i = 0; i < Model.DocumentosSubir.Count; i++)
-                    {
-                        var archivo = Model.DocumentosSubir[i];
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>@archivo.Name (@(Math.Round(archivo.Size / 1024.0, 2)) KB)</span>
-                            <button class="btn btn-sm btn-danger" @onclick="() => RemoverDocumento(i)">
-                                <i class="bi bi-trash"></i> Eliminar
-                            </button>
-                        </li>
-                    }
-                </ul>
-            </div>
-        }
-    </fieldset>
-
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
-            @(IsSubmitting ? "Registrando..." : "Registrar Comité")
-        </button>
-        <button type="button" class="btn btn-secondary" @onclick="Cancelar" disabled="@IsSubmitting">
-            Cancelar
-        </button>
-    </div>
-</EditForm>
-
-@code {
-    
-}
+﻿@* *@
+@* @using REGISTROLEGAL.Repositories.Interfaces *@
+@* @inject IRegistroService RegistroService *@
+@* @inject NavigationManager Navigation *@
+@* <div class="card-body"> *@
+@* <EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit"> *@
+@*     <DataAnnotationsValidator /> *@
+@*     <ValidationSummary Class="alert alert-danger mb-3" /> *@
+@* *@
+@*     @if (!string.IsNullOrEmpty(MensajeExito)) *@
+@*     { *@
+@*         <div class="alert alert-success">@MensajeExito</div> *@
+@*     } *@
+@* *@
+@*     @if (!string.IsNullOrEmpty(MensajeError)) *@
+@*     { *@
+@*         <div class="alert alert-danger">@MensajeError</div> *@
+@*     } *@
+@* *@
+@*     <h3 class="mb-4">Registro de Comité de Salud</h3> *@
+@* *@
+@*     <!-- DATOS DEL COMITÉ --> *@
+@*     <fieldset class="border p-3 mb-4"> *@
+@*         <legend class="w-auto px-2">Información del Comité</legend> *@
+@*         <div class="mb-3"> *@
+@*             <label class="form-label">Nombre del Comité de Salud *</label> *@
+@*             <InputText @bind-Value="Model.NombreComiteSalud" class="form-control" /> *@
+@*             <ValidationMessage For="@(() => Model.NombreComiteSalud)" class="text-danger small" /> *@
+@*         </div> *@
+@* *@
+@*         <div class="mb-3"> *@
+@*             <label class="form-label">Comunidad</label> *@
+@*             <InputText @bind-Value="Model.Comunidad" class="form-control" /> *@
+@*         </div> *@
+@*     </fieldset> *@
+@* *@
+@*     <!-- UBICACIÓN GEOGRÁFICA --> *@
+@*     <fieldset class="border p-3 mb-4"> *@
+@*         <legend class="w-auto px-2">Ubicación Geográfica</legend> *@
+@*         <div class="row"> *@
+@*             <div class="col-md-3 mb-3"> *@
+@*                 <label class="form-label">Región de Salud *</label> *@
+@*                 <InputSelect @bind-Value="Model.RId"  TValue="int" class="form-select"> *@
+@*                     <option value="0">-- Seleccione --</option> *@
+@*                     @foreach (var region in Regiones) *@
+@*                     { *@
+@*                         <option value="@region.RegionSaludId">@region.NombreRegion</option> *@
+@*                     } *@
+@*                 </InputSelect> *@
+@*                 <ValidationMessage For="@(() => Model.RId)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-md-3 mb-3"> *@
+@*                 <label class="form-label">Provincia *</label> *@
+@*                 <InputSelect @bind-Value="Model.PId" TValue="int" @onchange="@(async e => await CargarDistritos(e))" class="form-select"> *@
+@*                     <option value="0">-- Seleccione --</option> *@
+@*                     @foreach (var provincia in Provincias) *@
+@*                     { *@
+@*                         <option value="@provincia.ProvinciaId">@provincia.NombreProvincia</option> *@
+@*                     } *@
+@*                 </InputSelect> *@
+@*                 <ValidationMessage For="@(() => Model.PId)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-md-3 mb-3"> *@
+@*                 <label class="form-label">Distrito *</label> *@
+@*                 <InputSelect @bind-Value="Model.DId" TValue="int" @onchange="@(async e => await CargarCorregimientos(e))" class="form-select"> *@
+@*                     <option value="0">-- Seleccione --</option> *@
+@*                     @foreach (var distrito in Distritos) *@
+@*                     { *@
+@*                         <option value="@distrito.DistritoId">@distrito.NombreDistrito</option> *@
+@*                     } *@
+@*                 </InputSelect> *@
+@*                 <ValidationMessage For="@(() => Model.DId)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-md-3 mb-3"> *@
+@*                 <label class="form-label">Corregimiento *</label> *@
+@*                 <InputSelect @bind-Value="Model.CId" TValue="int" class="form-select"> *@
+@*                     <option value="0">-- Seleccione --</option> *@
+@*                     @foreach (var corregimiento in Corregimientos) *@
+@*                     { *@
+@*                         <option value="@corregimiento.CorregimientoId">@corregimiento.NombreCorregimiento</option> *@
+@*                     } *@
+@*                 </InputSelect> *@
+@*                 <ValidationMessage For="@(() => Model.CId)" class="text-danger small" /> *@
+@*             </div> *@
+@*         </div> *@
+@*     </fieldset> *@
+@* *@
+@*     <!-- TIPO DE TRÁMITE --> *@
+@*     <div class="form-group mb-4"> *@
+@*         <label class="form-label">Tipo de Trámite *</label> *@
+@*         <InputSelect @bind-Value="Model.TipoTramiteId" TValue="int" @onchange="@(async e => await OnTramiteChanged(e))" class="form-select"> *@
+@*             <option value="0">-- Seleccione --</option> *@
+@*             @foreach (var tramite in TipoTramites) *@
+@*             { *@
+@*                 <option value="@tramite.TramiteId">@tramite.NombreTramite</option> *@
+@*             } *@
+@*         </InputSelect> *@
+@*         <ValidationMessage For="@(() => Model.TipoTramiteId)" class="text-danger small" /> *@
+@*     </div> *@
+@* *@
+@*     <!-- MIEMBROS --> *@
+@*     @if (Model.TipoTramiteId > 0) *@
+@*     { *@
+@*         //inicio *@
+@*         <div class="card-header border-top"> *@
+@*             <h3 class="mb-0 fw-bold">Renglones de la Requisición</h3> *@
+@*         </div> *@
+@*         <div class="card-body"> *@
+@*             <div class="mb-3"> *@
+@*                 <label class="fw-bold">Detalles del Grupo <span *@
+@*                         class="text-danger">(LEER TEXTO DE EJEMPLO)</span></label> *@
+@*                 <TextAreaInput @bind-Value="RequisicionData.GrupoBase" *@
+@*                                class="form-control form-control-sm text-uppercase" Rows="6" *@
+@*                                aria-required="true"/> *@
+@*                 <ValidationMessage For="() => RequisicionData.GrupoBase" class="text-danger"/> *@
+@*             </div> *@
+@*             @if (!ResultRenglon.Success) *@
+@*             { *@
+@*                 <div class="mb-3"> *@
+@*                     @foreach (var item in ResultRenglon.Errores) *@
+@*                     { *@
+@*                         <p class="text-danger mb-0">@item</p> *@
+@*                     } *@
+@*                 </div> *@
+@*             } *@
+@*             <div class="row mb-2"> *@
+@*                 <div class="col-lg-2"> *@
+@*                     <label class="fw-bold">Cantidad</label> *@
+@*                     <input type="number" @bind="RenglonForm.Cantidad" *@
+@*                            class="form-control form-control-sm text-uppercase" *@
+@*                            id="RowCantidad"> *@
+@*                 </div> *@
+@*                 <div class="col-lg-3"> *@
+@*                     <label class="fw-bold">Código</label> *@
+@*                     <div class="input-group"> *@
+@*                         <input *@
+@*                             id="RowCodigo" *@
+@*                             type="text" *@
+@*                             @bind="RenglonForm.Codigo" *@
+@*                             class="form-control form-control-sm text-uppercase"> *@
+@*                         @if (RequisicionData.TipoRequisicionCode == "IS") *@
+@*                         { *@
+@*                             <button class="btn btn-sm btn-primary" type="button" @onclick="LoadFicha" *@
+@*                                     disabled="@(RequisicionData.TipoRequisicionCode != "IS")"> *@
+@*                                 <Tooltip Title="Buscar Datos de la Ficha Técnica"> *@
+@*                                     <i class="fa-solid fa-magnifying-glass"></i> *@
+@*                                 </Tooltip> *@
+@*                             </button> *@
+@*                         } *@
+@*                     </div> *@
+@*                     @if (RequisicionData.TipoRequisicionCode == "IS") *@
+@*                     { *@
+@*                         <div class="alert alert-info pb-0 mt-1" role="alert"> *@
+@*                             <p>Puede dar clic al botón para buscar los datos de la Ficha Técnica, cuando es Compra de *@
+@*                                 Insumos Sanitarios</p> *@
+@*                         </div> *@
+@*                     } *@
+@*                 </div> *@
+@*                 <div class="col-lg-3"> *@
+@*                     <label class="fw-bold">Unidad</label> *@
+@*                     <input type="text" @bind="RenglonForm.Unidad" class="form-control form-control-sm text-uppercase" *@
+@*                            id="RowUnidad"> *@
+@*                 </div> *@
+@*                 <div class="col-lg-2"> *@
+@*                     <label class="fw-bold">Precio Unitario</label> *@
+@*                     <input type="number" @bind="RenglonForm.PrecioUnitario" *@
+@*                            class="form-control form-control-sm text-uppercase" *@
+@*                            id="RowPrecioUnitario"> *@
+@*                 </div> *@
+@*                 <div class="col-lg-2"> *@
+@*                     <label class="fw-bold" for="RowITBMS">¿I.T.B.M.S.?</label> *@
+@*                     <div> *@
+@*                         <input type="checkbox" @bind="RenglonForm.ITBMS" class="form-check-input" id="RowITBMS"> *@
+@*                         <label class="form-check-label" for="RowITBMS">I.T.B.M.S.</label> *@
+@*                     </div> *@
+@*                 </div> *@
+@*             </div> *@
+@*             <div class="mb-2"> *@
+@*                 <label class="fw-bold">Descripción</label> *@
+@*                 <textarea id="RowDescripcion" @bind="RenglonForm.Descripcion" rows="6" *@
+@*                           class="form-control form-control-sm text-uppercase text-uppercase"></textarea> *@
+@*             </div> *@
+@*         </div> *@
+@*         <div class="card-footer border-bottom"> *@
+@*             <button type="button" class="btn btn-primary text-white" @onclick="InsertItemSubmit"> *@
+@*                 <i class="fa-solid fa-floppy-disk me-1"></i>Guardar Renglón *@
+@*             </button> *@
+@*             @if (RenglonEditing) *@
+@*             { *@
+@*                 <button type="button" class="btn btn-danger text-white ms-2" @onclick="CancelEditRenglon"> *@
+@*                     <i class="fa-solid fa-xmark me-1"></i> Cancelar Edición *@
+@*                 </button> *@
+@*             } *@
+@*         </div> *@
+@*         <div class="card-body"> *@
+@*             @if (Renglones == null || Renglones.Count == 0) *@
+@*             { *@
+@*                 <h3 class="fw-bold my-3"><i class="fa-regular fa-folder-open me-1"></i>Sin registros</h3> *@
+@*             } *@
+@*             else *@
+@*             { *@
+@*                 int row = 1; *@
+@*                 <div class="table-responsive" style="max-height: 350px; overflow-y: auto;"> *@
+@*                     <table class="table table-sm table-bordered"> *@
+@*                         <thead> *@
+@*                         <tr> *@
+@*                             <th class="fw-bold text-center">#</th> *@
+@*                             <th class="fw-bold text-center">Cantidad</th> *@
+@*                             <th class="fw-bold text-center">Código</th> *@
+@*                             <th class="fw-bold text-center">Unidad</th> *@
+@*                             <th class="fw-bold text-center">Descripción</th> *@
+@*                             <th class="fw-bold text-center">Precio Unitario</th> *@
+@*                             <th class="fw-bold text-center">Sub Total</th> *@
+@*                             <th class="fw-bold text-center">I.T.B.M.S.</th> *@
+@*                             <th class="fw-bold text-center">Precio Total</th> *@
+@*                             <th class="fw-bold text-center">Acciones</th> *@
+@*                         </tr> *@
+@*                         </thead> *@
+@*                         <tbody> *@
+@*                         @foreach (var item in Renglones.Where(x => x.ShowRow == true)) *@
+@*                         { *@
+@*                             <tr> *@
+@*                                 <td class="text-center">@row</td> *@
+@*                                 <td class="text-end">@item.Cantidad</td> *@
+@*                                 <td>@item.Codigo</td> *@
+@*                                 <td>@item.Unidad</td> *@
+@*                                 <td class="" style="white-space: pre-wrap;">@item.Descripcion</td> *@
+@*                                 <td class="text-end">@item.PrecioUnitario.ToString("#,##0.00##")</td> *@
+@*                                 <td class="text-end">@item.ValorSubTotal.ToString("#,##0.00##")</td> *@
+@*                                 <td class="text-center">@(item.ITBMS ? "SI" : "NO")</td> *@
+@*                                 <td class="text-end">@item.ValorTotal.ToString("#,##0.00##")</td> *@
+@*                                 <td class="text-center"> *@
+@*                                     <div class="btn-group" role="group" aria-label="acciones"> *@
+@*                                         <button type="button" class="btn btn-light" *@
+@*                                                 @onclick="() => EditRenglon(item.TempId)"> *@
+@*                                             <Tooltip Title="Editar Renglón"> *@
+@*                                                 <i class="fa-solid fa-pen-to-square text-primary"></i> *@
+@*                                             </Tooltip> *@
+@*                                         </button> *@
+@*                                         <button type="button" class="btn btn-light" *@
+@*                                                 @onclick="() => DeleteRenglon(item.TempId)"> *@
+@*                                             <Tooltip Title="Eliminar Renglón"> *@
+@*                                                 <i class="fa-solid fa-trash text-danger"></i> *@
+@*                                             </Tooltip> *@
+@*                                         </button> *@
+@*                                     </div> *@
+@*                                 </td> *@
+@*                             </tr> *@
+@*                             row++; *@
+@*                         } *@
+@*                         </tbody> *@
+@*                     </table> *@
+@*                 </div> *@
+@*             } *@
+@*         </div> *@
+@*         <div class="card-body border-top"> *@
+@*             <table class="table table-borderless ms-auto h4" style="width: min(300px, 100%);"> *@
+@*                 <tr> *@
+@*                     <td class="text-end"> *@
+@*                         SubTotal: *@
+@*                     </td> *@
+@*                     <td class="text-end"> *@
+@*                         @RequisicionData.PrecioSubTotalRequisicion.ToString("n2") *@
+@*                     </td> *@
+@*                 </tr> *@
+@*                 <tr> *@
+@*                     <td class="text-end"> *@
+@*                         I.T.B.M.S.: *@
+@*                     </td> *@
+@*                     <td class="text-end"> *@
+@*                         @RequisicionData.PrecioITBMSRequisicion.ToString("n2") *@
+@*                     </td> *@
+@*                 </tr> *@
+@*                 <tr> *@
+@*                     <td class="text-end"> *@
+@*                         Total: *@
+@*                     </td> *@
+@*                     <td class="text-end"> *@
+@*                         @RequisicionData.PrecioTotalRequisicion.ToString("n2") *@
+@*                     </td> *@
+@*                 </tr> *@
+@*             </table> *@
+@*         </div> *@
+@*         <div class="card-footer"> *@
+@*             <button type="submit" class="btn btn-primary text-white"> *@
+@*                 <i class="fa-solid fa-floppy-disk me-1"></i>Guardar Requisición *@
+@*             </button> *@
+@*         </div> *@
+@*     </div> *@
+@* </EditForm> *@
+@* *@
+@* <Modal @ref="ModalFormulario" *@
+@*        Title="!Mensaje¡" *@
+@*        ShowCloseButton="false" *@
+@*        UseStaticBackdrop="true" *@
+@*        Size="ModalSize.Regular"> *@
+@*     <BodyTemplate> *@
+@*         @if (!RequisicionResult.Success) *@
+@*         { *@
+@*             <div class="mb-3"> *@
+@*                 @foreach (var item in RequisicionResult.Errores) *@
+@*                 { *@
+@*                     <p class="text-danger mb-1 h4">@item</p> *@
+@*                 } *@
+@*             </div> *@
+@*         } *@
+@*     </BodyTemplate> *@
+@*     <FooterTemplate> *@
+@*         <button type="button" class="btn btn-primary text-white" *@
+@*                 onclick="@(async () => await ModalFormulario.HideAsync())"> *@
+@*             <i class="fa-solid fa-rectangle-xmark me-1"></i>Cerrar *@
+@*         </button> *@
+@*     </FooterTemplate> *@
+@* </Modal> *@
+@*         // fin *@
+@*         <fieldset class="border p-3 mb-4"> *@
+@*             <legend class="w-auto px-2">Miembros del Comité</legend> *@
+@* *@
+@*             @if (Model.TipoTramiteId == 3) *@
+@*             { *@
+@*                 <div class="alert alert-info mb-3"> *@
+@*                     Para Junta Interventora, solo se permiten 2 miembros: Presidente y Tesorero. *@
+@*                 </div> *@
+@*             } *@
+@* *@
+@*             @for (int i = 0; i < Model.Miembros.Count; i++) *@
+@*             { *@
+@*                 var miembro = Model.Miembros[i]; *@
+@*                 <div class="card mb-3" @key="miembro"> *@
+@*                     <div class="card-body"> *@
+@*                         <h5 class="card-title">Miembro @(i + 1)</h5> *@
+@*                         <div class="row"> *@
+@*                             <div class="col-md-4 mb-3"> *@
+@*                                 <label class="form-label">Nombre *</label> *@
+@*                                 <InputText @bind-Value="miembro.Nombre" class="form-control" TValue="string"/> *@
+@*                                 <ValidationMessage For="@(() => miembro.Nombre)" class="text-danger small" /> *@
+@*                             </div> *@
+@* *@
+@*                             <div class="col-md-4 mb-3"> *@
+@*                                 <label class="form-label">Cédula *</label> *@
+@*                                 <InputText @bind-Value="miembro.Cedula" class="form-control" /> *@
+@*                                 <ValidationMessage For="@(() => miembro.Cedula)" class="text-danger small" /> *@
+@*                             </div> *@
+@* *@
+@*                             <div class="col-md-4 mb-3"> *@
+@*                                 <label class="form-label">Cargo *</label> *@
+@*                                 <InputSelect @bind-Value="miembro.CargoId" TValue="int" class="form-select"> *@
+@*                                     <option value="0">-- Seleccione --</option> *@
+@*                                     @foreach (var cargo in CargosDisponibles) *@
+@*                                     { *@
+@*                                         <option value="@cargo.CargoId">@cargo.NombreCargo</option> *@
+@*                                     } *@
+@*                                 </InputSelect> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </div> *@
+@*             } *@
+@* *@
+@*             @if (Model.TipoTramiteId == 1 && Model.Miembros.Count < 7) *@
+@*             { *@
+@*                 <button type="button" class="btn btn-primary" @onclick="AddMiembro"> *@
+@*                     + Añadir Miembro *@
+@*                 </button> *@
+@*             } *@
+@*             else if (Model.TipoTramiteId == 3 && Model.Miembros.Count < 2) *@
+@*             { *@
+@*                 <button type="button" class="btn btn-primary" @onclick="AddMiembro"> *@
+@*                     + Añadir Miembro *@
+@*                 </button> *@
+@*             } *@
+@*         </fieldset> *@
+@*     } *@
+@* *@
+@*     <!-- DOCUMENTOS --> *@
+@*     <fieldset class="border p-3 mb-4"> *@
+@*         <legend class="w-auto px-2">Documentos Legales</legend> *@
+@*         <div class="mb-3"> *@
+@*             <label class="form-label">Subir documentos</label> *@
+@*             <InputFile OnChange="@CargarDocumentos" multiple class="form-control" /> *@
+@*             <small class="form-text text-muted">Puede subir múltiples documentos (PDF, DOCX, JPG, PNG)</small> *@
+@*         </div> *@
+@* *@
+@*         @if (Model.DocumentosSubir?.Count > 0) *@
+@*         { *@
+@*             <div class="mt-3"> *@
+@*                 <h6>Archivos seleccionados:</h6> *@
+@*                 <ul class="list-group"> *@
+@*                     @for (int i = 0; i < Model.DocumentosSubir.Count; i++) *@
+@*                     { *@
+@*                         var archivo = Model.DocumentosSubir[i]; *@
+@*                         <li class="list-group-item d-flex justify-content-between align-items-center"> *@
+@*                             <span>@archivo.Name (@(Math.Round(archivo.Size / 1024.0, 2)) KB)</span> *@
+@*                             <button class="btn btn-sm btn-danger" @onclick="() => RemoverDocumento(i)"> *@
+@*                                 <i class="bi bi-trash"></i> Eliminar *@
+@*                             </button> *@
+@*                         </li> *@
+@*                     } *@
+@*                 </ul> *@
+@*             </div> *@
+@*         } *@
+@*     </fieldset> *@
+@* *@
+@*     <div class="d-grid gap-2 d-md-flex justify-content-md-end"> *@
+@*         <button type="submit" class="btn btn-primary" disabled="@IsSubmitting"> *@
+@*             @(IsSubmitting ? "Registrando..." : "Registrar Comité") *@
+@*         </button> *@
+@*         <button type="button" class="btn btn-secondary" @onclick="Cancelar" disabled="@IsSubmitting"> *@
+@*             Cancelar *@
+@*         </button> *@
+@*     </div> *@
+@* </EditForm> *@
+@* </div> *@
+@* @code { *@
+@* *@
+@* } *@

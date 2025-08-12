@@ -325,9 +325,9 @@ public partial class DbContextLegal : DbContext
 
             entity.Property(e => e.NombreProvincia).HasMaxLength(100);
 
-            entity.HasOne(d => d.RegionSalud).WithMany(p => p.TbProvincia)
-                .HasForeignKey(d => d.RegionSaludId)
-                .HasConstraintName("FK_Provincia_RegionSalud");
+            // entity.HasOne(d => d.RegionSalud).WithMany(p => p.TbProvincia)
+            //     .HasForeignKey(d => d.RegionSaludId)
+            //     .HasConstraintName("FK_Provincia_RegionSalud");
         });
 
         modelBuilder.Entity<TbRegSecuencia>(entity =>

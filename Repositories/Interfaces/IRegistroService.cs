@@ -47,7 +47,9 @@ public interface IRegistroService
     #region Ubicacion
 
         Task<List<TbRegionSalud>> ObtenerRegionesAsync();
-        Task<List<TbProvincia>> ObtenerProvinciasPorRegionAsync(int regionId);
+        
+        Task<List<TbProvincia>> ObtenerProvinciasAsync();
+        // Task<List<TbProvincia>> ObtenerProvinciasPorRegionAsync(int regionId);
         Task<List<TbDistrito>> ObtenerDistritosPorProvinciaAsync(int provinciaId);
         Task<List<TbCorregimiento>> ObtenerCorregimientosPorDistritoAsync(int distritoId);
 

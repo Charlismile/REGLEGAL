@@ -71,10 +71,10 @@ public class RegistroService : IRegistroService
                 {
                     NombreComiteSalud = comite.NombreComiteSalud,
                     Comunidad = comite.Comunidad,
-                    RegionSaludId = comite.RegionSaludId,
-                    ProvinciaId = comite.ProvinciaId,
-                    DistritoId = comite.DistritoId,
-                    CorregimientoId = comite.CorregimientoId
+                    RId = comite.RegionSaludId,
+                    PId = comite.ProvinciaId,
+                    DId = comite.DistritoId,
+                    CId = comite.CorregimientoId
                 });
             }
 
@@ -90,10 +90,10 @@ public class RegistroService : IRegistroService
             {
                 NombreComiteSalud = comite.NombreComiteSalud,
                 Comunidad = comite.Comunidad,
-                RegionSaludId = comite.RegionSaludId,
-                ProvinciaId = comite.ProvinciaId,
-                DistritoId = comite.DistritoId,
-                CorregimientoId = comite.CorregimientoId
+                RId = comite.RegionSaludId,
+                PId = comite.ProvinciaId,
+                DId = comite.DistritoId,
+                CId = comite.CorregimientoId
             };
         }
 
@@ -103,10 +103,10 @@ public class RegistroService : IRegistroService
             {
                 NombreComiteSalud = dto.NombreComiteSalud,
                 Comunidad = dto.Comunidad,
-                RegionSaludId = dto.RegionSaludId,
-                ProvinciaId = dto.ProvinciaId,
-                DistritoId = dto.DistritoId,
-                CorregimientoId = dto.CorregimientoId
+                RegionSaludId = dto.RId,
+                ProvinciaId = dto.PId,
+                DistritoId = dto.DId,
+                CorregimientoId = dto.CId
             };
 
             _context.TbDatosComite.Add(comite);
@@ -121,10 +121,10 @@ public class RegistroService : IRegistroService
 
             comite.NombreComiteSalud = dto.NombreComiteSalud;
             comite.Comunidad = dto.Comunidad;
-            comite.RegionSaludId = dto.RegionSaludId;
-            comite.ProvinciaId = dto.ProvinciaId;
-            comite.DistritoId = dto.DistritoId;
-            comite.CorregimientoId = dto.CorregimientoId;
+            comite.RegionSaludId = dto.RId;
+            comite.ProvinciaId = dto.PId;
+            comite.DistritoId = dto.DId;
+            comite.CorregimientoId = dto.CId;
 
             await _context.SaveChangesAsync();
             return true;
@@ -239,9 +239,12 @@ public class RegistroService : IRegistroService
 
     public Task<List<TbRegionSalud>> ObtenerRegionesAsync() => 
         _context.TbRegionSalud.OrderBy(r => r.NombreRegion).ToListAsync();
+    
+    public Task<List<TbProvincia>> ObtenerProvinciasAsync() => 
+        _context.TbProvincia.OrderBy(p => p.NombreProvincia).ToListAsync();
 
-    public Task<List<TbProvincia>> ObtenerProvinciasPorRegionAsync(int regionId) => 
-        _context.TbProvincia.Where(p => p.RegionSaludId == regionId).OrderBy(p => p.NombreProvincia).ToListAsync();
+    // public Task<List<TbProvincia>> ObtenerProvinciasPorRegionAsync(int regionId) => 
+    //     _context.TbProvincia.Where(p => p.RegionSaludId == regionId).OrderBy(p => p.NombreProvincia).ToListAsync();
 
     public Task<List<TbDistrito>> ObtenerDistritosPorProvinciaAsync(int provinciaId) => 
         _context.TbDistrito.Where(d => d.ProvinciaId == provinciaId).OrderBy(d => d.NombreDistrito).ToListAsync();
