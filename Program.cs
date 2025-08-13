@@ -21,9 +21,6 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-// Register your services
-builder.Services.AddScoped<IUserData, UserDataService>();
-
 // Add Authentication and Identity
 builder.Services.AddAuthentication(options =>
     {
@@ -32,21 +29,27 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-// Register DbContexts
+// Get connection strings
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+// Register DbContexts
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddDbContext<DbContextLegal>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// SOLUCIÓN: Registrar SOLO el DbContextFactory para DbContextLegal (no ambos)
+// El factory manejará la creación de instancias del DbContext
+builder.Services.AddDbContextFactory<DbContextLegal>(options =>
+    options.UseSqlServer(connectionString));
 
 // ✅ Register HttpClient
 builder.Services.AddHttpClient();
 
+// Register Mapster
 builder.Services.AddMapster();
-builder.Services.AddScoped<IRegistroService, RegistroService>();
+
+// Register custom services DESPUÉS de los DbContexts - CORREGIDO
+builder.Services.AddScoped<ICommon, CommonServices>();
 
 // Identity Core
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -54,17 +57,15 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-// builder.Services.AddScoped<IRegistroComiteService, RegistroComiteService>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-//carga de archivos 
+// Configuración de carga de archivos 
 builder.Services.Configure<IISServerOptions>(options =>
 {
     options.MaxRequestBodySize = 50_000_000; // 50 MB
 });
 
 var app = builder.Build();
-
 
 // Configure the HTTP pipeline
 if (app.Environment.IsDevelopment())

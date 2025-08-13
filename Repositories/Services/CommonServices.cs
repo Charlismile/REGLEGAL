@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using REGISTROLEGAL.DTOs;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
+using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
 
 namespace REGISTROLEGAL.Repositories.Services;
@@ -8,43 +8,123 @@ namespace REGISTROLEGAL.Repositories.Services;
 public class CommonServices : ICommon
 {
     private readonly IDbContextFactory<DbContextLegal> _Context;
-    private readonly IConfiguration _Configuration;
 
-    public CommonServices(IDbContextFactory<DbContextLegal> Context, IConfiguration Configuration)
+    public CommonServices(IDbContextFactory<DbContextLegal> Context)
     {
         _Context = Context;
-        _Configuration = Configuration;
     }
 
-    public async Task<string> GetFakePassword()
+ public async Task<List<ListModel>> GetRegiones()
     {
-        string Password = _Configuration.GetSection("FakePass").Value ?? "";
-        return await Task.FromResult(Password);
-    }
-
-    public async Task<List<RegistroDto>> ObtenerRegionesAsync()
-    {
-        var lista = new List<RegistroDto>();
+        List<ListModel> Lista = new List<ListModel>();
         try
         {
             using (var localContext = await _Context.CreateDbContextAsync())
             {
-                lista = await localContext.TbRegionSalud
-                    .Select(x => new RegistroDto()
+                Lista = await localContext.TbRegionSalud
+                    .Select(x => new ListModel()
                     {
-                        RId = x.RegionSaludId,
-                        NombreRegion = x.NombreRegion
+                        Id = x.RegionSaludId,
+                        Name = x.NombreRegion ?? "",
                     }).ToListAsync();
             }
         }
         catch (Exception)
         {
-            // manejar errores o log
         }
+        return Lista;
+    }
+    public async Task<List<ListModel>> GetProvincias()
+    {
+        List<ListModel> Lista = new List<ListModel>();
+        try
+        {
+            using (var localContext = await _Context.CreateDbContextAsync())
+            {
+                Lista = await localContext.TbProvincia
+                    .Select(x => new ListModel()
+                    {
+                        Id = x.ProvinciaId,
+                        Name = x.NombreProvincia ?? "",
+                    }).ToListAsync();
+            }
+        }
+        catch (Exception)
+        {
+        }
+        return Lista;
+    }
+    
+    public async Task<List<ListModel>> GetDistritos(int ProvinciaId)
+    {
+        List<ListModel> Lista = new List<ListModel>();
+        try
+        {
+            using (var localContext = await _Context.CreateDbContextAsync())
+            {
+                Lista = await localContext.TbDistrito.Where(x => x.ProvinciaId == ProvinciaId)
+                    .Select(x => new ListModel()
+                    {
+                        Id = x.DistritoId,
+                        Name = x.NombreDistrito ?? "",
+                    }).ToListAsync();
 
-        return lista;
+                Lista = Lista.OrderBy(x => x.Name).ToList();
+            }
+        }
+        catch (Exception)
+        {
+        }
+        return Lista;
     }
 
-    
+    public async Task<List<ListModel>> GetCorregimientos(int DistritoId)
+    {
+        List<ListModel> Lista = new List<ListModel>();
+        try
+        {
+            using (var localContext = await _Context.CreateDbContextAsync())
+            {
+                Lista = await localContext.TbCorregimiento.Where(x => x.DistritoId == DistritoId)
+                    .Select(x => new ListModel()
+                    {
+                        Id = x.CorregimientoId,
+                        Name = x.NombreCorregimiento ?? "",
+                    }).ToListAsync();
+
+                Lista = Lista.OrderBy(x => x.Name).ToList();
+            }
+        }
+        catch (Exception)
+        {
+        }
+        return Lista;
+    }
+
+    public async Task<List<ListModel>> GetCargos()
+    {
+        List<ListModel> Lista = new List<ListModel>();
+        try
+        {
+            using (var localContext = await _Context.CreateDbContextAsync())
+            {
+                Lista = await localContext.TbCargosMiembrosComite // Asumiendo que tienes una tabla TbCargo
+                    .Select(x => new ListModel()
+                    {
+                        Id = x.CargoId,
+                        Name = x.NombreCargo ?? ""
+                    })
+                    .OrderBy(x => x.Name)
+                    .ToListAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Opcional: loggear ex.Message o usar ILogger
+            // Nunca ignores excepciones en producción
+            throw new Exception("Error al obtener los cargos.", ex);
+        }
+        return Lista;
+    }
     
 }

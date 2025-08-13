@@ -176,12 +176,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Componente/RegistroAsociacion.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21wb25lbnRlXFJlZ2lzdHJvQXNvY2lhY2lvbi5yYXpvcg==
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Formularios/RegistroAsociacion.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xGb3JtdWxhcmlvc1xSZWdpc3Ryb0Fzb2NpYWNpb24ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Componente/RegistroComite.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21wb25lbnRlXFJlZ2lzdHJvQ29taXRlLnJhem9y
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Formularios/RegistroComite.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xGb3JtdWxhcmlvc1xSZWdpc3Ryb0NvbWl0ZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Auth.razor]
@@ -198,14 +198,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Public/SolicitudAsociacion.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQdWJsaWNcU29saWNpdHVkQXNvY2lhY2lvbi5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Public/SolicitudComite.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQdWJsaWNcU29saWNpdHVkQ29taXRlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Weather.razor]

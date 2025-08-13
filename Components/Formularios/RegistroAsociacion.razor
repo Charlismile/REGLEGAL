@@ -1,0 +1,172 @@
+﻿@* @page "/registro-asociacion" *@
+@* <EditForm Model="@AModel" OnValidSubmit="@HandleValidSubmit"> *@
+@*     <DataAnnotationsValidator /> *@
+@*     <ValidationSummary Class="alert alert-danger mb-3" /> *@
+@* *@
+@*     @if (!string.IsNullOrEmpty(MensajeExito)) *@
+@*     { *@
+@*         <div class="alert alert-success">@MensajeExito</div> *@
+@*     } *@
+@* *@
+@*     @if (!string.IsNullOrEmpty(MensajeError)) *@
+@*     { *@
+@*         <div class="alert alert-danger">@MensajeError</div> *@
+@*     } *@
+@* *@
+@*     <h3 class="mb-4">Registro de Asociación sin Fines de Lucro</h3> *@
+@* *@
+@*     <!-- DATOS DE LA ASOCIACIÓN --> *@
+@*     <fieldset class="border p-3 mb-4"> *@
+@*         <legend class="w-auto px-2">Información de la Asociación</legend> *@
+@*         <div class="row"> *@
+@*             <div class="col-md-8 mb-3"> *@
+@*                 <label class="form-label">Nombre de la Asociación *</label> *@
+@*                 <InputText @bind-Value="AModel.NombreAsociacion" class="form-control" /> *@
+@*                 <ValidationMessage For="@(() => AModel.NombreAsociacion)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-md-4 mb-3"> *@
+@*                 <label class="form-label">Folio *</label> *@
+@*                 <InputNumber @bind-Value="AModel.Folio" class="form-control" TValue="int"/> *@
+@*                 <ValidationMessage For="@(() => AModel.Folio)" class="text-danger small" /> *@
+@*             </div> *@
+@*         </div> *@
+@* *@
+@*         <div class="mb-3"> *@
+@*             <label class="form-label">Actividad de la Asociación *</label> *@
+@*             <InputText @bind-Value="AModel.Actividad" class="form-control" /> *@
+@*             <small class="form-text text-muted">Describa brevemente la actividad que realiza la asociación</small> *@
+@*             <ValidationMessage For="@(() => AModel.Actividad)" class="text-danger small" /> *@
+@*         </div> *@
+@*     </fieldset> *@
+@* *@
+@*     <!-- REPRESENTANTE LEGAL --> *@
+@*     <fieldset class="border p-3 mb-4"> *@
+@*         <legend class="w-auto px-2">Representante Legal</legend> *@
+@*         <div class="row"> *@
+@*             <div class="col-md-6 mb-3"> *@
+@*                 <label class="form-label">Nombre *</label> *@
+@*                 <InputText @bind-Value="AModel.NombreRepLegal" class="form-control" /> *@
+@*                 <ValidationMessage For="@(() => AModel.NombreRepLegal)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-md-6 mb-3"> *@
+@*                 <label class="form-label">Cédula *</label> *@
+@*                 <InputText @bind-Value="AModel.CedulaRepLegal" class="form-control" /> *@
+@*                 <ValidationMessage For="@(() => AModel.CedulaRepLegal)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-md-6 mb-3"> *@
+@*                 <label class="form-label">Cargo *</label> *@
+@*                 <InputText @bind-Value="AModel.CargoRepLegal" class="form-control" readonly /> *@
+@*                 <small class="form-text text-muted">El cargo del representante legal siempre es Presidente</small> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-md-6 mb-3"> *@
+@*                 <label class="form-label">Teléfono *</label> *@
+@*                 <InputText @bind-Value="AModel.TelefonoRepLegal" class="form-control" /> *@
+@*                 <ValidationMessage For="@(() => AModel.TelefonoRepLegal)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-12 mb-3"> *@
+@*                 <label class="form-label">Dirección *</label> *@
+@*                 <InputText @bind-Value="AModel.DireccionRepLegal" class="form-control" /> *@
+@*                 <ValidationMessage For="@(() => AModel.DireccionRepLegal)" class="text-danger small" /> *@
+@*             </div> *@
+@*         </div> *@
+@*     </fieldset> *@
+@* *@
+@*     <!-- APODERADO LEGAL --> *@
+@*     <fieldset class="border p-3 mb-4"> *@
+@*         <legend class="w-auto px-2">Apoderado Legal</legend> *@
+@*         <div class="row"> *@
+@*             <div class="col-md-6 mb-3"> *@
+@*                 <label class="form-label">Nombre *</label> *@
+@*                 <InputText @bind-Value="AModel.NombreApoAbogado" class="form-control" /> *@
+@*                 <ValidationMessage For="@(() => AModel.NombreApoAbogado)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-md-6 mb-3"> *@
+@*                 <label class="form-label">Cédula *</label> *@
+@*                 <InputText @bind-Value="AModel.CedulaApoAbogado" class="form-control" /> *@
+@*                 <ValidationMessage For="@(() => AModel.CedulaApoAbogado)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-md-6 mb-3"> *@
+@*                 <label class="form-label">Teléfono *</label> *@
+@*                 <InputText @bind-Value="AModel.TelefonoApoAbogado" class="form-control" /> *@
+@*                 <ValidationMessage For="@(() => AModel.TelefonoApoAbogado)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-md-6 mb-3"> *@
+@*                 <label class="form-label">Correo *</label> *@
+@*                 <InputText @bind-Value="AModel.CorreoApoAbogado" class="form-control" type="email" /> *@
+@*                 <ValidationMessage For="@(() => AModel.CorreoApoAbogado)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-12 mb-3"> *@
+@*                 <label class="form-label">Dirección *</label> *@
+@*                 <InputText @bind-Value="AModel.DireccionApoAbogado" class="form-control" /> *@
+@*                 <ValidationMessage For="@(() => AModel.DireccionApoAbogado)" class="text-danger small" /> *@
+@*             </div> *@
+@* *@
+@*             <div class="col-12 mb-3"> *@
+@*                 <div class="form-check"> *@
+@*                     <InputCheckbox @bind-Value="AModel.PerteneceAFirma" class="form-check-input" /> *@
+@*                     <label class="form-check-label">¿El apoderado pertenece a una firma de abogados?</label> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@* *@
+@*         @if (AModel.PerteneceAFirma) *@
+@*         { *@
+@*             <div class="mt-4 pt-3 border-top"> *@
+@*                 <h5>Firma de Abogados</h5> *@
+@*                 <div class="row mt-3"> *@
+@*                     <div class="col-md-6 mb-3"> *@
+@*                         <label class="form-label">Nombre de la Firma *</label> *@
+@*                         <InputText @bind-Value="AModel.NombreFirma" class="form-control" /> *@
+@*                         <ValidationMessage For="@(() => AModel.NombreFirma)" class="text-danger small" /> *@
+@*                     </div> *@
+@* *@
+@*                     <div class="col-md-6 mb-3"> *@
+@*                         <label class="form-label">Correo de la Firma *</label> *@
+@*                         <InputText @bind-Value="AModel.CorreoFirma" class="form-control" type="email" /> *@
+@*                         <ValidationMessage For="@(() => AModel.CorreoFirma)" class="text-danger small" /> *@
+@*                     </div> *@
+@* *@
+@*                     <div class="col-md-6 mb-3"> *@
+@*                         <label class="form-label">Teléfono de la Firma *</label> *@
+@*                         <InputText @bind-Value="AModel.TelefonoFirma" class="form-control" /> *@
+@*                         <ValidationMessage For="@(() => AModel.TelefonoFirma)" class="text-danger small" /> *@
+@*                     </div> *@
+@* *@
+@*                     <div class="col-12 mb-3"> *@
+@*                         <label class="form-label">Dirección de la Firma *</label> *@
+@*                         <InputText @bind-Value="AModel.DireccionFirma" class="form-control" /> *@
+@*                         <ValidationMessage For="@(() => AModel.DireccionFirma)" class="text-danger small" /> *@
+@*                     </div> *@
+@*                 </div> *@
+@*             </div> *@
+@*         } *@
+@*     </fieldset> *@
+@* *@
+@*     <!-- Archivos --> *@
+@*     <div class="mt-4"> *@
+@*         <label class="form-label fw-semibold">Resolución</label> *@
+@*         <InputFile OnChange="@((e) => AModel.ResolucionArchivo = e.File)" class="form-control" /> *@
+@*     </div> *@
+@*     <div class="mt-3"> *@
+@*         <label class="form-label fw-semibold">Acta</label> *@
+@*         <InputFile OnChange="@((e) => AModel.ActaArchivo = e.File)" class="form-control" /> *@
+@*     </div> *@
+@* *@
+@*     <div class="d-grid gap-2 d-md-flex justify-content-md-end"> *@
+@*         <button type="submit" class="btn btn-primary" disabled="@IsSubmitting"> *@
+@*             @(IsSubmitting ? "Registrando..." : "Registrar Asociación") *@
+@*         </button> *@
+@*         <button type="button" class="btn btn-secondary" @onclick="Cancelar" disabled="@IsSubmitting"> *@
+@*             Cancelar *@
+@*         </button> *@
+@*     </div> *@
+@* </EditForm> *@
