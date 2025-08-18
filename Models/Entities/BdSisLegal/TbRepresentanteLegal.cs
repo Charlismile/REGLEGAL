@@ -17,5 +17,7 @@ public partial class TbRepresentanteLegal
 
     public string? DireccionRepLegal { get; set; }
 
+    public string? ApellidoRepLegal { get; set; }
+
     public virtual ICollection<TbAsociacion> TbAsociacion { get; set; } = new List<TbAsociacion>();
 }

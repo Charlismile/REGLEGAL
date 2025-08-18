@@ -74,6 +74,7 @@ public partial class DbContextLegal : DbContext
         {
             entity.HasKey(e => e.ApoAbogadoId).HasName("PK__TbApoder__424F7A70EBE2E5E9");
 
+            entity.Property(e => e.ApellidoApoAbogado).HasMaxLength(200);
             entity.Property(e => e.CedulaApoAbogado)
                 .HasMaxLength(20)
                 .IsUnicode(false);
@@ -198,6 +199,7 @@ public partial class DbContextLegal : DbContext
             entity.HasIndex(e => e.DcomiteId, "IX_TbDatosMiembros_DcomiteId");
 
             entity.Property(e => e.DmiembroId).HasColumnName("DMiembroId");
+            entity.Property(e => e.ApellidoMiembro).HasMaxLength(200);
             entity.Property(e => e.CedulaMiembro)
                 .HasMaxLength(20)
                 .IsUnicode(false);
@@ -325,9 +327,9 @@ public partial class DbContextLegal : DbContext
 
             entity.Property(e => e.NombreProvincia).HasMaxLength(100);
 
-            // entity.HasOne(d => d.RegionSalud).WithMany(p => p.TbProvincia)
-            //     .HasForeignKey(d => d.RegionSaludId)
-            //     .HasConstraintName("FK_Provincia_RegionSalud");
+            entity.HasOne(d => d.RegionSalud).WithMany(p => p.TbProvincia)
+                .HasForeignKey(d => d.RegionSaludId)
+                .HasConstraintName("FK_Provincia_RegionSalud");
         });
 
         modelBuilder.Entity<TbRegSecuencia>(entity =>
@@ -348,6 +350,7 @@ public partial class DbContextLegal : DbContext
         {
             entity.HasKey(e => e.RepLegalId).HasName("PK__TbRepres__4E77DD119801C2BF");
 
+            entity.Property(e => e.ApellidoRepLegal).HasMaxLength(200);
             entity.Property(e => e.CargoRepLegal).HasMaxLength(100);
             entity.Property(e => e.CedulaRepLegal)
                 .HasMaxLength(20)

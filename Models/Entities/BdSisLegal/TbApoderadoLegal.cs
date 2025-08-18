@@ -19,6 +19,8 @@ public partial class TbApoderadoLegal
 
     public int? ApoderadoFirmaId { get; set; }
 
+    public string? ApellidoApoAbogado { get; set; }
+
     public virtual TbApoderadoFirma? ApoderadoFirma { get; set; }
 
     public virtual ICollection<TbAsociacion> TbAsociacion { get; set; } = new List<TbAsociacion>();

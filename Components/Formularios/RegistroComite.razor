@@ -1,310 +1,310 @@
-﻿@* @page "/registro-comite" *@
-@* @using REGISTROLEGAL.Models.LegalModels *@
-@* *@
-@* <div class="card-body"> *@
-@* <EditForm Model="@CModel" OnValidSubmit="@HandleValidSubmit"> *@
-@*     <DataAnnotationsValidator /> *@
-@*     <ValidationSummary Class="alert alert-danger mb-3" /> *@
-@* *@
-@*     @if (!string.IsNullOrEmpty(MensajeExito)) *@
-@*     { *@
-@*         <div class="alert alert-success">@MensajeExito</div> *@
-@*     } *@
-@* *@
-@*     @if (!string.IsNullOrEmpty(MensajeError)) *@
-@*     { *@
-@*         <div class="alert alert-danger">@MensajeError</div> *@
-@*     } *@
-@* *@
-@*     <h3 class="mb-4">Registro de Comité de Salud</h3> *@
-@* *@
-@*     <!-- DATOS DEL COMITÉ --> *@
-@*     <fieldset class="border p-3 mb-4"> *@
-@*         <legend class="w-auto px-2">Información del Comité</legend> *@
-@*         <div class="mb-3"> *@
-@*             <label class="form-label">Nombre del Comité de Salud *</label> *@
-@*             <InputText @bind-Value="CModel.NombreComiteSalud" class="form-control" /> *@
-@*             <ValidationMessage For="@(() => CModel.NombreComiteSalud)" class="text-danger small" /> *@
-@*         </div> *@
-@* *@
-@*         <div class="mb-3"> *@
-@*             <label class="form-label">Comunidad</label> *@
-@*             <InputText @bind-Value="CModel.Comunidad" class="form-control" /> *@
-@*         </div> *@
-@*     </fieldset> *@
-@* *@
-@*     <!-- UBICACIÓN GEOGRÁFICA --> *@
-@*     <fieldset class="border p-3 mb-4"> *@
-@*         <legend class="w-auto px-2">Ubicación Geográfica</legend> *@
-@*         <div class="card-body"> *@
-@*             <div class="row g-3"> *@
-@*                 <!-- Región de Salud --> *@
-@*                 <div class="col-sm-3"> *@
-@*                     <label class="form-label">Región de salud</label> *@
-@*                     <InputSelect TValue="int?" class="form-select" *@
-@*                                  @bind-Value="@CModel.RegionSaludId"> *@
-@*                         <option value="">--Seleccione--</option> *@
-@*                         @foreach (var x in comiteRegioneslist) *@
-@*                         { *@
-@*                             <option value="@x.Id">@x.Name</option> *@
-@*                         } *@
-@*                     </InputSelect> *@
-@*                     <ValidationMessage For="@(() => CModel.RegionSaludId)" class="text-danger"/> *@
-@*                 </div> *@
-@* *@
-@*                 <!-- Provincia --> *@
-@*                 <div class="col-sm-3"> *@
-@*                     <label class="form-label">Provincia</label> *@
-@*                     <InputSelect TValue="int?" class="form-select" *@
-@*                                  Value="@CModel.ProvinciaId" *@
-@*                                  ValueChanged="@(async (int? ProvinciaId) => await comiteProvinciaChanged(ProvinciaId ?? 0))" *@
-@*                                  ValueExpression="@(() => CModel.ProvinciaId)"> *@
-@*                         <option value="">--Seleccione--</option> *@
-@*                         @foreach (var x in comiteProvinciaList) *@
-@*                         { *@
-@*                             <option value="@x.Id">@x.Name</option> *@
-@*                         } *@
-@*                     </InputSelect> *@
-@*                     <ValidationMessage For="@(() => CModel.ProvinciaId)" class="text-danger"/> *@
-@*                 </div> *@
-@* *@
-@*                 <!-- Distrito --> *@
-@*                 <div class="col-sm-3"> *@
-@*                     <label class="form-label">Distrito</label> *@
-@*                     <InputSelect TValue="int?" class="form-select" *@
-@*                                  Value="@CModel.DistritoId" *@
-@*                                  ValueChanged="@(async (int? DistritoId) => await comiteDistritoChanged(DistritoId ?? 0))" *@
-@*                                  ValueExpression="@(() => CModel.DistritoId)"> *@
-@*                         <option value="">--Seleccione--</option> *@
-@*                         @foreach (var x in comiteDistritolist) *@
-@*                         { *@
-@*                             <option value="@x.Id">@x.Name</option> *@
-@*                         } *@
-@*                     </InputSelect> *@
-@*                     <ValidationMessage For="@(() => CModel.DistritoId)" class="text-danger"/> *@
-@*                 </div> *@
-@* *@
-@*                 <!-- Corregimiento --> *@
-@*                 <div class="col-sm-3"> *@
-@*                     <label class="form-label">Corregimiento</label> *@
-@*                     <InputSelect TValue="int?" class="form-select" *@
-@*                                  @bind-Value="@CModel.CorregimientoId"> *@
-@*                         <option value="">--Seleccione--</option> *@
-@*                         @foreach (var x in comiteCorregimientolist) *@
-@*                         { *@
-@*                             <option value="@x.Id">@x.Name</option> *@
-@*                         } *@
-@*                     </InputSelect> *@
-@*                     <ValidationMessage For="@(() => CModel.CorregimientoId)" class="text-danger"/> *@
-@*                 </div> *@
-@*             </div> *@
-@*         </div> *@
-@*     </fieldset> *@
-@* *@
-@* *@
-@*     <!-- TIPO DE TRÁMITE --> *@
-@* <div class="col-12"> *@
-@*     <label class="form-label">Seleccione tipo de trámite</label> *@
-@*     <div class="d-flex gap-4 align-items-center"> *@
-@*         <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum"> *@
-@*             <div class="form-check form-check-inline"> *@
-@*                 <InputRadio class="form-check-input" Value="TipoTramite.Personeria" id="Personeria" /> *@
-@*                 <label class="form-check-label" for="Personeria">Personería</label> *@
-@*             </div> *@
-@*             <div class="form-check form-check-inline"> *@
-@*                 <InputRadio class="form-check-input" Value="TipoTramite.CambioDirectiva" id="Directiva" /> *@
-@*                 <label class="form-check-label" for="Directiva">Cambio de Junta Directiva</label> *@
-@*             </div> *@
-@*             <div class="form-check form-check-inline"> *@
-@*                 <InputRadio class="form-check-input" Value="TipoTramite.JuntaInterventora" id="Interventora" /> *@
-@*                 <label class="form-check-label" for="Interventora">Junta Interventora</label> *@
-@*             </div> *@
-@*         </InputRadioGroup> *@
-@*         <ValidationMessage For="@(() => CModel.TipoTramiteEnum)" /> *@
-@*     </div> *@
-@* </div> *@
-@* *@
-@* <!-- PERSONERÍA: Creación inicial del comité --> *@
-@* @if (CModel.TipoTramiteEnum == TipoTramite.Personeria) *@
-@* { *@
-@*     <div class="col-12 mt-3"> *@
-@*         <h5>Junta Directiva (creación inicial - 7 miembros)</h5> *@
-@*         <p class="text-muted"><small>Complete los 7 cargos principales del comité.</small></p> *@
-@* *@
-@*         @for (int i = 0; i < CModel.NombreMiembro.Count; i++) *@
-@*         { *@
-@*             <div class="row mb-2 align-items-center"> *@
-@*                 <div class="col-sm-4"> *@
-@*                     <InputText class="form-control form-control-sm" *@
-@*                                @bind-Value="CModel.Miembros[i].NombreMiembro" *@
-@*                                placeholder="Nombre del miembro" /> *@
-@*                     <ValidationMessage For="@(() => CModel.Miembros[i].NombreMiembro)" /> *@
-@*                 </div> *@
-@*                 <div class="col-sm-3"> *@
-@*                     <InputText class="form-control form-control-sm" *@
-@*                                @bind-Value="CModel.Miembros[i].CedulaMiembro" *@
-@*                                placeholder="Cédula (8 dígitos)" /> *@
-@*                     <ValidationMessage For="@(() => CModel.Miembros[i].CedulaMiembro)" /> *@
-@*                 </div> *@
-@*                 <div class="col-sm-4"> *@
-@*                     <InputSelect class="form-select form-select-sm" *@
-@*                                  @bind-Value="CModel.Miembros[i].CargoId"> *@
-@*                         <option value="">-- Seleccione cargo --</option> *@
-@*                         @foreach (var cargo in Cargos) *@
-@*                         { *@
-@*                             <option value="@cargo.Id">@cargo.Nombre</option> *@
-@*                         } *@
-@*                     </InputSelect> *@
-@*                     @if (CModel.Miembros[i].CargoId == 0) *@
-@*                     { *@
-@*                         <div class="text-danger small">Requerido</div> *@
-@*                     } *@
-@*                 </div> *@
-@*                 <div class="col-sm-1"> *@
-@*                     <button class="btn btn-sm btn-danger" @onclick="() => CModel.Miembros.RemoveAt(i)">✖</button> *@
-@*                 </div> *@
-@*             </div> *@
-@*         } *@
-@* *@
-@*         @if (CModel.Miembros.Count < 7) *@
-@*         { *@
-@*             <button class="btn btn-sm btn-outline-primary" @onclick="AgregarMiembroVacio"> *@
-@*                 + Agregar Miembro *@
-@*             </button> *@
-@*         } *@
-@*     </div> *@
-@* *@
-@*     <div class="col-12 mt-3"> *@
-@*         <label class="form-label">Fecha de Creación del Comité</label> *@
-@*         <InputDate class="form-control" @bind-Value="CModel.CreadaEn" /> *@
-@*         <ValidationMessage For="@(() => CModel.)" /> *@
-@*     </div> *@
-@* *@
-@*     <div class="col-12 mt-3"> *@
-@*         <label class="form-label">Fecha de Elección de la Junta Directiva</label> *@
-@*         <InputDate class="form-control" @bind-Value="CModel.CreadaEn" /> *@
-@*         <ValidationMessage For="@(() => CModel.CreadaEn)" /> *@
-@*     </div> *@
-@* } *@
-@* *@
-@* <!-- CAMBIO DE JUNTA DIRECTIVA --> *@
-@* @if (CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva) *@
-@* { *@
-@*     <div class="col-12 mt-3"> *@
-@*         <h5>Cambio de Junta Directiva (edición)</h5> *@
-@*         <p class="text-muted"><small>Actualice los miembros de la junta directiva.</small></p> *@
-@* *@
-@*         @for (int i = 0; i < CModel.Miembros.Count; i++) *@
-@*         { *@
-@*             <div class="row mb-2 align-items-center"> *@
-@*                 <div class="col-sm-4"> *@
-@*                     <InputText class="form-control form-control-sm" *@
-@*                                @bind-Value="CModel.Miembros[i].NombreMiembro" *@
-@*                                placeholder="Nombre" /> *@
-@*                     <ValidationMessage For="@(() => CModel.Miembros[i].NombreMiembro)" /> *@
-@*                 </div> *@
-@*                 <div class="col-sm-3"> *@
-@*                     <InputText class="form-control form-control-sm" *@
-@*                                @bind-Value="CModel.Miembros[i].CedulaMiembro" *@
-@*                                placeholder="Cédula" /> *@
-@*                     <ValidationMessage For="@(() => CModel.Miembros[i].CedulaMiembro)" /> *@
-@*                 </div> *@
-@*                 <div class="col-sm-4"> *@
-@*                     <InputSelect class="form-select form-select-sm" *@
-@*                                  @bind-Value="CModel.Miembros[i].CargoId"> *@
-@*                         <option value="">-- Cargo --</option> *@
-@*                         @foreach (var cargo in Cargos) *@
-@*                         { *@
-@*                             <option value="@cargo.Id">@cargo.Nombre</option> *@
-@*                         } *@
-@*                     </InputSelect> *@
-@*                     @if (CModel.Miembros[i].CargoId == 0) *@
-@*                     { *@
-@*                         <div class="text-danger small">Requerido</div> *@
-@*                     } *@
-@*                 </div> *@
-@*                 <div class="col-sm-1"> *@
-@*                     <button class="btn btn-sm btn-secondary" @onclick="() => CModel.Miembros[i] = new MiembroModel()"> *@
-@*                         🗙 *@
-@*                     </button> *@
-@*                 </div> *@
-@*             </div> *@
-@*         } *@
-@* *@
-@*         @if (CModel.Miembros.Count < 7) *@
-@*         { *@
-@*             <button class="btn btn-sm btn-outline-primary" @onclick="AgregarMiembroVacio"> *@
-@*                 + Agregar Miembro *@
-@*             </button> *@
-@*         } *@
-@*     </div> *@
-@* *@
-@*     <div class="col-12 mt-3"> *@
-@*         <label class="form-label">Fecha de Elección de la Nueva Junta</label> *@
-@*         <InputDate class="form-control" @bind-Value="CModel.FechaEleccion" /> *@
-@*         <ValidationMessage For="@(() => CModel.FechaEleccion)" /> *@
-@*     </div> *@
-@* } *@
-@* *@
-@* <!-- JUNTA INTERVENTORA --> *@
-@* @if (CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora) *@
-@* { *@
-@*     <div class="col-12 mt-3"> *@
-@*         <h5>Junta Interventora (máximo 2 miembros)</h5> *@
-@*         <p class="text-muted"><small>Presidente y/o Tesorero(a) del comité.</small></p> *@
-@* *@
-@*         @for (int i = 0; i < CModel.MiembrosInterventores.Count; i++) *@
-@*         { *@
-@*             <div class="row mb-2 align-items-center"> *@
-@*                 <div class="col-sm-4"> *@
-@*                     <InputText class="form-control form-control-sm" *@
-@*                                @bind-Value="CModel.MiembrosInterventores[i].NombreMiembro" *@
-@*                                placeholder="Nombre" /> *@
-@*                     <ValidationMessage For="@(() => CModel.MiembrosInterventores[i].NombreMiembro)" /> *@
-@*                 </div> *@
-@*                 <div class="col-sm-3"> *@
-@*                     <InputText class="form-control form-control-sm" *@
-@*                                @bind-Value="CModel.MiembrosInterventores[i].CedulaMiembro" *@
-@*                                placeholder="Cédula" /> *@
-@*                     <ValidationMessage For="@(() => CModel.MiembrosInterventores[i].CedulaMiembro)" /> *@
-@*                 </div> *@
-@*                 <div class="col-sm-4"> *@
-@*                     <InputSelect class="form-select form-select-sm" *@
-@*                                  @bind-Value="CModel.MiembrosInterventores[i].CargoId"> *@
-@*                         <option value="">-- Cargo --</option> *@
-@*                         <option value="1">Presidente</option> *@
-@*                         <option value="4">Tesorero(a)</option> *@
-@*                     </InputSelect> *@
-@*                 </div> *@
-@*                 <div class="col-sm-1"> *@
-@*                     <button class="btn btn-sm btn-danger" @onclick="() => CModel.MiembrosInterventores.RemoveAt(i)">✖</button> *@
-@*                 </div> *@
-@*             </div> *@
-@*         } *@
-@* *@
-@*         @if (CModel.MiembrosInterventores.Count < 2) *@
-@*         { *@
-@*             <button class="btn btn-sm btn-outline-primary" @onclick="() => CModel.MiembrosInterventores.Add(new MiembroModel())"> *@
-@*                 + Agregar Interventor *@
-@*             </button> *@
-@*         } *@
-@*     </div> *@
-@* *@
-@*     <div class="col-12 mt-3"> *@
-@*         <label class="form-label">Fecha de Elección de la Junta Interventora</label> *@
-@*         <InputDate class="form-control" @bind-Value="CModel.FechaEleccion" /> *@
-@*         <ValidationMessage For="@(() => CModel.FechaEleccion)" /> *@
-@*     </div> *@
-@* } *@
-@* *@
-@* <!-- DOCUMENTO LEGAL (RESOLUCIÓN) --> *@
-@* <div class="col-12 mt-3"> *@
-@*     <label class="form-label">Resolución (Documentación Legal)</label> *@
-@*     <InputFile class="form-control" OnChange="OnFileSelected" /> *@
-@*     <small class="form-text text-muted">Suba el documento oficial que respalda este trámite (PDF, DOC, etc.).</small> *@
-@* </div> *@
-@* </EditForm> *@
-@* </div> *@
-@* @code { *@
-@* *@
-@* } *@
+﻿@page "/registro-comite"
+@using REGISTROLEGAL.Models.LegalModels
+
+<div class="card-body">
+<EditForm Model="@CModel" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary Class="alert alert-danger mb-3" />
+
+    @if (!string.IsNullOrEmpty(MensajeExito))
+    {
+        <div class="alert alert-success">@MensajeExito</div>
+    }
+
+    @if (!string.IsNullOrEmpty(MensajeError))
+    {
+        <div class="alert alert-danger">@MensajeError</div>
+    }
+
+    <h3 class="mb-4">Registro de Comité de Salud</h3>
+
+    <!-- DATOS DEL COMITÉ -->
+    <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">Información del Comité</legend>
+        <div class="mb-3">
+            <label class="form-label">Nombre del Comité de Salud *</label>
+            <InputText @bind-Value="CModel.NombreComiteSalud" class="form-control" />
+            <ValidationMessage For="@(() => CModel.NombreComiteSalud)" class="text-danger small" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Comunidad</label>
+            <InputText @bind-Value="CModel.Comunidad" class="form-control" />
+        </div>
+    </fieldset>
+
+    <!-- UBICACIÓN GEOGRÁFICA -->
+    <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">Ubicación Geográfica</legend>
+        <div class="card-body">
+            <div class="row g-3">
+                <!-- Región de Salud -->
+                <div class="col-sm-3">
+                    <label class="form-label">Región de salud</label>
+                    <InputSelect TValue="int?" class="form-select"
+                                 @bind-Value="@CModel.RegionSaludId">
+                        <option value="">--Seleccione--</option>
+                        @foreach (var x in comiteRegioneslist)
+                        {
+                            <option value="@x.Id">@x.Name</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => CModel.RegionSaludId)" class="text-danger"/>
+                </div>
+
+                <!-- Provincia -->
+                <div class="col-sm-3">
+                    <label class="form-label">Provincia</label>
+                    <InputSelect TValue="int?" class="form-select"
+                                 Value="@CModel.ProvinciaId"
+                                 ValueChanged="@(async (int? ProvinciaId) => await comiteProvinciaChanged(ProvinciaId ?? 0))"
+                                 ValueExpression="@(() => CModel.ProvinciaId)">
+                        <option value="">--Seleccione--</option>
+                        @foreach (var x in comiteProvinciaList)
+                        {
+                            <option value="@x.Id">@x.Name</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => CModel.ProvinciaId)" class="text-danger"/>
+                </div>
+
+                <!-- Distrito -->
+                <div class="col-sm-3">
+                    <label class="form-label">Distrito</label>
+                    <InputSelect TValue="int?" class="form-select"
+                                 Value="@CModel.DistritoId"
+                                 ValueChanged="@(async (int? DistritoId) => await comiteDistritoChanged(DistritoId ?? 0))"
+                                 ValueExpression="@(() => CModel.DistritoId)">
+                        <option value="">--Seleccione--</option>
+                        @foreach (var x in comiteDistritolist)
+                        {
+                            <option value="@x.Id">@x.Name</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => CModel.DistritoId)" class="text-danger"/>
+                </div>
+
+                <!-- Corregimiento -->
+                <div class="col-sm-3">
+                    <label class="form-label">Corregimiento</label>
+                    <InputSelect TValue="int?" class="form-select"
+                                 @bind-Value="@CModel.CorregimientoId">
+                        <option value="">--Seleccione--</option>
+                        @foreach (var x in comiteCorregimientolist)
+                        {
+                            <option value="@x.Id">@x.Name</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => CModel.CorregimientoId)" class="text-danger"/>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+
+    <!-- TIPO DE TRÁMITE -->
+<div class="col-12">
+    <label class="form-label">Seleccione tipo de trámite</label>
+    <div class="d-flex gap-4 align-items-center">
+        <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum">
+            <div class="form-check form-check-inline">
+                <InputRadio class="form-check-input" Value="TipoTramite.Personeria" id="Personeria" />
+                <label class="form-check-label" for="Personeria">Personería</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <InputRadio class="form-check-input" Value="TipoTramite.CambioDirectiva" id="Directiva" />
+                <label class="form-check-label" for="Directiva">Cambio de Junta Directiva</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <InputRadio class="form-check-input" Value="TipoTramite.JuntaInterventora" id="Interventora" />
+                <label class="form-check-label" for="Interventora">Junta Interventora</label>
+            </div>
+        </InputRadioGroup>
+        <ValidationMessage For="@(() => CModel.TipoTramiteEnum)" />
+    </div>
+</div>
+
+<!-- PERSONERÍA: Creación inicial del comité -->
+@if (CModel.TipoTramiteEnum == TipoTramite.Personeria)
+{
+    <div class="col-12 mt-3">
+        <h5>Junta Directiva (creación inicial - 7 miembros)</h5>
+        <p class="text-muted"><small>Complete los 7 cargos principales del comité.</small></p>
+
+        @for (int i = 0; i < CModel.Miembros.Count; i++)
+        {
+            <div class="row mb-2 align-items-center">
+                <div class="col-sm-4">
+                    <InputText class="form-control form-control-sm"
+                               @bind-Value="CModel.Miembros[i].NombreMiembro"
+                               placeholder="Nombre del miembro" />
+                    <ValidationMessage For="@(() => CModel.Miembros[i].NombreMiembro)" />
+                </div>
+                <div class="col-sm-3">
+                    <InputText class="form-control form-control-sm"
+                               @bind-Value="CModel.Miembros[i].CedulaMiembro"
+                               placeholder="Cédula (8 dígitos)" />
+                    <ValidationMessage For="@(() => CModel.Miembros[i].CedulaMiembro)" />
+                </div>
+                <div class="col-sm-4">
+                    <InputSelect class="form-select form-select-sm"
+                                 @bind-Value="CModel.Miembros[i].CargoId">
+                        <option value="">-- Seleccione cargo --</option>
+                        @foreach (var cargo in Cargos)
+                        {
+                            <option value="@cargo.Id">@cargo.Name</option>
+                        }
+                    </InputSelect>
+                    @if (CModel.Miembros[i].CargoId == 0)
+                    {
+                        <div class="text-danger small">Requerido</div>
+                    }
+                </div>
+                <div class="col-sm-1">
+                    <button class="btn btn-sm btn-danger" @onclick="() => CModel.Miembros.RemoveAt(i)">✖</button>
+                </div>
+            </div>
+        }
+
+        @if (CModel.Miembros.Count < 7)
+        {
+            <button class="btn btn-sm btn-outline-primary" @onclick="AgregarMiembroVacio">
+                + Agregar Miembro
+            </button>
+        }
+    </div>
+
+    <div class="col-12 mt-3">
+        <label class="form-label">Fecha de Creación del Comité</label>
+        <InputDate class="form-control" @bind-Value="CModel.CreadaEn" />
+        <ValidationMessage For="@(() => CModel.CreadaEn)" />
+    </div>
+
+    <div class="col-12 mt-3">
+        <label class="form-label">Fecha de Elección de la Junta Directiva</label>
+        <InputDate class="form-control" @bind-Value="CModelHistorial.FechaCambioCo" />
+        <ValidationMessage For="@(() => CModelHistorial.FechaCambioCo)" />
+    </div>
+}
+
+<!-- CAMBIO DE JUNTA DIRECTIVA -->
+@if (CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva)
+{
+    <div class="col-12 mt-3">
+        <h5>Cambio de Junta Directiva (edición)</h5>
+        <p class="text-muted"><small>Actualice los miembros de la junta directiva.</small></p>
+
+        @for (int i = 0; i < CModel.Miembros.Count; i++)
+        {
+            <div class="row mb-2 align-items-center">
+                <div class="col-sm-4">
+                    <InputText class="form-control form-control-sm"
+                               @bind-Value="CModel.Miembros[i].NombreMiembro"
+                               placeholder="Nombre" />
+                    <ValidationMessage For="@(() => CModel.Miembros[i].NombreMiembro)" />
+                </div>
+                <div class="col-sm-3">
+                    <InputText class="form-control form-control-sm"
+                               @bind-Value="CModel.Miembros[i].CedulaMiembro"
+                               placeholder="Cédula" />
+                    <ValidationMessage For="@(() => CModel.Miembros[i].CedulaMiembro)" />
+                </div>
+                <div class="col-sm-4">
+                    <InputSelect class="form-select form-select-sm"
+                                 @bind-Value="CModel.Miembros[i].CargoId">
+                        <option value="">-- Cargo --</option>
+                        @foreach (var cargo in Cargos)
+                        {
+                            <option value="@cargo.Id">@cargo.Name</option>
+                        }
+                    </InputSelect>
+                    @if (CModel.Miembros[i].CargoId == 0)
+                    {
+                        <div class="text-danger small">Requerido</div>
+                    }
+                </div>
+                <div class="col-sm-1">
+                    <button class="btn btn-sm btn-secondary" @onclick="() => CModel.Miembros[i] = new MiembroComiteModel()">
+                        🗙
+                    </button>
+                </div>
+            </div>
+        }
+
+        @if (CModel.Miembros.Count < 7)
+        {
+            <button class="btn btn-sm btn-outline-primary" @onclick="AgregarMiembroVacio">
+                + Agregar Miembro
+            </button>
+        }
+    </div>
+
+    <div class="col-12 mt-3">
+        <label class="form-label">Fecha de Elección de la Nueva Junta</label>
+        <InputDate class="form-control" @bind-Value="CModel.CreadaEn" />
+        <ValidationMessage For="@(() => CModel.CreadaEn)" />
+    </div>
+}
+
+<!-- JUNTA INTERVENTORA -->
+@if (CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
+{
+    <div class="col-12 mt-3">
+        <h5>Junta Interventora (máximo 2 miembros)</h5>
+        <p class="text-muted"><small>Presidente y/o Tesorero(a) del comité.</small></p>
+
+        @for (int i = 0; i < CModel.MiembrosInterventores.Count; i++)
+        {
+            <div class="row mb-2 align-items-center">
+                <div class="col-sm-4">
+                    <InputText class="form-control form-control-sm"
+                               @bind-Value="CModel.MiembrosInterventores[i].NombreMiembro"
+                               placeholder="Nombre" />
+                    <ValidationMessage For="@(() => CModel.MiembrosInterventores[i].NombreMiembro)" />
+                </div>
+                <div class="col-sm-3">
+                    <InputText class="form-control form-control-sm"
+                               @bind-Value="CModel.MiembrosInterventores[i].CedulaMiembro"
+                               placeholder="Cédula" />
+                    <ValidationMessage For="@(() => CModel.MiembrosInterventores[i].CedulaMiembro)" />
+                </div>
+                <div class="col-sm-4">
+                    <InputSelect class="form-select form-select-sm"
+                                 @bind-Value="CModel.MiembrosInterventores[i].CargoId">
+                        <option value="">-- Cargo --</option>
+                        <option value="1">Presidente</option>
+                        <option value="4">Tesorero(a)</option>
+                    </InputSelect>
+                </div>
+                <div class="col-sm-1">
+                    <button class="btn btn-sm btn-danger" @onclick="() => CModel.MiembrosInterventores.RemoveAt(i)">✖</button>
+                </div>
+            </div>
+        }
+
+        @if (CModel.MiembrosInterventores.Count < 2)
+        {
+            <button class="btn btn-sm btn-outline-primary" @onclick="() => CModel.MiembrosInterventores.Add(new MiembroComiteModel())">
+                + Agregar Interventor
+            </button>
+        }
+    </div>
+
+    <div class="col-12 mt-3">
+        <label class="form-label">Fecha de Elección de la Junta Interventora</label>
+        <InputDate class="form-control" @bind-Value="CModel.CreadaEn" />
+        <ValidationMessage For="@(() => CModel.CreadaEn)" />
+    </div>
+}
+
+<!-- DOCUMENTO LEGAL (RESOLUCIÓN) -->
+<div class="col-12 mt-3">
+    <label class="form-label">Resolución (Documentación Legal)</label>
+    <InputFile class="form-control" OnChange="OnFileSelected" />
+    <small class="form-text text-muted">Suba el documento oficial que respalda este trámite (PDF, DOC, etc.).</small>
+</div>
+</EditForm>
+</div>
+@code {
+
+}

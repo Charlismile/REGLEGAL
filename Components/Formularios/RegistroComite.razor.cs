@@ -16,6 +16,10 @@ public partial class RegistroComite : ComponentBase
 
     // Modelo principal
     private ComiteModel CModel { get; set; } = new();
+    
+    // Modelo para historial
+    private TbDetalleRegComiteHistorial CModelHistorial { get; set; } = new();
+
 
     // Mensajes de feedback
     private string MensajeExito { get; set; } = string.Empty;
@@ -54,6 +58,39 @@ public partial class RegistroComite : ComponentBase
         CModel.CorregimientoId = null;
     }
     
+    private async Task GuardarAsync()
+    {
+        // Mapear ComiteModel (DTO) -> Entidad EF
+        var entidadComite = new TbDetalleRegComite
+        {
+            // OJO: si ComiteId es identity/autonumérico, no lo asignes aquí
+            TipoTramiteId = CModel.NumeroTramite,
+            CreadaEn = CModel.CreadaEn,
+            CreadaPor = CModel.CreadaPor,
+            NumRegCoSecuencia = CModel.NumRegCoSecuencia,
+            NomRegCoAnio = CModel.NomRegCoAnio,
+            NumRegCoMes = CModel.NumRegCoMes,
+            NumRegCoCompleta = CModel.NumRegCoCompleta
+        };
+
+        // Guardar primero el comité (para obtener su Id)
+        _context.TbDetalleRegComite.Add(entidadComite);
+        await _context.SaveChangesAsync();
+
+        // Ahora mapeamos y guardamos el historial
+        var entidadHistorial = new TbDetalleRegComiteHistorial
+        {
+            ComiteId = entidadComite.ComiteId,   // FK
+            CoEstadoSolicitudId = CModelHistorial.CoEstadoSolicitudId,
+            ComentarioCo = CModelHistorial.ComentarioCo,
+            UsuarioRevisorCo = CModelHistorial.UsuarioRevisorCo,
+            FechaCambioCo = CModelHistorial.FechaCambioCo
+        };
+
+        _context.TbDetalleRegComiteHistorial.Add(entidadHistorial);
+        await _context.SaveChangesAsync();
+    }
+
 
     private async Task OnFileSelected(InputFileChangeEventArgs e)
     {
@@ -72,6 +109,10 @@ public partial class RegistroComite : ComponentBase
         return Task.CompletedTask;
     }
 
+    private void AgregarMiembroVacio()
+    {
+        CModel.Miembros.Add(new MiembroComiteModel());
+    }
     private void Cancelar()
     {
         Navigation.NavigateTo("/");
