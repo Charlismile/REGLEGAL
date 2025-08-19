@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace REGISTROLEGAL.Models.LegalModels;
 
@@ -44,4 +45,8 @@ public class ComiteModel
     public List<MiembroComiteModel> Miembros { get; set; } = new();
     
     public List<MiembroComiteModel> MiembrosInterventores { get; set; } = new();
+    
+    public List<ArchivoModel> Archivos { get; set; } = new();
+
+    public List<IBrowserFile> DocumentosSubir { get; set; } = new();
 }

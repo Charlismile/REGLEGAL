@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace REGISTROLEGAL.Models.LegalModels;
 
@@ -128,4 +129,9 @@ public class AsociacionModel
 
     public string CreadaPor { get; set; } = "";
 
+    
+    //listas
+    public List<ArchivoModel> Archivos { get; set; } = new();
+
+    public List<IBrowserFile> DocumentosSubir { get; set; } = new();
 }

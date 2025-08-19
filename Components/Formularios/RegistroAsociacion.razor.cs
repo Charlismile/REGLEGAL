@@ -28,95 +28,124 @@ public partial class RegistroAsociacion : ComponentBase
 
     private async Task CargarDocumentos(InputFileChangeEventArgs e)
     {
+        MensajeError = "";
         foreach (var file in e.GetMultipleFiles())
         {
-            // Validar tamaño (máximo 10 MB)
             if (file.Size > 10 * 1024 * 1024)
             {
-                MensajeError = $"El archivo {file.Name} excede el tamaño máximo de 10 MB.";
+                MensajeError += $"El archivo {file.Name} excede 10 MB.\n";
                 continue;
             }
 
-            // Validar tipo
             var extension = Path.GetExtension(file.Name).ToLower();
-            var permitidas = new[] { ".pdf", ".docx", ".jpg", ".png", ".jpeg" };
+            var permitidas = new[] { ".pdf", ".docx", ".jpg", ".jpeg", ".png" };
             if (!permitidas.Contains(extension))
             {
-                MensajeError = $"El archivo {file.Name} no tiene un formato permitido.";
+                MensajeError += $"El archivo {file.Name} no tiene formato permitido.\n";
                 continue;
             }
 
-            // AModel.DocumentosSubir.Add(file);
+            AModel.DocumentosSubir.Add(file);
         }
     }
 
     private void RemoverDocumento(int index)
     {
-        // if (index >= 0 && index < AModel.DocumentosSubir.Count)
-        // {
-        //     AModel.DocumentosSubir.RemoveAt(index);
-        // }
+        if (index >= 0 && index < AModel.DocumentosSubir.Count)
+            AModel.DocumentosSubir.RemoveAt(index);
     }
 
     private async Task HandleValidSubmit()
-    {
-        IsSubmitting = true;
-        MensajeError = "";
-        MensajeExito = "";
+{
+    IsSubmitting = true;
+    MensajeError = "";
+    MensajeExito = "";
 
-        // try
-        // {
-        //     // Validar que si pertenece a firma, todos los campos de firma estén completos
-        //     if (AModel.PerteneceAFirma)
-        //     {
-        //         if (string.IsNullOrWhiteSpace(AModel.NombreFirma))
-        //         {
-        //             MensajeError = "Debe ingresar el nombre de la firma de abogados.";
-        //             return;
-        //         }
-        //
-        //         if (string.IsNullOrWhiteSpace(AModel.CorreoFirma))
-        //         {
-        //             MensajeError = "Debe ingresar el correo de la firma de abogados.";
-        //             return;
-        //         }
-        //
-        //         if (string.IsNullOrWhiteSpace(AModel.TelefonoFirma))
-        //         {
-        //             MensajeError = "Debe ingresar el teléfono de la firma de abogados.";
-        //             return;
-        //         }
-        //
-        //         if (string.IsNullOrWhiteSpace(AModel.DireccionFirma))
-        //         {
-        //             MensajeError = "Debe ingresar la dirección de la firma de abogados.";
-        //             return;
-        //         }
-        //     }
-        // }
-        // ✅ CORRECTO: Usar la instancia inyectada del servicio
-        //     var resultado = await CommonServices.as(AModel);
-        //
-        //     if (resultado)
-        //     {
-        //         MensajeExito = "Asociación registrada con éxito.";
-        //         // ✅ CORRECTO: Usar NavigationManager inyectado
-        //         Navigation.NavigateTo("/asociaciones");
-        //     }
-        //     else
-        //     {
-        //         MensajeError = "Error al registrar la asociación. Por favor, intente nuevamente.";
-        //     }
-        // }
-        // catch (Exception ex)
-        // {
-        //     MensajeError = $"Error inesperado: {ex.Message}";
-        // }
-        // finally
-        // {
-        //     IsSubmitting = false;
-        // }
+    try
+    {
+        // Validación de firma de abogados
+        if (AModel.PerteneceAFirma)
+        {
+            if (string.IsNullOrWhiteSpace(AModel.NombreFirma) ||
+                string.IsNullOrWhiteSpace(AModel.CorreoFirma) ||
+                string.IsNullOrWhiteSpace(AModel.TelefonoFirma) ||
+                string.IsNullOrWhiteSpace(AModel.DireccionFirma))
+            {
+                MensajeError = "Complete todos los datos de la firma de abogados.";
+                return;
+            }
+        }
+
+        // Guardar Asociación en base de datos
+        var firma = new TbApoderadoFirma
+        {
+            NombreFirma = AModel.NombreFirma,
+            CorreoFirma = AModel.CorreoFirma,
+            TelefonoFirma = AModel.TelefonoFirma,
+            DireccionFirma = AModel.DireccionFirma
+        };
+
+        var apoderado = new TbApoderadoLegal
+        {
+            NombreApoAbogado = AModel.NombreApoAbogado,
+            CedulaApoAbogado = AModel.CedulaApoAbogado,
+            TelefonoApoAbogado = AModel.TelefonoApoAbogado,
+            CorreoApoAbogado = AModel.CorreoApoAbogado,
+            DireccionApoAbogado = AModel.DireccionApoAbogado,
+            ApoderadoFirma = firma
+        };
+
+        var asociacion = new TbAsociacion
+        {
+            NombreAsociacion = AModel.NombreAsociacion,
+            Actividad = AModel.Actividad,
+            Folio = AModel.Folio,
+            RepresentanteLegal = new TbRepresentanteLegal
+            {
+                NombreRepLegal = AModel.NombreRepLegal,
+                CedulaRepLegal = AModel.CedulaRepLegal,
+                CargoRepLegal = AModel.CargoRepLegal,
+                TelefonoRepLegal = AModel.TelefonoRepLegal,
+                DireccionRepLegal = AModel.DireccionRepLegal
+            },
+            ApoderadoLegal = apoderado
+        };
+
+        _context.TbAsociacion.Add(asociacion);
+        await _context.SaveChangesAsync();
+
+
+        // Guardar archivos
+        foreach (var archivo in AModel.DocumentosSubir)
+        {
+            var resultado = await _Commonservice.GuardarArchivoAsync(
+                archivo,
+                categoria: "DocumentosAsociacion",
+                asociacionId: _context.TbAsociacion.OrderByDescending(a => a.AsociacionId).First().AsociacionId
+            );
+
+            if (!resultado.ok)
+            {
+                MensajeError += resultado.mensaje + "\n";
+            }
+        }
+
+        if (string.IsNullOrEmpty(MensajeError))
+        {
+            MensajeExito = "Asociación registrada con éxito.";
+            Navigation.NavigateTo("/asociaciones");
+        }
     }
+    catch (Exception ex)
+    {
+        MensajeError = $"Error inesperado: {ex.Message}";
+    }
+    finally
+    {
+        IsSubmitting = false;
+    }
+}
+
 
 // ✅ CORRECTO: Usar NavigationManager inyectado
     private void Cancelar() => Navigation.NavigateTo("/asociaciones");
