@@ -1,10 +1,9 @@
 ﻿@implements IDisposable
-
 @inject NavigationManager NavigationManager
 
-<nav class="navbar navbar-expand-lg bg-gob-blue" data-bs-theme="dark">
+<nav class="navbar navbar-expand-lg bg-gob-blue" data-bs-theme="light">
     <div class="container">
-        <NavLink class="navbar-brand" href="" Match="NavLinkMatch.All">
+        <NavLink class="navbar-brand text-white" href="" Match="NavLinkMatch.All">
             <i class="fa-solid fa-house"></i> Inicio
         </NavLink>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -12,31 +11,59 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav mb-2 mb-lg-0">
                 <AuthorizeView>
-                    <NotAuthorized>
-                        <li class="nav-item">
-                            <NavLink class="nav-link active" href="/account/login" Match="NavLinkMatch.All">
-                                <i class="fa-solid fa-right-to-bracket me-1"></i> Acceder
-                            </NavLink>
-                        </li>
-                    </NotAuthorized>
                     <Authorized>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                               aria-expanded="false">
-                                Dropdown
+                            <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-list"></i> Registro
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li>
+                                    <NavLink class="dropdown-item" href="permisos-sanitarios-operacion">
+                                        <i class="fa-solid fa-certificate"></i> Comite
+                                    </NavLink>
+                                </li>
+                                <li><hr class="dropdown-divider"/></li>
+                                <li>
+                                    <NavLink class="dropdown-item" href="permisos-actividades-requisitos">
+                                        <i class="fa-solid fa-list-check"></i> Asociacion
+                                    </NavLink>
+                                </li>
                             </ul>
                         </li>
                     </Authorized>
                 </AuthorizeView>
             </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <AuthorizeView>
+                    <NotAuthorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link active text-white" href="/account/login" Match="NavLinkMatch.All">
+                                <i class="fa-solid fa-right-to-bracket me-1"></i> Acceder
+                            </NavLink>
+                        </li>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </ul>
         </div>
     </div>
 </nav>
+
+<!-- Estilos CSS necesarios para los submenús anidados -->
+<style>
+    .dropdown-submenu {
+        position: absolute;
+        left: 100%;
+        top: 0;
+        margin-top: -1px;
+    }
+    
+    .dropend:hover > .dropdown-menu {
+        display: block;
+    }
+</style>
 
 @code {
     private string? currentUrl;
@@ -57,5 +84,4 @@
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
-
 }

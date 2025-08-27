@@ -50,6 +50,8 @@ builder.Services.AddMapster();
 
 // Register custom services DESPUÉS de los DbContexts - CORREGIDO
 builder.Services.AddScoped<ICommon, CommonServices>();
+builder.Services.AddScoped<ILocalStorage, LocalStorageServices>();
+builder.Services.AddScoped<IDatabaseProvider, DatabaseProviderService>();
 
 // Identity Core
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

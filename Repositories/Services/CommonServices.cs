@@ -15,7 +15,8 @@ public class CommonServices : ICommon
     {
         _context = context;
     }
-    // servicios de subidad de archivos
+
+    #region archivos
     public async Task<(bool ok, string mensaje)> GuardarArchivoAsync(IBrowserFile archivo, string categoria, int? asociacionId = null, int? comiteId = null)
     {
         try
@@ -79,7 +80,9 @@ public class CommonServices : ICommon
             return (false, $"Error al guardar archivo: {ex.Message}");
         }
     }
+    #endregion
 
+    #region generales
     // servicios generales
  public async Task<List<ListModel>> GetRegiones()
     {
@@ -101,19 +104,22 @@ public class CommonServices : ICommon
         }
         return Lista;
     }
-    public async Task<List<ListModel>> GetProvincias()
+    
+    public async Task<List<ListModel>> GetProvincias(int RegionId)
     {
         List<ListModel> Lista = new List<ListModel>();
         try
         {
             using (var localContext = await _context.CreateDbContextAsync())
             {
-                Lista = await localContext.TbProvincia
+                Lista = await localContext.TbProvincia.Where(x => x.ProvinciaId == RegionId)
                     .Select(x => new ListModel()
                     {
                         Id = x.ProvinciaId,
                         Name = x.NombreProvincia ?? "",
                     }).ToListAsync();
+
+                Lista = Lista.OrderBy(x => x.Name).ToList();
             }
         }
         catch (Exception)
@@ -168,6 +174,7 @@ public class CommonServices : ICommon
         return Lista;
     }
 
+
     public async Task<List<ListModel>> GetCargos()
     {
         List<ListModel> Lista = new List<ListModel>();
@@ -193,4 +200,134 @@ public class CommonServices : ICommon
         }
         return Lista;
     }
+    #endregion
+
+    #region Comite
+    public async Task<(bool exito, string mensaje)> RegistrarComiteAsync(ComiteModel model, IBrowserFile archivoResolucion)
+{
+    using var context = await _context.CreateDbContextAsync();
+    using var transaction = await context.Database.BeginTransactionAsync();
+
+    try
+    {
+        var userId = "USR-TEMP"; // TOD0: reemplazar con usuario real
+        if (string.IsNullOrEmpty(userId))
+            return (false, "Usuario no autenticado.");
+
+        // Validaciones de miembros según trámite
+        if (model.TipoTramiteEnum == TipoTramite.Personeria && model.Miembros.Count != 7)
+            return (false, "Para Personería, se requieren exactamente 7 miembros.");
+
+        if (model.TipoTramiteEnum == TipoTramite.JuntaInterventora && model.MiembrosInterventores.Count > 2)
+            return (false, "La Junta Interventora solo puede tener hasta 2 miembros.");
+
+        // Secuencia
+        var anio = DateTime.Now.Year;
+        var mes = DateTime.Now.Month;
+        var secuenciaEntidadId = 2; // Comité
+        var secuencia = await context.TbRegSecuencia
+            .FirstOrDefaultAsync(s => s.EntidadId == secuenciaEntidadId && s.Anio == anio && s.Activo);
+
+        if (secuencia == null)
+            return (false, "No hay secuencia disponible para este año.");
+
+        var numSecuencia = secuencia.Numeracion;
+        secuencia.Numeracion++;
+        await context.SaveChangesAsync();
+
+        // DetalleRegComite
+        var tipoTramiteId = model.TipoTramiteEnum switch
+        {
+            TipoTramite.Personeria => 1,
+            TipoTramite.CambioDirectiva => 2,
+            TipoTramite.JuntaInterventora => 3,
+            _ => throw new ArgumentException("Tipo de trámite no válido")
+        };
+
+        var detalleReg = new TbDetalleRegComite
+        {
+            TipoTramiteId = tipoTramiteId,
+            CreadaEn = DateTime.Now,
+            CreadaPor = userId,
+            NumRegCoSecuencia = numSecuencia,
+            NomRegCoAnio = anio,
+            NumRegCoMes = mes
+        };
+
+        context.TbDetalleRegComite.Add(detalleReg);
+        await context.SaveChangesAsync();
+
+        // DatosComite
+        var datosComite = new TbDatosComite
+        {
+            NombreComiteSalud = model.NombreComiteSalud,
+            Comunidad = model.Comunidad,
+            RegionSaludId = model.RegionSaludId ?? 0,
+            ProvinciaId = model.ProvinciaId ?? 0,
+            DistritoId = model.DistritoId,
+            CorregimientoId = model.CorregimientoId,
+            DcomiteId = detalleReg.ComiteId // FK
+        };
+
+        context.TbDatosComite.Add(datosComite);
+        await context.SaveChangesAsync();
+
+        // Miembros
+        var miembros = model.TipoTramiteEnum == TipoTramite.JuntaInterventora
+            ? model.MiembrosInterventores
+            : model.Miembros;
+
+        foreach (var m in miembros)
+        {
+            context.TbDatosMiembros.Add(new TbDatosMiembros
+            {
+                NombreMiembro = m.NombreMiembro,
+                CedulaMiembro = m.CedulaMiembro,
+                CargoId = m.CargoId,
+                DcomiteId = datosComite.DcomiteId
+            });
+        }
+        await context.SaveChangesAsync();
+
+        // Archivo
+        if (archivoResolucion != null)
+        {
+            var (archivoOk, archivoMsg) = await GuardarArchivoAsync(
+                archivoResolucion,
+                "Resolución",
+                comiteId: detalleReg.ComiteId
+            );
+
+            if (!archivoOk)
+            {
+                await transaction.RollbackAsync();
+                return (false, "Error al guardar el archivo: " + archivoMsg);
+            }
+        }
+
+        // Historial
+        var historial = new TbDetalleRegComiteHistorial
+        {
+            ComiteId = detalleReg.ComiteId,
+            CoEstadoSolicitudId = 1,
+            FechaCambioCo = DateTime.Now,
+            UsuarioRevisorCo = userId,
+            ComentarioCo = "Registro inicial del comité"
+        };
+
+        context.TbDetalleRegComiteHistorial.Add(historial);
+        await context.SaveChangesAsync();
+
+        await transaction.CommitAsync();
+
+        return (true, $"Comité registrado con éxito. Número de registro: {numSecuencia}/{anio}/{mes}");
+    }
+    catch (Exception ex)
+    {
+        await transaction.RollbackAsync();
+        return (false, "Error interno al registrar el comité: " + ex.Message);
+    }
+}
+
+    #endregion
 }

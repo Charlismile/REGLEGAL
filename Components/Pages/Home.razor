@@ -1,90 +1,18 @@
 ﻿@page "/"
+@using REGISTROLEGAL.Components.Layout
+@layout EmptyLayout
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
 
-<PageTitle>Sistema Legal - Inicio</PageTitle>
-
-<div class="min-vh-100 d-flex align-items-center bg-light">
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <img src="favicon.png" alt="Logo" class="mb-4" style="height: 80px;">
-            <h1 class="display-5 fw-bold text-primary">Sistema de Asesoría Legal</h1>
-            <p class="lead text-muted">Registro de organizaciones comunitarias y sin fines de lucro</p>
-        </div>
-
-        <div class="row row-cols-1 row-cols-lg-2 g-4 justify-content-center">
-            <!-- Card Comité -->
-            <div class="col">
-                <div class="card h-100 border-start border-5 border-success shadow">
-                    <div class="card-header bg-white py-3">
-                        <h4 class="mb-0 text-success">
-                            <i class="bi bi-people-fill me-2"></i>Comité de Salud
-                        </h4>
-                    </div>
-                    <div class="card-body d-flex flex-column text-center py-4">
-                        <div class="mb-3">
-                            <i class="bi bi-heart-pulse display-4 text-success"></i>
-                        </div>
-                        <p class="card-text flex-grow-1">
-                            Grupo organizado para promover programas de salud pública en comunidades locales.
-                        </p>
-                        <div class="mt-auto">
-                            <a class="btn btn-success w-100 py-2 fw-semibold" href="/registro-comite">
-                                Registrar Comité
-                                <i class="bi bi-arrow-right ms-2"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card Asociación -->
-            <div class="col">
-                <div class="card h-100 border-start border-5 border-primary shadow">
-                    <div class="card-header bg-white py-3">
-                        <h4 class="mb-0 text-primary">
-                            <i class="bi bi-building me-2"></i>Asociación Sin Fines de Lucro
-                        </h4>
-                    </div>
-                    <div class="card-body d-flex flex-column text-center py-4">
-                        <div class="mb-3">
-                            <i class="bi bi-shield-check display-4 text-primary"></i>
-                        </div>
-                        <p class="card-text flex-grow-1">
-                            Entidad legal para actividades de beneficio social sin distribución de ganancias.
-                        </p>
-                        <div class="mt-auto">
-                            <a class="btn btn-primary w-100 py-2 fw-semibold" href="/registro-asociacion">
-                                Registrar Asociación
-                                <i class="bi bi-arrow-right ms-2"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-5 pt-4">
-            <p class="text-muted">
-                <i class="bi bi-info-circle me-1"></i>
-                Acceso exclusivo para usuarios autorizados
-                <a href="/login" class="text-decoration-none ms-2">Iniciar sesión</a>
-            </p>
-        </div>
-    </div>
-</div>
-
-<style>
-    .card {
-        transition: transform 0.3s, box-shadow 0.3s;
-        border-radius: 0.75rem;
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity == null || !authState.User.Identity.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/Account/Login");
+        }
     }
-    
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
-    }
-    
-    .card-header {
-        border-bottom: none;
-        border-radius: 0.75rem 0.75rem 0 0 !important;
-    }
-</style>
+
+}

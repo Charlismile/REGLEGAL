@@ -1,118 +1,133 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
-using REGISTROLEGAL.Repositories.Services;
 
 namespace REGISTROLEGAL.Components.Formularios;
 
 public partial class RegistroComite : ComponentBase
 {
     [Inject] private ICommon _Commonservice { get; set; }
-
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
     [Inject] private DbContextLegal _context { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
-    // Modelo principal
     private ComiteModel CModel { get; set; } = new();
-    
-    // Modelo para historial
     private TbDetalleRegComiteHistorial CModelHistorial { get; set; } = new();
 
-
-    // Mensajes de feedback
     private string MensajeExito { get; set; } = string.Empty;
     private string MensajeError { get; set; } = string.Empty;
-
-    // Listas para selects
     private List<ListModel> comiteRegioneslist { get; set; } = new();
     private List<ListModel> comiteProvinciaList { get; set; } = new();
-    private List<ListModel> comiteDistritolist { get; set; } = new();
-    private List<ListModel> comiteCorregimientolist { get; set; } = new();
-    
+    private List<ListModel> comiteDistritoList { get; set; } = new();
+    private List<ListModel> comiteCorregimientoList { get; set; } = new();
     private List<ListModel> Cargos { get; set; } = new();
-   
-    
+
+    private IBrowserFile _archivoResolucion;
 
     protected override async Task OnInitializedAsync()
     {
-        comiteProvinciaList = await _Commonservice.GetProvincias();
-        comiteRegioneslist = await _Commonservice.GetRegiones();
         Cargos = (await _Commonservice.GetCargos()).ToList();
-    }
 
-    private async Task comiteProvinciaChanged(int id)
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        CModel.CreadaPor = user.Identity?.IsAuthenticated == true
+            ? user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value
+              ?? user.FindFirst(c => c.Type == "sub")?.Value
+              ?? "usuario-desconocido"
+            : "invitado";
+        
+        comiteRegioneslist = await _Commonservice.GetRegiones();
+    }
+    
+    private async Task RegionChanged(int id)
+    {
+        CModel.RegionSaludId = id;
+        comiteProvinciaList = await _Commonservice.GetProvincias(id);
+        comiteDistritoList.Clear();
+        CModel.ProvinciaId = null;
+        comiteCorregimientoList.Clear();
+        CModel.DistritoId = null;
+        CModel.CorregimientoId = null; 
+    }
+    private async Task ProvinciaChanged(int id)
     {
         CModel.ProvinciaId = id;
-        comiteDistritolist = await _Commonservice.GetDistritos(id);
-        comiteCorregimientolist.Clear();
+        comiteDistritoList = await _Commonservice.GetDistritos(id);
+        comiteCorregimientoList.Clear();
         CModel.DistritoId = null;
         CModel.CorregimientoId = null;
     }
 
-    private async Task comiteDistritoChanged(int id)
+    
+
+    private async Task DistritoChanged(int id)
     {
         CModel.DistritoId = id;
-        comiteCorregimientolist = await _Commonservice.GetCorregimientos(id);
+        comiteCorregimientoList = await _Commonservice.GetCorregimientos(id);
         CModel.CorregimientoId = null;
     }
     
-    private async Task GuardarAsync()
+
+    private Task OnFileSelected(InputFileChangeEventArgs e)
     {
-        // Mapear ComiteModel (DTO) -> Entidad EF
-        var entidadComite = new TbDetalleRegComite
-        {
-            // OJO: si ComiteId es identity/autonumérico, no lo asignes aquí
-            TipoTramiteId = CModel.NumeroTramite,
-            CreadaEn = CModel.CreadaEn,
-            CreadaPor = CModel.CreadaPor,
-            NumRegCoSecuencia = CModel.NumRegCoSecuencia,
-            NomRegCoAnio = CModel.NomRegCoAnio,
-            NumRegCoMes = CModel.NumRegCoMes,
-            NumRegCoCompleta = CModel.NumRegCoCompleta
-        };
-
-        // Guardar primero el comité (para obtener su Id)
-        _context.TbDetalleRegComite.Add(entidadComite);
-        await _context.SaveChangesAsync();
-
-        // Ahora mapeamos y guardamos el historial
-        var entidadHistorial = new TbDetalleRegComiteHistorial
-        {
-            ComiteId = entidadComite.ComiteId,   // FK
-            CoEstadoSolicitudId = CModelHistorial.CoEstadoSolicitudId,
-            ComentarioCo = CModelHistorial.ComentarioCo,
-            UsuarioRevisorCo = CModelHistorial.UsuarioRevisorCo,
-            FechaCambioCo = CModelHistorial.FechaCambioCo
-        };
-
-        _context.TbDetalleRegComiteHistorial.Add(entidadHistorial);
-        await _context.SaveChangesAsync();
-    }
-
-
-    private async Task OnFileSelected(InputFileChangeEventArgs e)
-    {
-        // Aquí procesas el archivo subido
-        var file = e.File;
-        if (file != null)
-        {
-            using var stream = file.OpenReadStream(1024 * 1024); // 1MB max
-            // Guardar o procesar el archivo
-        }
-    }
-    // Envío de formulario
-    private Task HandleValidSubmit()
-    {
-        MensajeExito = "Registro exitoso";
+        _archivoResolucion = e.File;
         return Task.CompletedTask;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        MensajeExito = string.Empty;
+        MensajeError = string.Empty;
+
+        try
+        {
+            // Validaciones según tipo de trámite
+            if (CModel.TipoTramiteEnum == TipoTramite.Personeria && CModel.Miembros.Count != 7)
+            {
+                MensajeError = "Debe registrar exactamente 7 miembros para la Junta Directiva.";
+                return;
+            }
+            if (CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora && CModel.MiembrosInterventores.Count == 0)
+            {
+                MensajeError = "Debe registrar al menos un interventor.";
+                return;
+            }
+
+            if (CModel.CreadaEn == default)
+                CModel.CreadaEn = DateTime.Now;
+            if (CModelHistorial.FechaCambioCo == default)
+                CModelHistorial.FechaCambioCo = DateTime.Now;
+
+            // Guardar en servicio
+            var (exito, mensaje) = await _Commonservice.RegistrarComiteAsync(CModel, _archivoResolucion);
+
+            if (exito)
+            {
+                MensajeExito = mensaje;
+                // Opcional: Navigation.NavigateTo("/comites");
+            }
+            else
+            {
+                MensajeError = mensaje;
+            }
+        }
+        catch (Exception ex)
+        {
+            MensajeError = "Error inesperado: " + ex.Message;
+        }
+
+        StateHasChanged();
     }
 
     private void AgregarMiembroVacio()
     {
         CModel.Miembros.Add(new MiembroComiteModel());
     }
+
     private void Cancelar()
     {
         Navigation.NavigateTo("/");

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Forms;
 namespace REGISTROLEGAL.Models.LegalModels;
 
 public enum TipoTramite { Personeria = 1, CambioDirectiva = 2, JuntaInterventora = 3 }
-public class ComiteModel
+public class ComiteModel : IValidatableObject
 {
     public int ComiteId { get; set; }
     // TRÁMITE
@@ -12,7 +12,14 @@ public class ComiteModel
     [Range(1, int.MaxValue, ErrorMessage = "Seleccione un tipo de trámite válido")]
     public TipoTramite TipoTramiteEnum { get; set; }
     
-    public int NumeroTramite { get; set; } 
+    // Campos automáticos (los llenará el servicio)
+    public int NumeroTramite => TipoTramiteEnum switch
+    {
+        TipoTramite.Personeria => 1,
+        TipoTramite.CambioDirectiva => 2,
+        TipoTramite.JuntaInterventora => 3,
+        _ => 0
+    };
     
     public DateTime CreadaEn { get; set; }
     
@@ -24,13 +31,9 @@ public class ComiteModel
     
     public string? Comunidad { get; set; }
 
-    [Required(ErrorMessage = "La región de salud es obligatoria")]
     public int? RegionSaludId { get; set; }
-
-    [Required(ErrorMessage = "La provincia es obligatoria")]
     public int? ProvinciaId { get; set; }
 
-    [Required(ErrorMessage = "El distrito es obligatorio")]
     public int? DistritoId { get; set; }
 
     public int? CorregimientoId { get; set; }
@@ -39,7 +42,7 @@ public class ComiteModel
     public int NumRegCoSecuencia { get; set; }
     public int NomRegCoAnio { get; set; }
     public int NumRegCoMes { get; set; }
-    public string? NumRegCoCompleta { get; set; }
+    public string NumRegCoCompleta => $"{NumRegCoSecuencia}/{NomRegCoAnio}/{NumRegCoMes:D2}";
     // MIEMBROS
     [MinLength(1, ErrorMessage = "Debe agregar al menos 1 miembro")]
     public List<MiembroComiteModel> Miembros { get; set; } = new();
@@ -49,4 +52,25 @@ public class ComiteModel
     public List<ArchivoModel> Archivos { get; set; } = new();
 
     public List<IBrowserFile> DocumentosSubir { get; set; } = new();
+    
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (!ProvinciaId.HasValue)
+            yield return new ValidationResult("La provincia es obligatoria.", new[] { nameof(ProvinciaId) });
+        else
+        {
+            if (!RegionSaludId.HasValue)
+                yield return new ValidationResult("La región es obligatoria.", new[] { nameof(RegionSaludId) });
+            else
+            {
+                if (!DistritoId.HasValue)
+                    yield return new ValidationResult("El distrito es obligatorio.", new[] { nameof(DistritoId) });
+                else
+                {
+                    if (!CorregimientoId.HasValue)
+                        yield return new ValidationResult("El corregimiento es obligatorio.", new[] { nameof(CorregimientoId) });
+                }
+            }
+        }
+    }
 }

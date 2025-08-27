@@ -1,17 +1,32 @@
 ﻿@inherits LayoutComponentBase
+@using IDatabaseProvider = REGISTROLEGAL.Repositories.Interfaces.IDatabaseProvider
+@inject IDatabaseProvider DatabaseProviderService
+
 
 <header>
     <div class="container">
         <img src="/logo-gob.png" class="img-fluid" alt="logo gobierno" width="400" style="height: 110px">
     </div>
-    @* <NavMenu/> *@
+    <NavMenu/>
 </header>
-<div class="py-5">
+<div class="py-3 px-2">
+    @if (IsDev)
+    {
+        <div class="alert alert-danger mx-5">
+            <p>IsDev: @IsDev</p>
+            <p>@Connection</p>
+        </div>
+    }
     @Body
 </div>
 
 @code{
-    //protected override void OnInitialized()
-    //{
-    //}
+    private bool IsDev { get; set; }
+    private string Connection { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        IsDev = DatabaseProviderService.GetEnvironment();
+        Connection = DatabaseProviderService.GetConnectionString();
+    }
 }
