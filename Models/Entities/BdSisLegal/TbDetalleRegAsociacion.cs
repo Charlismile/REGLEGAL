@@ -19,7 +19,7 @@ public partial class TbDetalleRegAsociacion
 
     public string? NumRegAcompleta { get; set; }
 
-    public virtual ICollection<TbArchivos> TbArchivos { get; set; } = new List<TbArchivos>();
+    public virtual ICollection<TbAsociacionArchivos> TbAsociacionArchivos { get; set; } = new List<TbAsociacionArchivos>();
 
     public virtual ICollection<TbDetalleRegAsociacionHistorial> TbDetalleRegAsociacionHistorial { get; set; } = new List<TbDetalleRegAsociacionHistorial>();
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
+using REGISTROLEGAL.Repositories.Services;
 
 namespace REGISTROLEGAL.Components.Formularios;
 
@@ -14,12 +15,13 @@ public partial class RegistroComite : ComponentBase
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
     [Inject] private DbContextLegal _context { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
+    [Inject] private IRegistroComite RegistroComiteService { get; set; } = default!;
 
     private ComiteModel CModel { get; set; } = new();
     private TbDetalleRegComiteHistorial CModelHistorial { get; set; } = new();
-
-    private string MensajeExito { get; set; } = string.Empty;
-    private string MensajeError { get; set; } = string.Empty;
+    private EditContext editContext;
+    private ValidationMessageStore messageStore;
+    private string UserName { get; set; } = "";
     private List<ListModel> comiteRegioneslist { get; set; } = new();
     private List<ListModel> comiteProvinciaList { get; set; } = new();
     private List<ListModel> comiteDistritoList { get; set; } = new();
@@ -28,21 +30,41 @@ public partial class RegistroComite : ComponentBase
 
     private IBrowserFile _archivoResolucion;
 
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(CModel);
+        messageStore = new ValidationMessageStore(editContext);
+        editContext.OnValidationRequested += OnValidationRequested;
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        Cargos = (await _Commonservice.GetCargos()).ToList();
-
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        CModel.CreadaPor = user.Identity?.IsAuthenticated == true
-            ? user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value
-              ?? user.FindFirst(c => c.Type == "sub")?.Value
-              ?? "usuario-desconocido"
-            : "invitado";
+        UserName = authState.User.Identity?.Name ?? "";
         
+        Cargos = (await _Commonservice.GetCargos()).ToList();
         comiteRegioneslist = await _Commonservice.GetRegiones();
     }
-    
+
+    private void OnValidationRequested(object? sender, ValidationRequestedEventArgs e)
+    {
+        messageStore.Clear();
+
+        // Validaciones de provincias / regiones / distritos / corregimientos
+        if (!CModel.ProvinciaId.HasValue || CModel.ProvinciaId == 0)
+            messageStore.Add(() => CModel.ProvinciaId, "La provincia es obligatoria.");
+
+        if (!CModel.RegionSaludId.HasValue || CModel.RegionSaludId == 0)
+            messageStore.Add(() => CModel.RegionSaludId, "La región es obligatoria.");
+
+        if (!CModel.DistritoId.HasValue || CModel.DistritoId == 0)
+            messageStore.Add(() => CModel.DistritoId, "El distrito es obligatorio.");
+
+        if (!CModel.CorregimientoId.HasValue || CModel.CorregimientoId == 0)
+            messageStore.Add(() => CModel.CorregimientoId, "El corregimiento es obligatorio.");
+    }
+
+
     private async Task RegionChanged(int id)
     {
         CModel.RegionSaludId = id;
@@ -61,16 +83,13 @@ public partial class RegistroComite : ComponentBase
         CModel.DistritoId = null;
         CModel.CorregimientoId = null;
     }
-
     
-
     private async Task DistritoChanged(int id)
     {
         CModel.DistritoId = id;
         comiteCorregimientoList = await _Commonservice.GetCorregimientos(id);
         CModel.CorregimientoId = null;
     }
-    
 
     private Task OnFileSelected(InputFileChangeEventArgs e)
     {
@@ -80,52 +99,16 @@ public partial class RegistroComite : ComponentBase
 
     private async Task HandleValidSubmit()
     {
-        MensajeExito = string.Empty;
-        MensajeError = string.Empty;
-
-        try
+        CModel.CreadaPor = UserName;
+        ResultModel result = await RegistroComiteService.CrearComite(CModel);
+        
+        if (!result.Success)
         {
-            // Validaciones según tipo de trámite
-            if (CModel.TipoTramiteEnum == TipoTramite.Personeria && CModel.Miembros.Count != 7)
-            {
-                MensajeError = "Debe registrar exactamente 7 miembros para la Junta Directiva.";
-                return;
-            }
-            if (CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora && CModel.MiembrosInterventores.Count == 0)
-            {
-                MensajeError = "Debe registrar al menos un interventor.";
-                return;
-            }
-
-            if (CModel.CreadaEn == default)
-                CModel.CreadaEn = DateTime.Now;
-            if (CModelHistorial.FechaCambioCo == default)
-                CModelHistorial.FechaCambioCo = DateTime.Now;
-
-            // Guardar en servicio
-            var (exito, mensaje) = await _Commonservice.RegistrarComiteAsync(CModel, _archivoResolucion);
-
-            if (exito)
-            {
-                MensajeExito = mensaje;
-                // Opcional: Navigation.NavigateTo("/comites");
-            }
-            else
-            {
-                MensajeError = mensaje;
-            }
+            var errorDetalle = string.IsNullOrEmpty(result.Message)
+                ? "Hubo un error al procesar la solicitud."
+                : result.Message;
+            return;
         }
-        catch (Exception ex)
-        {
-            MensajeError = "Error inesperado: " + ex.Message;
-        }
-
-        StateHasChanged();
-    }
-
-    private void AgregarMiembroVacio()
-    {
-        CModel.Miembros.Add(new MiembroComiteModel());
     }
 
     private void Cancelar()

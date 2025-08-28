@@ -52,6 +52,7 @@ builder.Services.AddMapster();
 builder.Services.AddScoped<ICommon, CommonServices>();
 builder.Services.AddScoped<ILocalStorage, LocalStorageServices>();
 builder.Services.AddScoped<IDatabaseProvider, DatabaseProviderService>();
+builder.Services.AddScoped<IRegistroComite, RegistroComiteService>();
 
 // Identity Core
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

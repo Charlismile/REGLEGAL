@@ -10,57 +10,52 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Log in</PageTitle>
+<PageTitle>Iniciar Sesión</PageTitle>
 
-<h1>Log in</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <StatusMessage Message="@errorMessage"/>
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-info">
+    <div class="card shadow-lg border-0 rounded-3" style="max-width: 420px; width: 100%;">
+        <div class="card-body p-4">
+            <div class="text-center mb-4">
+                <img src="favicon.png" alt="Logo" width="60" class="mb-2" />
+                <h3 class="fw-bold text-dark">Sistema Legal</h3>
+                <p class="text-muted mb-0">Acceso de Usuarios</p>
+            </div>
+
+            <StatusMessage Message="@errorMessage" />
+
             <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                <DataAnnotationsValidator/>
-                <h2>Use a local account to log in.</h2>
-                <hr/>
-                <ValidationSummary class="text-danger" role="alert"/>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger small" role="alert" />
+
                 <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com"/>
-                    <label for="email" class="form-label">Email</label>
-                    <ValidationMessage For="() => Input.Email" class="text-danger"/>
+                    <InputText @bind-Value="Input.Email" class="form-control rounded-3" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label>Email</label>
+                    <ValidationMessage For="() => Input.Email" class="text-danger small" />
                 </div>
+
                 <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password"/>
-                    <label for="password" class="form-label">Password</label>
-                    <ValidationMessage For="() => Input.Password" class="text-danger"/>
+                    <InputText type="password" @bind-Value="Input.Password" class="form-control rounded-3" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label>Contraseña</label>
+                    <ValidationMessage For="() => Input.Password" class="text-danger small" />
                 </div>
-                <div class="checkbox mb-3">
-                    <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input"/>
-                        Remember me
-                    </label>
+
+                <div class="form-check mb-3">
+                    <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input" id="rememberMe" />
+                    <label for="rememberMe" class="form-check-label">Recordarme</label>
                 </div>
-                <div>
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-3 shadow-sm">Iniciar Sesión</button>
                 </div>
-                <div>
-                    <p>
-                        <a href="Account/ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
+
+                @* <div class="text-center mt-4"> *@
+                @*     <a href="Account/ForgotPassword" class="d-block text-decoration-none mb-2">¿Olvidó su contraseña?</a> *@
+                @*     <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))"  *@
+                @*        class="d-block text-decoration-none mb-2">Registrar nuevo usuario</a> *@
+                @*     <a href="Account/ResendEmailConfirmation" class="d-block text-decoration-none">Reenviar confirmación de correo</a> *@
+                @* </div> *@
             </EditForm>
-        </section>
-    </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to log in.</h3>
-            <hr/>
-            <ExternalLoginPicker/>
-        </section>
+        </div>
     </div>
 </div>
 
@@ -77,19 +72,16 @@
     {
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
-            // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         }
     }
 
     public async Task LoginUser()
     {
-        // This doesn't count login failures towards account lockout
-        // To enable password failures to trigger account lockout, set lockoutOnFailure: true
         var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
-            Logger.LogInformation("Public logged in.");
+            Logger.LogInformation("Usuario inició sesión.");
             RedirectManager.RedirectTo(ReturnUrl);
         }
         else if (result.RequiresTwoFactor)
@@ -100,24 +92,19 @@
         }
         else if (result.IsLockedOut)
         {
-            Logger.LogWarning("Public account locked out.");
+            Logger.LogWarning("Cuenta bloqueada.");
             RedirectManager.RedirectTo("Account/Lockout");
         }
         else
         {
-            errorMessage = "Error: Invalid login attempt.";
+            errorMessage = "Error: Intento de inicio de sesión inválido.";
         }
     }
 
     private sealed class InputModel
     {
         [Required] [EmailAddress] public string Email { get; set; } = "";
-
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; } = "";
-
-        [Display(Name = "Remember me?")] public bool RememberMe { get; set; }
+        [Required] [DataType(DataType.Password)] public string Password { get; set; } = "";
+        [Display(Name = "Recordarme")] public bool RememberMe { get; set; }
     }
-
 }

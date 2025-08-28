@@ -1,7 +1,8 @@
 ﻿@implements IDisposable
 @inject NavigationManager NavigationManager
-
-<nav class="navbar navbar-expand-lg bg-gob-blue" data-bs-theme="light">
+<AuthorizeView>
+    <Authorized>
+<nav class="navbar navbar-expand-lg bg-info" data-bs-theme="light">
     <div class="container">
         <NavLink class="navbar-brand text-white" href="" Match="NavLinkMatch.All">
             <i class="fa-solid fa-house"></i> Inicio
@@ -12,44 +13,43 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mb-2 mb-lg-0">
-                <AuthorizeView>
-                    <Authorized>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white" href="#" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-list"></i> Registro
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <NavLink class="dropdown-item" href="permisos-sanitarios-operacion">
-                                        <i class="fa-solid fa-certificate"></i> Comite
-                                    </NavLink>
-                                </li>
-                                <li><hr class="dropdown-divider"/></li>
-                                <li>
-                                    <NavLink class="dropdown-item" href="permisos-actividades-requisitos">
-                                        <i class="fa-solid fa-list-check"></i> Asociacion
-                                    </NavLink>
-                                </li>
-                            </ul>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-list"></i> Registro
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <NavLink class="dropdown-item" href="permisos-sanitarios-operacion">
+                                <i class="fa-solid fa-certificate"></i> Comite
+                            </NavLink>
                         </li>
-                    </Authorized>
-                </AuthorizeView>
+                        <li><hr class="dropdown-divider"/></li>
+                        <li>
+                            <NavLink class="dropdown-item" href="permisos-actividades-requisitos">
+                                <i class="fa-solid fa-list-check"></i> Asociacion
+                            </NavLink>
+                        </li>
+                    </ul>
+                </li>
+                    
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <AuthorizeView>
-                    <NotAuthorized>
-                        <li class="nav-item">
-                            <NavLink class="nav-link active text-white" href="/account/login" Match="NavLinkMatch.All">
-                                <i class="fa-solid fa-right-to-bracket me-1"></i> Acceder
-                            </NavLink>
-                        </li>
-                    </NotAuthorized>
+                    @* <NotAuthorized> *@
+                    @*     <li class="nav-item"> *@
+                    @*         <NavLink class="nav-link active text-white" href="/account/login" Match="NavLinkMatch.All"> *@
+                    @*             <i class="fa-solid fa-right-to-bracket me-1"></i> Acceder *@
+                    @*         </NavLink> *@
+                    @*     </li> *@
+                    @* </NotAuthorized> *@
                 </AuthorizeView>
             </ul>
         </div>
     </div>
 </nav>
+</Authorized>
+</AuthorizeView>
 
 <!-- Estilos CSS necesarios para los submenús anidados -->
 <style>

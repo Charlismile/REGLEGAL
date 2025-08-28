@@ -19,11 +19,13 @@ public partial class DbContextLegal : DbContext
 
     public virtual DbSet<TbApoderadoLegal> TbApoderadoLegal { get; set; }
 
-    public virtual DbSet<TbArchivos> TbArchivos { get; set; }
-
     public virtual DbSet<TbAsociacion> TbAsociacion { get; set; }
 
+    public virtual DbSet<TbAsociacionArchivos> TbAsociacionArchivos { get; set; }
+
     public virtual DbSet<TbCargosMiembrosComite> TbCargosMiembrosComite { get; set; }
+
+    public virtual DbSet<TbComiteArchivos> TbComiteArchivos { get; set; }
 
     public virtual DbSet<TbCorregimiento> TbCorregimiento { get; set; }
 
@@ -90,33 +92,6 @@ public partial class DbContextLegal : DbContext
                 .HasConstraintName("FK_ApoderadoLegal_ApoderadoFirma");
         });
 
-        modelBuilder.Entity<TbArchivos>(entity =>
-        {
-            entity.HasKey(e => e.ArchivoId).HasName("PK__TbArchiv__3D24274A8FA1F287");
-
-            entity.HasIndex(e => e.DetRegAsociacionId, "IX_TbArchivos_DetRegAsociacion");
-
-            entity.HasIndex(e => e.DetRegComiteId, "IX_TbArchivos_DetRegComite");
-
-            entity.Property(e => e.Categoria).HasMaxLength(100);
-            entity.Property(e => e.FechaSubida)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.IsActivo).HasDefaultValue(true);
-            entity.Property(e => e.NombreArchivoGuardado).HasMaxLength(500);
-            entity.Property(e => e.NombreOriginal).HasMaxLength(500);
-            entity.Property(e => e.Url).HasMaxLength(1000);
-            entity.Property(e => e.Version).HasDefaultValue(1);
-
-            entity.HasOne(d => d.DetRegAsociacion).WithMany(p => p.TbArchivos)
-                .HasForeignKey(d => d.DetRegAsociacionId)
-                .HasConstraintName("FK_Archivos_DetalleRegAsociacion");
-
-            entity.HasOne(d => d.DetRegComite).WithMany(p => p.TbArchivos)
-                .HasForeignKey(d => d.DetRegComiteId)
-                .HasConstraintName("FK_Archivos_DetalleRegComite");
-        });
-
         modelBuilder.Entity<TbAsociacion>(entity =>
         {
             entity.HasKey(e => e.AsociacionId).HasName("PK__TbAsocia__5B58E10505500571");
@@ -135,12 +110,52 @@ public partial class DbContextLegal : DbContext
                 .HasConstraintName("FK_Asociacion_RepresentanteLegal");
         });
 
+        modelBuilder.Entity<TbAsociacionArchivos>(entity =>
+        {
+            entity.HasKey(e => e.AsociacionArchivoId).HasName("PK__TbAsocia__C43A0B67A153E161");
+
+            entity.Property(e => e.Categoria).HasMaxLength(100);
+            entity.Property(e => e.FechaSubida)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsActivo).HasDefaultValue(true);
+            entity.Property(e => e.NombreArchivoGuardado).HasMaxLength(500);
+            entity.Property(e => e.NombreOriginal).HasMaxLength(500);
+            entity.Property(e => e.Url).HasMaxLength(1000);
+            entity.Property(e => e.Version).HasDefaultValue(1);
+
+            entity.HasOne(d => d.DetRegAsociacion).WithMany(p => p.TbAsociacionArchivos)
+                .HasForeignKey(d => d.DetRegAsociacionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AsociacionArchivos_DetalleRegAsociacion");
+        });
+
         modelBuilder.Entity<TbCargosMiembrosComite>(entity =>
         {
             entity.HasKey(e => e.CargoId).HasName("PK__TbCargos__B4E665CD75F0DDFE");
 
             entity.Property(e => e.IsActivo).HasDefaultValue(true);
             entity.Property(e => e.NombreCargo).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<TbComiteArchivos>(entity =>
+        {
+            entity.HasKey(e => e.ComiteArchivoId).HasName("PK__TbComite__035E99E91D5CE992");
+
+            entity.Property(e => e.Categoria).HasMaxLength(100);
+            entity.Property(e => e.FechaSubida)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsActivo).HasDefaultValue(true);
+            entity.Property(e => e.NombreArchivoGuardado).HasMaxLength(500);
+            entity.Property(e => e.NombreOriginal).HasMaxLength(500);
+            entity.Property(e => e.Url).HasMaxLength(1000);
+            entity.Property(e => e.Version).HasDefaultValue(1);
+
+            entity.HasOne(d => d.DetRegComite).WithMany(p => p.TbComiteArchivos)
+                .HasForeignKey(d => d.DetRegComiteId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ComiteArchivos_DetalleRegComite");
         });
 
         modelBuilder.Entity<TbCorregimiento>(entity =>
@@ -259,18 +274,13 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbDetalleRegComite>(entity =>
         {
-            entity.HasKey(e => e.ComiteId).HasName("PK__TbDetall__5799B3A3328837BC");
-
-            entity.HasIndex(e => e.CreadaPor, "IX_TbDetalleRegComite_CreadaPor");
-
-            entity.HasIndex(e => e.TipoTramiteId, "IX_TbDetalleRegComite_TipoTramite");
+            entity.HasKey(e => e.DetalleRegComiteId).HasName("PK__TbDetall__EFD6F2462EE9028E");
 
             entity.Property(e => e.CreadaEn)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.NumRegCoCompleta)
-                .HasMaxLength(18)
-                .HasComputedColumnSql("((((CONVERT([nvarchar](10),[NumRegCoSecuencia])+'/')+CONVERT([nvarchar](4),[NomRegCoAnio]))+'/')+CONVERT([nvarchar](2),[NumRegCoMes]))", true);
+            entity.Property(e => e.CreadaPor).HasMaxLength(450);
+            entity.Property(e => e.NumRegCoCompleta).HasMaxLength(50);
 
             entity.HasOne(d => d.TipoTramite).WithMany(p => p.TbDetalleRegComite)
                 .HasForeignKey(d => d.TipoTramiteId)

@@ -116,19 +116,19 @@ public partial class RegistroAsociacion : ComponentBase
 
 
         // Guardar archivos
-        foreach (var archivo in AModel.DocumentosSubir)
-        {
-            var resultado = await _Commonservice.GuardarArchivoAsync(
-                archivo,
-                categoria: "DocumentosAsociacion",
-                asociacionId: _context.TbAsociacion.OrderByDescending(a => a.AsociacionId).First().AsociacionId
-            );
-
-            if (!resultado.ok)
-            {
-                MensajeError += resultado.mensaje + "\n";
-            }
-        }
+        // foreach (var archivo in AModel.DocumentosSubir)
+        // {
+        //     var resultado = await _Commonservice.GuardarArchivoAsync(
+        //         archivo,
+        //         categoria: "DocumentosAsociacion",
+        //         asociacionId: _context.TbAsociacion.OrderByDescending(a => a.AsociacionId).First().AsociacionId
+        //     );
+        //
+        //     if (!resultado.ok)
+        //     {
+        //         MensajeError += resultado.mensaje + "\n";
+        //     }
+        // }
 
         if (string.IsNullOrEmpty(MensajeError))
         {

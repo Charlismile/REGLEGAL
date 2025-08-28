@@ -15,9 +15,9 @@ public partial class TbDatosComite
 
     public int ProvinciaId { get; set; }
 
-    public int? DistritoId { get; set; }
+    public int DistritoId { get; set; }
 
-    public int? CorregimientoId { get; set; }
+    public int CorregimientoId { get; set; }
 
     public virtual TbCorregimiento Corregimiento { get; set; } = null!;
 

@@ -5,6 +5,8 @@ namespace REGISTROLEGAL.Models.Entities.BdSisLegal;
 
 public partial class TbDetalleRegComite
 {
+    public int DetalleRegComiteId { get; set; }
+
     public int ComiteId { get; set; }
 
     public int TipoTramiteId { get; set; }
@@ -21,7 +23,7 @@ public partial class TbDetalleRegComite
 
     public string? NumRegCoCompleta { get; set; }
 
-    public virtual ICollection<TbArchivos> TbArchivos { get; set; } = new List<TbArchivos>();
+    public virtual ICollection<TbComiteArchivos> TbComiteArchivos { get; set; } = new List<TbComiteArchivos>();
 
     public virtual ICollection<TbDetalleRegComiteHistorial> TbDetalleRegComiteHistorial { get; set; } = new List<TbDetalleRegComiteHistorial>();
 

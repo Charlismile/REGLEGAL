@@ -14,15 +14,15 @@ public interface ICommon
     Task<List<ListModel>> GetCargos();
     #endregion
     
-    #region Comite
-    Task<(bool exito, string mensaje)> RegistrarComiteAsync(ComiteModel model, IBrowserFile archivoResolucion);
-    #endregion
-
-    #region Asociacion
-
-    
-
-        #endregion
-    Task<(bool ok, string mensaje)> GuardarArchivoAsync(IBrowserFile archivo, string categoria, int? asociacionId = null, int? comiteId = null);
-    
+    // #region Comite
+    // Task<(bool exito, string mensaje)> RegistrarComiteAsync(ComiteModel model, IBrowserFile archivoResolucion);
+    // #endregion
+    //
+    // #region Asociacion
+    //
+    //
+    //
+    //     #endregion
+    // Task<(bool ok, string mensaje)> GuardarArchivoAsync(IBrowserFile archivo, string categoria, int? asociacionId = null, int? comiteId = null);
+    //
 }
