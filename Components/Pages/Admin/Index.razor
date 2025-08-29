@@ -1,0 +1,72 @@
+﻿@page "/Index"
+@using REGISTROLEGAL.Models.Entities.BdSisLegal
+@inject DbContextLegal _context
+
+<PageTitle>Gráficas</PageTitle>
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Estadísticas</h2>
+
+    <div class="row text-center">
+        <div class="col-md-6">
+            <h5>Comités</h5>
+            <canvas id="comiteChart" width="400" height="400"></canvas>
+        </div>
+        <div class="col-md-6">
+            <h5>Asociaciones</h5>
+            <canvas id="asociacionChart" width="400" height="400"></canvas>
+        </div>
+    </div>
+</div>
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Datos desde Blazor
+            const comites = @totalComites;
+            const asociaciones = @totalAsociaciones;
+
+            // ===== Comités (Bar Chart) =====
+            const ctx1 = document.getElementById('comiteChart').getContext('2d');
+            drawBarChart(ctx1, ["Comités"], [comites], ["#007bff"]);
+
+            // ===== Asociaciones (Pie Chart) =====
+            const ctx2 = document.getElementById('asociacionChart').getContext('2d');
+            drawPieChart(ctx2, ["Asociaciones"], [asociaciones], ["#28a745"]);
+        });
+
+        // Función para gráfico de barras
+        function drawBarChart(ctx, labels, data, colors) {
+            const width = ctx.canvas.width;
+            const height = ctx.canvas.height;
+            const barWidth = 100;
+            const barHeight = data[0] * 5; // escala básica
+            ctx.fillStyle = colors[0];
+            ctx.fillRect((width - barWidth) / 2, height - barHeight, barWidth, barHeight);
+            ctx.fillStyle = "#000";
+            ctx.fillText(data[0], width / 2 - 10, height - barHeight - 10);
+        }
+
+        // Función para gráfico circular (Pie)
+        function drawPieChart(ctx, labels, data, colors) {
+            const total = data.reduce((a, b) => a + b, 0);
+            let startAngle = 0;
+
+            for (let i = 0; i < data.length; i++) {
+                const sliceAngle = 2 * Math.PI * data[i] / total;
+                ctx.beginPath();
+                ctx.moveTo(200, 200); // centro
+                ctx.arc(200, 200, 150, startAngle, startAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                startAngle += sliceAngle;
+
+                // Etiqueta
+                ctx.fillStyle = "#000";
+                ctx.fillText(data[i], 190, 200);
+            }
+        }
+    </script>
+
+@code {
+    
+}

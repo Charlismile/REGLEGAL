@@ -1,0 +1,65 @@
+﻿@page "/Listado"
+@using Microsoft.EntityFrameworkCore
+@using REGISTROLEGAL.Models.Entities.BdSisLegal
+@inject DbContextLegal _context
+
+<PageTitle>Listados</PageTitle>
+
+<div class="container mt-4">
+    <h3>Listado de Comités</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Comunidad</th>
+            <th>Miembros</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var c in comites)
+        {
+            <tr>
+                <td>@c.DcomiteId</td>
+                <td>@c.NombreComiteSalud</td>
+                <td>@c.Comunidad</td>
+                <td>@c.TbDatosMiembros</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <h3 class="mt-5">Listado de Asociaciones</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Apoderado Legal</th>
+            <th>Representante Legal</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var a in asociaciones)
+        {
+            <tr>
+                <td>@a.AsociacionId</td>
+                <td>@a.NombreAsociacion</td>
+                <td>@a.ApoderadoLegal</td>
+                <td>@a.RepresentanteLegal</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private List<TbDatosComite> comites = new();
+    private List<TbAsociacion> asociaciones = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        comites = await _context.TbDatosComite.ToListAsync();
+        asociaciones = await _context.TbAsociacion.ToListAsync();
+    }
+}

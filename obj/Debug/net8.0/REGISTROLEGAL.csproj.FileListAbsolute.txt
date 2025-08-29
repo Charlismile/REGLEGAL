@@ -320,3 +320,4 @@ C:\Users\cabernalo\Documents\PROJECT GIT\REGLEGAL\obj\Debug\net8.0\ref\REGISTROL
 C:\Users\cabernalo\Documents\PROJECT GIT\REGLEGAL\bin\Debug\net8.0\Mapster.dll
 C:\Users\cabernalo\Documents\PROJECT GIT\REGLEGAL\bin\Debug\net8.0\Mapster.Core.dll
 C:\Users\cabernalo\Documents\PROJECT GIT\REGLEGAL\bin\Debug\net8.0\Mapster.DependencyInjection.dll
+C:\Users\cabernalo\Documents\PROJECT GIT\REGLEGAL\obj\Debug\net8.0\scopedcss\Components\Pages\Admin\Index.razor.rz.scp.css

@@ -188,6 +188,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcRW1wdHlMYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Admin/Listado.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxMaXN0YWRvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Auth.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBdXRoLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -198,10 +202,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Index.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbmRleC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Routes.razor]
@@ -219,3 +219,7 @@ build_metadata.AdditionalFiles.CssScope = b-fovej0khhf
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-ztze6i55pl
+
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Admin/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxJbmRleC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-olihy3kg6n

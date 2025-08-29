@@ -1,15 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
-using REGISTROLEGAL.Repositories.Interfaces;
 
 namespace REGISTROLEGAL.Repositories.Services;
 
-public class RegistroComiteService : IRegistroComite
+public class RegistroAsociacionService
 {
     private readonly IDbContextFactory<DbContextLegal> _context;
 
-    public RegistroComiteService(IDbContextFactory<DbContextLegal> context)
+    public RegistroAsociacionService(IDbContextFactory<DbContextLegal> context)
     {
         _context = context;
     }
@@ -35,57 +34,6 @@ public class RegistroComiteService : IRegistroComite
         await context.SaveChangesAsync();
 
         return nuevaSecuencia;
-    }
-    
-    private async Task<TbDatosMiembros> RegisterUser()
-    {
-        // crear miembros
-        var nuevoMiembro = new TbDatosMiembros()
-        {
-            NombreMiembro = model.,
-            CedulaMiembro = model.Comunidad,
-            CargoId = model.RegionSaludId ?? 0,
-            ProvinciaId = model.ProvinciaId ?? 0,
-            DistritoId = model.DistritoId ?? 0,
-            CorregimientoId = model.CorregimientoId ?? 0
-        };
-        context.TbDatosComite.Add(nuevoMiembro);
-        await context.SaveChangesAsync();
-
-        List<string> Roles = new List<string>();
-        if (FormData.IsGenericUser)
-        {
-            Roles.Add("user_unidad");
-        }
-        
-        if (FormData.IsComprasUser)
-        {
-            Roles.Add("user_compras");
-        }
-
-        if (FormData.IsAdminUser)
-        {
-            Roles.Add("user_admin");
-        }
-
-        ResultModel Resultado;
-        if (UpdatingUser)
-        {
-            Resultado = await _UserService.UpdateUser(UserData, Roles);
-        }
-        else
-        {
-            Resultado = await _UserService.CreateUser(UserData, Roles);
-        }
-
-        _ToastService.Notify(new(Resultado.Success ? ToastType.Success : ToastType.Danger, "", $"Mensaje",
-            $"{DateTime.Now}",
-            Resultado.Message));
-
-        if (Resultado.Success)
-        {
-            _NavigationProvider.NavigateTo("/administracion/users");
-        }
     }
 
     public async Task<ResultModel> CrearComite(ComiteModel model)
