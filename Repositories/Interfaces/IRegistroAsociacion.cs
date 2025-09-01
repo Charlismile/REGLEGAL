@@ -1,4 +1,6 @@
-﻿namespace REGISTROLEGAL.Repositories.Interfaces;
+﻿using REGISTROLEGAL.Models.LegalModels;
+
+namespace REGISTROLEGAL.Repositories.Interfaces;
 
 public interface IRegistroAsociacion
 {

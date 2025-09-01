@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Components.Forms;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
-using REGISTROLEGAL.Repositories.Services;
 
 namespace REGISTROLEGAL.Components.Formularios;
 
@@ -41,7 +40,7 @@ public partial class RegistroComite : ComponentBase
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         UserName = authState.User.Identity?.Name ?? "";
-        
+
         Cargos = (await _Commonservice.GetCargos()).ToList();
         comiteRegioneslist = await _Commonservice.GetRegiones();
     }
@@ -50,7 +49,6 @@ public partial class RegistroComite : ComponentBase
     {
         messageStore.Clear();
 
-        // Validaciones de provincias / regiones / distritos / corregimientos
         if (!CModel.ProvinciaId.HasValue || CModel.ProvinciaId == 0)
             messageStore.Add(() => CModel.ProvinciaId, "La provincia es obligatoria.");
 
@@ -64,7 +62,6 @@ public partial class RegistroComite : ComponentBase
             messageStore.Add(() => CModel.CorregimientoId, "El corregimiento es obligatorio.");
     }
 
-
     private async Task RegionChanged(int id)
     {
         CModel.RegionSaludId = id;
@@ -73,8 +70,9 @@ public partial class RegistroComite : ComponentBase
         CModel.ProvinciaId = null;
         comiteCorregimientoList.Clear();
         CModel.DistritoId = null;
-        CModel.CorregimientoId = null; 
+        CModel.CorregimientoId = null;
     }
+
     private async Task ProvinciaChanged(int id)
     {
         CModel.ProvinciaId = id;
@@ -83,7 +81,7 @@ public partial class RegistroComite : ComponentBase
         CModel.DistritoId = null;
         CModel.CorregimientoId = null;
     }
-    
+
     private async Task DistritoChanged(int id)
     {
         CModel.DistritoId = id;
@@ -100,16 +98,143 @@ public partial class RegistroComite : ComponentBase
     private async Task HandleValidSubmit()
     {
         CModel.CreadaPor = UserName;
-        ResultModel result = await RegistroComiteService.CrearComite(CModel);
-        
-        if (!result.Success)
+
+        var result = await RegistroComiteService.CrearComite(CModel);
+
+        if (!result.Success || result.Id == 0)
         {
             var errorDetalle = string.IsNullOrEmpty(result.Message)
                 ? "Hubo un error al procesar la solicitud."
                 : result.Message;
             return;
         }
+
+        // Validar reglas de trámite
+        if (CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
+        {
+            var idPresidente = Cargos.FirstOrDefault(c => c.Name == "Presidente")?.Id;
+            var idTesorero = Cargos.FirstOrDefault(c => c.Name == "Tesorero(a)")?.Id;
+
+            if (CModel.Miembros.Count != 2 ||
+                !CModel.Miembros.Any(m => m.CargoId == idPresidente) ||
+                !CModel.Miembros.Any(m => m.CargoId == idTesorero))
+            {
+                messageStore.Add(() => CModel.Miembros, "La Junta Interventora debe tener exactamente Presidente y Tesorero(a).");
+                return;
+            }
+        }
+        else if (CModel.Miembros.Count > 7)
+        {
+            messageStore.Add(() => CModel.Miembros, "No se permiten más de 7 miembros.");
+            return;
+        }
+
+        // Guardar miembros
+        foreach (var miembro in CModel.Miembros)
+        {
+            await RegistroComiteService.AgregarMiembro(result.Id, miembro);
+        }
+
+        // TOD0: Guardar archivo resolución
+        // if (_archivoResolucion != null)
+        // {
+        //     using var stream = _archivoResolucion.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+        //     await RegistroComiteService.GuardarResolucion(result.IdGenerado.Value, _archivoResolucion.Name, stream);
+        // }
+
+        Navigation.NavigateTo("/comites");
     }
+
+    private TipoTramite _tipoTramite;
+    private TipoTramite TipoTramiteEnum
+    {
+        get => _tipoTramite;
+        set
+        {
+            if (_tipoTramite != value)
+            {
+                _tipoTramite = value;
+                OnTipoTramiteChanged(value);
+            }
+        }
+    }
+
+    private async void OnTipoTramiteChanged(TipoTramite tipo)
+    {
+        if (tipo == TipoTramite.CambioDirectiva || tipo == TipoTramite.JuntaInterventora)
+        {
+            int comiteId = 1; // reemplaza por Id real
+            await CargarComiteExistente(comiteId);
+        }
+        else
+        {
+            CModel.Miembros.Clear();
+            CModel.MiembrosInterventores.Clear();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task CargarComiteExistente(int comiteId)
+    {
+        var comiteExistente = await RegistroComiteService.GetComiteByIdAsync(comiteId);
+        if (comiteExistente != null)
+        {
+            CModel.NombreComiteSalud = comiteExistente.NombreComiteSalud;
+            CModel.Comunidad = comiteExistente.Comunidad;
+            CModel.RegionSaludId = comiteExistente.RegionSaludId;
+            CModel.ProvinciaId = comiteExistente.ProvinciaId;
+            CModel.DistritoId = comiteExistente.DistritoId;
+            CModel.CorregimientoId = comiteExistente.CorregimientoId;
+
+            if (CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva)
+            {
+                CModel.Miembros = comiteExistente.Miembros.Select(m => new MiembroComiteModel()
+                {
+                    MiembroId = m.MiembroId,
+                    NombreMiembro = m.NombreMiembro,
+                    ApellidoMiembro = m.ApellidoMiembro,
+                    CedulaMiembro = m.CedulaMiembro,
+                    CargoId = m.CargoId
+                }).ToList();
+            }
+            else if (CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
+            {
+                CModel.MiembrosInterventores = comiteExistente.Miembros.Take(2).Select(m => new MiembroComiteModel()
+                {
+                    MiembroId = m.MiembroId,
+                    NombreMiembro = m.NombreMiembro,
+                    ApellidoMiembro = m.ApellidoMiembro,
+                    CedulaMiembro = m.CedulaMiembro,
+                    CargoId = m.CargoId
+                }).ToList();
+            }
+        }
+    }
+    private void AgregarMiembro()
+    {
+        CModel.Miembros.Add(new MiembroComiteModel());
+        StateHasChanged(); // Fuerza el renderizado seguro
+        
+        CModel.MiembrosInterventores.Add(new MiembroComiteModel());
+        StateHasChanged();
+
+    }
+
+    private void RemoverMiembro(int miembroId)
+    {
+        var miembro = CModel.Miembros.FirstOrDefault(m => m.MiembroId == miembroId);
+        if (miembro != null)
+        {
+            CModel.Miembros.Remove(miembro);
+            StateHasChanged(); // Fuerza el renderizado seguro
+            
+            CModel.MiembrosInterventores.Remove(miembro);
+            StateHasChanged();
+
+        }
+    }
+
 
     private void Cancelar()
     {

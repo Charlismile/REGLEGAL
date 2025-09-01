@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BlazorBootstrap;
+using Microsoft.EntityFrameworkCore;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
@@ -37,55 +38,24 @@ public class RegistroComiteService : IRegistroComite
         return nuevaSecuencia;
     }
     
-    private async Task<TbDatosMiembros> RegisterUser()
+    public async Task<TbDatosMiembros> AgregarMiembro(int comiteId, MiembroComiteModel MModel)
     {
-        // crear miembros
-        var nuevoMiembro = new TbDatosMiembros()
+        await using var context = await _context.CreateDbContextAsync();
+        var nuevoMiembro = new TbDatosMiembros
         {
-            NombreMiembro = model.,
-            CedulaMiembro = model.Comunidad,
-            CargoId = model.RegionSaludId ?? 0,
-            ProvinciaId = model.ProvinciaId ?? 0,
-            DistritoId = model.DistritoId ?? 0,
-            CorregimientoId = model.CorregimientoId ?? 0
+            NombreMiembro = MModel.NombreMiembro,
+            ApellidoMiembro = MModel.ApellidoMiembro,
+            CargoId = MModel.CargoId,
+            CedulaMiembro = MModel.CedulaMiembro,
+            TelefonoMiembro = MModel.TelefonoMiembro,
+            CorreoMiembro = MModel.CorreoMiembro,
+            DcomiteId = comiteId
         };
-        context.TbDatosComite.Add(nuevoMiembro);
+
+        context.TbDatosMiembros.Add(nuevoMiembro);
         await context.SaveChangesAsync();
 
-        List<string> Roles = new List<string>();
-        if (FormData.IsGenericUser)
-        {
-            Roles.Add("user_unidad");
-        }
-        
-        if (FormData.IsComprasUser)
-        {
-            Roles.Add("user_compras");
-        }
-
-        if (FormData.IsAdminUser)
-        {
-            Roles.Add("user_admin");
-        }
-
-        ResultModel Resultado;
-        if (UpdatingUser)
-        {
-            Resultado = await _UserService.UpdateUser(UserData, Roles);
-        }
-        else
-        {
-            Resultado = await _UserService.CreateUser(UserData, Roles);
-        }
-
-        _ToastService.Notify(new(Resultado.Success ? ToastType.Success : ToastType.Danger, "", $"Mensaje",
-            $"{DateTime.Now}",
-            Resultado.Message));
-
-        if (Resultado.Success)
-        {
-            _NavigationProvider.NavigateTo("/administracion/users");
-        }
+        return nuevoMiembro;
     }
 
     public async Task<ResultModel> CrearComite(ComiteModel model)
@@ -96,7 +66,8 @@ public class RegistroComiteService : IRegistroComite
         var ahora = DateTime.UtcNow;
         var numeracion = sec.Anio < ahora.Year ? 1 : sec.Numeracion;
         var anio = sec.Anio < ahora.Year ? ahora.Year : sec.Anio;
-        var numCompleto = $"SOL-{anio}-{ahora.Month:00}-{numeracion:0000000000}";
+        var numCompleto = $"SOL-{anio}-{ahora.Month:00}-{numeracion.ToString().PadLeft(10, '0')}";
+
         
         await using var tx = await context.Database.BeginTransactionAsync();
         
@@ -158,4 +129,35 @@ public class RegistroComiteService : IRegistroComite
             };
         }
     }
+    
+    // Implementación
+    public async Task<ComiteModel?> GetComiteByIdAsync(int comiteId)
+    {
+        await using var context = await _context.CreateDbContextAsync();
+    
+        var comite = await context.TbDatosComite
+            .Include(c => c.TbDatosMiembros) // Asegúrate de la relación
+            .FirstOrDefaultAsync(c => c.DcomiteId == comiteId);
+
+        if (comite == null) return null;
+
+        return new ComiteModel
+        {
+            NombreComiteSalud = comite.NombreComiteSalud,
+            Comunidad = comite.Comunidad,
+            RegionSaludId = comite.RegionSaludId,
+            ProvinciaId = comite.ProvinciaId,
+            DistritoId = comite.DistritoId,
+            CorregimientoId = comite.CorregimientoId,
+            Miembros = comite.TbDatosMiembros.Select(m => new MiembroComiteModel()
+            {
+                MiembroId = m.DmiembroId,
+                NombreMiembro = m.NombreMiembro,
+                ApellidoMiembro = m.ApellidoMiembro,
+                CedulaMiembro = m.CedulaMiembro,
+                CargoId = m.CargoId
+            }).ToList()
+        };
+    }
+
 }

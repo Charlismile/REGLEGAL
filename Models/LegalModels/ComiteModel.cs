@@ -23,11 +23,11 @@ public class ComiteModel
     public int? DistritoId { get; set; }
     public int? CorregimientoId { get; set; }
 
-    // // MIEMBROS
-    // [MinLength(1, ErrorMessage = "Debe agregar al menos 1 miembro")]
-    // public List<MiembroComiteModel> Miembros { get; set; } = new();
-    //
-    // public List<MiembroComiteModel> MiembrosInterventores { get; set; } = new();
+    // MIEMBROS
+    [MinLength(1, ErrorMessage = "Debe agregar al menos 1 miembro")]
+    public List<MiembroComiteModel> Miembros { get; set; } = new();
+    
+    public List<MiembroComiteModel> MiembrosInterventores { get; set; } = new();
     //
     // public List<ArchivoModel> Archivos { get; set; } = new();
     //

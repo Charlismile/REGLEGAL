@@ -11,7 +11,7 @@
     <fieldset class="bloque-form">
         <legend>Tipo de Trámite</legend>
         <div class="d-flex flex-wrap gap-4">
-            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum">
+            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum" ValueChanged="OnTipoTramiteChanged">
                 <div class="form-check">
                     <InputRadio class="form-check-input" Value="TipoTramite.Personeria" id="Personeria" />
                     <label class="form-check-label" for="Personeria">Personería</label>
@@ -28,105 +28,150 @@
             <ValidationMessage For="@(() => CModel.TipoTramiteEnum)" class="text-danger small"/>
         </div>
     </fieldset>
-    
-    <!-- PERSONERÍA -->
-    @if (CModel.TipoTramiteEnum == TipoTramite.Personeria)
-    {
-        <!-- DATOS DEL COMITÉ -->
-        <fieldset class="bloque-form">
-            <legend>Información del Comité</legend>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Nombre del Comité de Salud *</label>
-                <InputText @bind-Value="CModel.NombreComiteSalud" class="form-control" placeholder="Ej: Comité de Salud de San Miguelito"/>
-                <ValidationMessage For="@(() => CModel.NombreComiteSalud)" class="text-danger small"/>
-            </div>
 
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Comunidad</label>
-                <InputText @bind-Value="CModel.Comunidad" class="form-control" placeholder="Ej: Barrio, corregimiento, etc."/>
-            </div>
-        </fieldset>
-
-        <!-- UBICACIÓN GEOGRÁFICA -->
-        <fieldset class="bloque-form">
-            <legend>Ubicación Geográfica</legend>
-            <div class="row g-3 mb-2">
-                <div class="col-sm-3">
-                    <label class="form-label">Región</label>
-                    <InputSelect TValue="int?" class="form-select"
-                                 Value="@CModel.RegionSaludId"
-                                 ValueChanged="@(async (int? RegionId) => await RegionChanged(RegionId ?? 0))"
-                                 ValueExpression="@(() => CModel.RegionSaludId)">
-                        <option value="">--Seleccione--</option>
-                        @foreach (var x in comiteRegioneslist)
-                        {
-                            <option value="@x.Id">@x.Name</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="@(() => CModel.RegionSaludId)" class="text-danger"/>
-                </div>
-                <div class="col-sm-3">
-                    <label class="form-label">Provincia</label>
-                    <InputSelect TValue="int?" class="form-select"
-                                 Value="@CModel.ProvinciaId"
-                                 ValueChanged="@(async (int? ProvinciaId) => await ProvinciaChanged(ProvinciaId ?? 0))"
-                                 ValueExpression="@(() => CModel.ProvinciaId)">
-                        <option value="">--Seleccione--</option>
-                        @foreach (var x in comiteProvinciaList)
-                        {
-                            <option value="@x.Id">@x.Name</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="@(() => CModel.ProvinciaId)" class="text-danger"/>
-                </div>
-
-                <div class="col-sm-3">
-                    <label class="form-label">Distrito</label>
-                    <InputSelect TValue="int?" class="form-select"
-                                 Value="@CModel.DistritoId"
-                                 ValueChanged="@(async (int? DistritoId) => await DistritoChanged(DistritoId ?? 0))"
-                                 ValueExpression="@(() => CModel.DistritoId)">
-                        <option value="">--Seleccione--</option>
-                        @foreach (var x in comiteDistritoList)
-                        {
-                            <option value="@x.Id">@x.Name</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="@(() => CModel.DistritoId)" class="text-danger"/>
-                </div>
-                <div class="col-sm-3">
-                    <label class="form-label">Corregimiento</label>
-                    <InputSelect TValue="int?" class="form-select"
-                                 Value="@CModel.CorregimientoId"
-                                 ValueChanged="@(async (int? CorregimientoId) => CModel.CorregimientoId = CorregimientoId)"
-                                 ValueExpression="@(() => CModel.CorregimientoId)">
-                        <option value="">--Seleccione--</option>
-                        @foreach (var x in comiteCorregimientoList)
-                        {
-                            <option value="@x.Id">@x.Name</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="@(() => CModel.CorregimientoId)" class="text-danger"/>
-                </div>
-            </div>
-        </fieldset>
-
-        <!--miembros comite-->
-
-
-        @* <!-- DOCUMENTO LEGAL --> *@
-        @* <fieldset class="bloque-form"> *@
-        @*     <legend>Documento Legal</legend> *@
-        @*     <label class="form-label fw-semibold">Resolución oficial</label> *@
-        @*     <InputFile class="form-control" OnChange="OnFileSelected"/> *@
-        @*     <small class="form-text text-muted">Suba el documento oficial (PDF, DOC, etc.).</small> *@
-        @* </fieldset> *@
-
-        <div class="mt-4 d-flex gap-2">
-            <button type="submit" class="btn btn-primary px-4">💾 Guardar</button>
-            <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancelar">Cancelar</button>
+    <!-- DATOS DEL COMITÉ (solo lectura si no es personería) -->
+    <fieldset class="bloque-form">
+        <legend>Información del Comité</legend>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre del Comité de Salud *</label>
+            <InputText @bind-Value="CModel.NombreComiteSalud" class="form-control" placeholder="Ej: Comité de Salud de San Miguelito"
+                       readonly="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)" />
+            <ValidationMessage For="@(() => CModel.NombreComiteSalud)" class="text-danger small"/>
         </div>
-    }
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Comunidad</label>
+            <InputText @bind-Value="CModel.Comunidad" class="form-control" placeholder="Ej: Barrio, corregimiento, etc."
+                       readonly="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)" />
+        </div>
+    </fieldset>
+
+    <!-- UBICACIÓN GEOGRÁFICA -->
+    <fieldset class="bloque-form">
+        <legend>Ubicación Geográfica</legend>
+        <div class="row g-3 mb-2">
+            <div class="col-sm-3">
+                <label class="form-label">Región</label>
+                <InputSelect TValue="int?" class="form-select"
+                             Value="@CModel.RegionSaludId"
+                             ValueChanged="@(async (int? RegionId) => await RegionChanged(RegionId ?? 0))"
+                             ValueExpression="@(() => CModel.RegionSaludId)"
+                             disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
+                    <option value="">--Seleccione--</option>
+                    @foreach (var x in comiteRegioneslist)
+                    {
+                        <option value="@x.Id">@x.Name</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Provincia</label>
+                <InputSelect TValue="int?" class="form-select"
+                             Value="@CModel.ProvinciaId"
+                             ValueChanged="@(async (int? ProvinciaId) => await ProvinciaChanged(ProvinciaId ?? 0))"
+                             ValueExpression="@(() => CModel.ProvinciaId)"
+                             disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
+                    <option value="">--Seleccione--</option>
+                    @foreach (var x in comiteProvinciaList)
+                    {
+                        <option value="@x.Id">@x.Name</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Distrito</label>
+                <InputSelect TValue="int?" class="form-select"
+                             Value="@CModel.DistritoId"
+                             ValueChanged="@(async (int? DistritoId) => await DistritoChanged(DistritoId ?? 0))"
+                             ValueExpression="@(() => CModel.DistritoId)"
+                             disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
+                    <option value="">--Seleccione--</option>
+                    @foreach (var x in comiteDistritoList)
+                    {
+                        <option value="@x.Id">@x.Name</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Corregimiento</label>
+                <InputSelect TValue="int?" class="form-select"
+                             Value="@CModel.CorregimientoId"
+                             ValueChanged="@(async (int? CorregimientoId) => CModel.CorregimientoId = CorregimientoId)"
+                             ValueExpression="@(() => CModel.CorregimientoId)"
+                             disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
+                    <option value="">--Seleccione--</option>
+                    @foreach (var x in comiteCorregimientoList)
+                    {
+                        <option value="@x.Id">@x.Name</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+    </fieldset>
+
+    <!-- MIEMBROS DEL COMITÉ -->
+    <fieldset class="bloque-form">
+        <legend>Miembros del Comité</legend>
+        @if (CModel.TipoTramiteEnum == TipoTramite.Personeria || CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva)
+        {
+            <p class="text-muted">Agregue hasta 7 miembros de la junta directiva.</p>
+            @foreach (var miembro in CModel.Miembros)
+            {
+                <div @key="miembro.MiembroId" class="mb-2">
+                    <InputText @bind-Value="miembro.NombreMiembro" placeholder="Nombre" />
+                    <InputText @bind-Value="miembro.ApellidoMiembro" placeholder="Apellido" />
+                    <InputText @bind-Value="miembro.CedulaMiembro" placeholder="Cédula" />
+                    <InputSelect @bind-Value="miembro.CargoId">
+                        @foreach (var cargo in Cargos)
+                        {
+                            <option value="@cargo.Id">@cargo.Name</option>
+                        }
+                    </InputSelect>
+                    <button type="button" @onclick="() => RemoverMiembro(miembro.MiembroId)">Eliminar</button>
+                </div>
+            }
+
+            @if (CModel.Miembros.Count < 7)
+            {
+                <button type="button" class="btn btn-outline-primary btn-sm mt-2" @onclick="AgregarMiembro">➕ Agregar miembro</button>
+            }
+        }
+        else if (CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
+        {
+            <p class="text-muted">Seleccione hasta 2 personas de la directiva existente (Presidente y Tesorero).</p>
+            @for (int i = 0; i < CModel.MiembrosInterventores.Count; i++)
+            {
+                <div @key="CModel.MiembrosInterventores[i].MiembroId" class="row g-3 mb-2">
+                    <div class="col-sm-4">
+                        <label class="form-label">Nombre *</label>
+                        <InputText @bind-Value="CModel.MiembrosInterventores[i].NombreMiembro" class="form-control" />
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Apellido *</label>
+                        <InputText @bind-Value="CModel.MiembrosInterventores[i].ApellidoMiembro" class="form-control" />
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Cédula *</label>
+                        <InputText @bind-Value="CModel.MiembrosInterventores[i].CedulaMiembro" class="form-control" />
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label">Cargo</label>
+                        <InputSelect @bind-Value="CModel.MiembrosInterventores[i].CargoId">
+                            @foreach (var cargo in Cargos)
+                            {
+                                <option value="@cargo.Id">@cargo.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+            }
+        }
+    </fieldset>
+
+    <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4">💾 Guardar</button>
+        <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancelar">Cancelar</button>
+    </div>
 </EditForm>
 
 <style>

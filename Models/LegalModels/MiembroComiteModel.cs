@@ -24,4 +24,5 @@ public class MiembroComiteModel
 
     [EmailAddress(ErrorMessage = "Correo electrónico no válido")]
     public string? CorreoMiembro { get; set; }
+    public int MiembroId { get; set; }
 }

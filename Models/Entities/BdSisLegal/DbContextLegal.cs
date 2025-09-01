@@ -218,7 +218,9 @@ public partial class DbContextLegal : DbContext
             entity.Property(e => e.CedulaMiembro)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+            entity.Property(e => e.CorreoMiembro).HasMaxLength(200);
             entity.Property(e => e.NombreMiembro).HasMaxLength(200);
+            entity.Property(e => e.TelefonoMiembro).HasMaxLength(20);
 
             entity.HasOne(d => d.Cargo).WithMany(p => p.TbDatosMiembros)
                 .HasForeignKey(d => d.CargoId)

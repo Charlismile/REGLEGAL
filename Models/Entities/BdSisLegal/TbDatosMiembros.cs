@@ -17,6 +17,10 @@ public partial class TbDatosMiembros
 
     public string? ApellidoMiembro { get; set; }
 
+    public string? TelefonoMiembro { get; set; }
+
+    public string? CorreoMiembro { get; set; }
+
     public virtual TbCargosMiembrosComite Cargo { get; set; } = null!;
 
     public virtual TbDatosComite? Dcomite { get; set; }
