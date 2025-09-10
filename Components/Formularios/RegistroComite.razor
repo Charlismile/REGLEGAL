@@ -11,7 +11,7 @@
     <fieldset class="bloque-form">
         <legend>Tipo de Trámite</legend>
         <div class="d-flex flex-wrap gap-4">
-            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum" ValueChanged="OnTipoTramiteChanged">
+            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum" @onchaged="OnTipoTramiteChanged">
                 <div class="form-check">
                     <InputRadio class="form-check-input" Value="TipoTramite.Personeria" id="Personeria" />
                     <label class="form-check-label" for="Personeria">Personería</label>
@@ -169,8 +169,12 @@
     </fieldset>
 
     <div class="mt-4 d-flex gap-2">
-        <button type="submit" class="btn btn-primary px-4">💾 Guardar</button>
-        <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancelar">Cancelar</button>
+        <button type="submit" class="btn btn-primary px-4" disabled="@IsSubmitting">
+            @(IsSubmitting ? "Registrando..." : "Registrar Asociación")
+        </button>
+        <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancelar" disabled="@IsSubmitting">
+            Cancelar
+        </button>
     </div>
 </EditForm>
 

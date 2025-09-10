@@ -27,7 +27,7 @@ public partial class RegistroComite : ComponentBase
     private List<ListModel> comiteCorregimientoList { get; set; } = new();
     private List<ListModel> Cargos { get; set; } = new();
 
-    private IBrowserFile _archivoResolucion;
+    private bool IsSubmitting = false;
 
     protected override void OnInitialized()
     {
@@ -89,11 +89,11 @@ public partial class RegistroComite : ComponentBase
         CModel.CorregimientoId = null;
     }
 
-    private Task OnFileSelected(InputFileChangeEventArgs e)
-    {
-        _archivoResolucion = e.File;
-        return Task.CompletedTask;
-    }
+    // private Task OnFileSelected(InputFileChangeEventArgs e)
+    // {
+    //     _archivoResolucion = e.File;
+    //     return Task.CompletedTask;
+    // }
 
     private async Task HandleValidSubmit()
     {

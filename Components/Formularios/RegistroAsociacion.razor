@@ -45,8 +45,13 @@
         <legend>Representante Legal</legend>
         <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label fw-semibold">Nombre *</label>
+                <label class="form-label fw-semibold">Nombre</label>
                 <InputText @bind-Value="AModel.NombreRepLegal" class="form-control" />
+                <ValidationMessage For="@(() => AModel.NombreRepLegal)" class="text-danger small"/>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Apellido</label>
+                <InputText @bind-Value="AModel.NombreApoAbogado" class="form-control" />
                 <ValidationMessage For="@(() => AModel.NombreRepLegal)" class="text-danger small"/>
             </div>
             <div class="col-md-6">
@@ -115,22 +120,22 @@
                 <h5 class="fw-semibold">Firma de Abogados</h5>
                 <div class="row g-3 mt-2">
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Nombre de la Firma *</label>
+                        <label class="form-label fw-semibold">Nombre de la Firma</label>
                         <InputText @bind-Value="AModel.NombreFirma" class="form-control" />
                         <ValidationMessage For="@(() => AModel.NombreFirma)" class="text-danger small"/>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Correo de la Firma *</label>
+                        <label class="form-label fw-semibold">Correo de la Firma</label>
                         <InputText @bind-Value="AModel.CorreoFirma" class="form-control" type="email" />
                         <ValidationMessage For="@(() => AModel.CorreoFirma)" class="text-danger small"/>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Teléfono de la Firma *</label>
+                        <label class="form-label fw-semibold">Teléfono de la Firma</label>
                         <InputText @bind-Value="AModel.TelefonoFirma" class="form-control" />
                         <ValidationMessage For="@(() => AModel.TelefonoFirma)" class="text-danger small"/>
                     </div>
                     <div class="col-12">
-                        <label class="form-label fw-semibold">Dirección de la Firma *</label>
+                        <label class="form-label fw-semibold">Dirección de la Firma</label>
                         <InputText @bind-Value="AModel.DireccionFirma" class="form-control" />
                         <ValidationMessage For="@(() => AModel.DireccionFirma)" class="text-danger small"/>
                     </div>
