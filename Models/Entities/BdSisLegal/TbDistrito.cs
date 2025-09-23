@@ -14,6 +14,4 @@ public partial class TbDistrito
     public virtual TbProvincia Provincia { get; set; } = null!;
 
     public virtual ICollection<TbCorregimiento> TbCorregimiento { get; set; } = new List<TbCorregimiento>();
-
-    public virtual ICollection<TbDatosComite> TbDatosComite { get; set; } = new List<TbDatosComite>();
 }

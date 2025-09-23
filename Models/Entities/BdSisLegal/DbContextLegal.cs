@@ -160,14 +160,13 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbCorregimiento>(entity =>
         {
-            entity.HasKey(e => e.CorregimientoId).HasName("PK__TbCorreg__5F50F199086D1C25");
+            entity.HasKey(e => e.CorregimientoId).HasName("PK__TbCorreg__5F50F199B91D48EC");
 
-            entity.Property(e => e.NombreCorregimiento).HasMaxLength(100);
+            entity.Property(e => e.NombreCorregimiento).HasMaxLength(150);
 
             entity.HasOne(d => d.Distrito).WithMany(p => p.TbCorregimiento)
                 .HasForeignKey(d => d.DistritoId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Corregimiento_Distrito");
+                .HasConstraintName("FK_TbCorregimiento_TbDistrito");
         });
 
         modelBuilder.Entity<TbDatosComite>(entity =>
@@ -185,26 +184,6 @@ public partial class DbContextLegal : DbContext
             entity.Property(e => e.DcomiteId).HasColumnName("DComiteId");
             entity.Property(e => e.Comunidad).HasMaxLength(200);
             entity.Property(e => e.NombreComiteSalud).HasMaxLength(200);
-
-            entity.HasOne(d => d.Corregimiento).WithMany(p => p.TbDatosComite)
-                .HasForeignKey(d => d.CorregimientoId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DatosComite_Corregimiento");
-
-            entity.HasOne(d => d.Distrito).WithMany(p => p.TbDatosComite)
-                .HasForeignKey(d => d.DistritoId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DatosComite_Distrito");
-
-            entity.HasOne(d => d.Provincia).WithMany(p => p.TbDatosComite)
-                .HasForeignKey(d => d.ProvinciaId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DatosComite_Provincia");
-
-            entity.HasOne(d => d.RegionSalud).WithMany(p => p.TbDatosComite)
-                .HasForeignKey(d => d.RegionSaludId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DatosComite_RegionSalud");
         });
 
         modelBuilder.Entity<TbDatosMiembros>(entity =>
@@ -315,14 +294,13 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbDistrito>(entity =>
         {
-            entity.HasKey(e => e.DistritoId).HasName("PK__TbDistri__BE6ADADD32E7548A");
+            entity.HasKey(e => e.DistritoId).HasName("PK__TbDistri__BE6ADADDCD7A1F4B");
 
-            entity.Property(e => e.NombreDistrito).HasMaxLength(100);
+            entity.Property(e => e.NombreDistrito).HasMaxLength(150);
 
             entity.HasOne(d => d.Provincia).WithMany(p => p.TbDistrito)
                 .HasForeignKey(d => d.ProvinciaId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Distrito_Provincia");
+                .HasConstraintName("FK_TbDistrito_TbProvincia");
         });
 
         modelBuilder.Entity<TbEstadoSolicitud>(entity =>
@@ -335,13 +313,13 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbProvincia>(entity =>
         {
-            entity.HasKey(e => e.ProvinciaId).HasName("PK__TbProvin__F7CBC777111E15E1");
+            entity.HasKey(e => e.ProvinciaId).HasName("PK__TbProvin__F7CBC777949B9F62");
 
-            entity.Property(e => e.NombreProvincia).HasMaxLength(100);
+            entity.Property(e => e.NombreProvincia).HasMaxLength(150);
 
             entity.HasOne(d => d.RegionSalud).WithMany(p => p.TbProvincia)
                 .HasForeignKey(d => d.RegionSaludId)
-                .HasConstraintName("FK_Provincia_RegionSalud");
+                .HasConstraintName("FK_TbProvincia_TbRegionSalud");
         });
 
         modelBuilder.Entity<TbRegSecuencia>(entity =>
@@ -353,7 +331,7 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbRegionSalud>(entity =>
         {
-            entity.HasKey(e => e.RegionSaludId).HasName("PK__TbRegion__2B018A54B22A0920");
+            entity.HasKey(e => e.RegionSaludId).HasName("PK__TbRegion__2B018A541F107B4B");
 
             entity.Property(e => e.NombreRegion).HasMaxLength(150);
         });
