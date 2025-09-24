@@ -36,6 +36,10 @@ public class AsociacionModel
     [Required(ErrorMessage = "El nombre del representante es obligatorio")]
     [StringLength(100)]
     public string NombreRepLegal { get; set; } = "";
+    
+    [Required(ErrorMessage = "El apellido del representante es obligatorio")]
+    [StringLength(100)]
+    public string ApellidoRepLegal { get; set; } = "";
 
     [Required(ErrorMessage = "El cargo del representante es obligatorio")]
     [StringLength(100)]
@@ -60,6 +64,11 @@ public class AsociacionModel
     [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "Solo puede contener letras y espacios")]
     [StringLength(200)]
     public string NombreApoAbogado { get; set; } = "";
+    
+    [Required(ErrorMessage = "El apellido del apoderado es obligatorio")]
+    [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "Solo puede contener letras y espacios")]
+    [StringLength(200)]
+    public string ApellidoApoAbogado { get; set; } = "";
 
     [Required(ErrorMessage = "La cédula del apoderado es obligatoria")]
     [RegularExpression(@"^\d{1,2}-\d{1,8}-\d{1,8}$", ErrorMessage = "Formato inválido: 1-123456-7")]
@@ -123,11 +132,13 @@ public class AsociacionModel
     [Range(1, int.MaxValue)]
     // public int TipoTramiteId { get; set; }
 
-    public bool EditMode { get; set; } = false;
+    public bool EditMode { get; set; } = true;
 
     public DateTime? CreadaEn { get; set; }
 
     public string CreadaPor { get; set; } = "";
+
+    public DateTime FechaResolucion { get; set; } = DateTime.Now;
 
     
     //listas

@@ -845,7 +845,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2591"
+          "Value": "3606"
         },
         {
           "Name": "Content-Type",
@@ -853,22 +853,22 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"u9qEka1auR7E3rd3/8/j8hkQdSOYj9bRJ4nYiFDR1sE=\""
+          "Value": "\"vTp3BRRTL5HyeFIK871E6lWik5spOIS4S+lDD3T4wR0=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 24 Jul 2025 18:16:14 GMT"
+          "Value": "Wed, 24 Sep 2025 14:28:27 GMT"
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-u9qEka1auR7E3rd3/8/j8hkQdSOYj9bRJ4nYiFDR1sE="
+          "Value": "sha256-vTp3BRRTL5HyeFIK871E6lWik5spOIS4S+lDD3T4wR0="
         }
       ]
     },
     {
-      "Route": "app.da95v2qkru.css",
+      "Route": "app.z0e9e6j9l2.css",
       "AssetFile": "app.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -882,7 +882,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2591"
+          "Value": "3606"
         },
         {
           "Name": "Content-Type",
@@ -890,21 +890,21 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"u9qEka1auR7E3rd3/8/j8hkQdSOYj9bRJ4nYiFDR1sE=\""
+          "Value": "\"vTp3BRRTL5HyeFIK871E6lWik5spOIS4S+lDD3T4wR0=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 24 Jul 2025 18:16:14 GMT"
+          "Value": "Wed, 24 Sep 2025 14:28:27 GMT"
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "da95v2qkru"
+          "Value": "z0e9e6j9l2"
         },
         {
           "Name": "integrity",
-          "Value": "sha256-u9qEka1auR7E3rd3/8/j8hkQdSOYj9bRJ4nYiFDR1sE="
+          "Value": "sha256-vTp3BRRTL5HyeFIK871E6lWik5spOIS4S+lDD3T4wR0="
         },
         {
           "Name": "label",
@@ -1237,6 +1237,88 @@
         {
           "Name": "label",
           "Value": "logo-gob.png"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-legales/DocumentosAsociacion/1/Carlos Bernal_CV_Software Engineer.mgl1gwiq7h.pdf",
+      "AssetFile": "uploads/documentos-legales/DocumentosAsociacion/1/Carlos Bernal_CV_Software Engineer.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1205371"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"5lJ88IcHZQwnnPusrUzxk1d5vJVfZjLyaqfEh4U6HPQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 24 Sep 2025 20:42:21 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "mgl1gwiq7h"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-5lJ88IcHZQwnnPusrUzxk1d5vJVfZjLyaqfEh4U6HPQ="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-legales/DocumentosAsociacion/1/Carlos Bernal_CV_Software Engineer.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-legales/DocumentosAsociacion/1/Carlos Bernal_CV_Software Engineer.pdf",
+      "AssetFile": "uploads/documentos-legales/DocumentosAsociacion/1/Carlos Bernal_CV_Software Engineer.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1205371"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"5lJ88IcHZQwnnPusrUzxk1d5vJVfZjLyaqfEh4U6HPQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 24 Sep 2025 20:42:21 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-5lJ88IcHZQwnnPusrUzxk1d5vJVfZjLyaqfEh4U6HPQ="
         }
       ]
     }

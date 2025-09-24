@@ -5,7 +5,7 @@ namespace REGISTROLEGAL.Models.Entities.BdSisLegal;
 
 public partial class TbDetalleRegAsociacion
 {
-    public int AsociacionId { get; set; }
+    public int DetRegAsociacionId { get; set; }
 
     public DateTime CreadaEn { get; set; }
 
@@ -18,6 +18,14 @@ public partial class TbDetalleRegAsociacion
     public int NumRegAmes { get; set; }
 
     public string? NumRegAcompleta { get; set; }
+
+    public string? NumeroResolucion { get; set; }
+
+    public DateTime? FechaResolucion { get; set; }
+
+    public int AsociacionId { get; set; }
+
+    public virtual TbAsociacion Asociacion { get; set; } = null!;
 
     public virtual ICollection<TbAsociacionArchivos> TbAsociacionArchivos { get; set; } = new List<TbAsociacionArchivos>();
 

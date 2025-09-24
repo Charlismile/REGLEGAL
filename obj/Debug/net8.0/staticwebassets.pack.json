@@ -25,6 +25,10 @@
       "PackagePath": "staticwebassets\\logo-gob.png"
     },
     {
+      "Id": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-legales\\DocumentosAsociacion\\1\\Carlos Bernal_CV_Software Engineer.pdf",
+      "PackagePath": "staticwebassets\\uploads\\documentos-legales\\DocumentosAsociacion\\1\\Carlos Bernal_CV_Software Engineer.pdf"
+    },
+    {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.REGISTROLEGAL.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },

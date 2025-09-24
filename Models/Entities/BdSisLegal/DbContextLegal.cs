@@ -53,6 +53,10 @@ public partial class DbContextLegal : DbContext
 
     public virtual DbSet<TbRepresentanteLegal> TbRepresentanteLegal { get; set; }
 
+    public virtual DbSet<TbSolicitud> TbSolicitud { get; set; }
+
+    public virtual DbSet<TbSolicitudDetalle> TbSolicitudDetalle { get; set; }
+
     public virtual DbSet<TbTipoTramite> TbTipoTramite { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -97,6 +101,9 @@ public partial class DbContextLegal : DbContext
             entity.HasKey(e => e.AsociacionId).HasName("PK__TbAsocia__5B58E10505500571");
 
             entity.Property(e => e.Actividad).HasMaxLength(1000);
+            entity.Property(e => e.FechaResolucion)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
             entity.Property(e => e.NombreAsociacion).HasMaxLength(200);
 
             entity.HasOne(d => d.ApoderadoLegal).WithMany(p => p.TbAsociacion)
@@ -214,13 +221,14 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbDetalleRegAsociacion>(entity =>
         {
-            entity.HasKey(e => e.AsociacionId).HasName("PK__TbDetall__5B58E10548EEA62B");
+            entity.HasKey(e => e.DetRegAsociacionId).HasName("PK__TbDetall__5B58E10548EEA62B");
 
             entity.HasIndex(e => e.CreadaPor, "IX_TbDetalleRegAsociacion_CreadaPor");
 
             entity.Property(e => e.CreadaEn)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.FechaResolucion).HasColumnType("datetime");
             entity.Property(e => e.NomRegAanio).HasColumnName("NomRegAAnio");
             entity.Property(e => e.NumRegAcompleta)
                 .HasMaxLength(18)
@@ -228,6 +236,12 @@ public partial class DbContextLegal : DbContext
                 .HasColumnName("NumRegACompleta");
             entity.Property(e => e.NumRegAmes).HasColumnName("NumRegAMes");
             entity.Property(e => e.NumRegAsecuencia).HasColumnName("NumRegASecuencia");
+            entity.Property(e => e.NumeroResolucion).HasMaxLength(50);
+
+            entity.HasOne(d => d.Asociacion).WithMany(p => p.TbDetalleRegAsociacion)
+                .HasForeignKey(d => d.AsociacionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TbDetalleRegAsociacion_TbAsociacion");
         });
 
         modelBuilder.Entity<TbDetalleRegAsociacionHistorial>(entity =>
@@ -261,7 +275,12 @@ public partial class DbContextLegal : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.CreadaPor).HasMaxLength(450);
+            entity.Property(e => e.FechaEleccion).HasColumnType("datetime");
+            entity.Property(e => e.FechaRegistro).HasColumnType("datetime");
+            entity.Property(e => e.FechaResolucion).HasColumnType("datetime");
             entity.Property(e => e.NumRegCoCompleta).HasMaxLength(50);
+            entity.Property(e => e.NumeroNota).HasMaxLength(50);
+            entity.Property(e => e.NumeroResolucion).HasMaxLength(50);
 
             entity.HasOne(d => d.TipoTramite).WithMany(p => p.TbDetalleRegComite)
                 .HasForeignKey(d => d.TipoTramiteId)
@@ -350,6 +369,39 @@ public partial class DbContextLegal : DbContext
             entity.Property(e => e.TelefonoRepLegal)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<TbSolicitud>(entity =>
+        {
+            entity.HasKey(e => e.SolicitudId).HasName("PK__TbSolici__85E95DC71169DBEA");
+
+            entity.Property(e => e.Comentario).HasMaxLength(1000);
+            entity.Property(e => e.Entidad).HasMaxLength(100);
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UsuarioCreador).HasMaxLength(450);
+
+            entity.HasOne(d => d.Estado).WithMany(p => p.TbSolicitud)
+                .HasForeignKey(d => d.EstadoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Solicitud_Estado");
+        });
+
+        modelBuilder.Entity<TbSolicitudDetalle>(entity =>
+        {
+            entity.HasKey(e => e.SolicitudDetalleId).HasName("PK__TbSolici__76D713263AD9C9A2");
+
+            entity.Property(e => e.Comentario).HasMaxLength(1000);
+            entity.Property(e => e.FechaCambio)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UsuarioCambio).HasMaxLength(450);
+
+            entity.HasOne(d => d.Solicitud).WithMany(p => p.TbSolicitudDetalle)
+                .HasForeignKey(d => d.SolicitudId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SolicitudDetalle_Solicitud");
         });
 
         modelBuilder.Entity<TbTipoTramite>(entity =>

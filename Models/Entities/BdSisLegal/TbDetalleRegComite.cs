@@ -23,6 +23,16 @@ public partial class TbDetalleRegComite
 
     public string? NumRegCoCompleta { get; set; }
 
+    public string? NumeroNota { get; set; }
+
+    public DateTime? FechaRegistro { get; set; }
+
+    public DateTime? FechaEleccion { get; set; }
+
+    public string? NumeroResolucion { get; set; }
+
+    public DateTime? FechaResolucion { get; set; }
+
     public virtual ICollection<TbComiteArchivos> TbComiteArchivos { get; set; } = new List<TbComiteArchivos>();
 
     public virtual ICollection<TbDetalleRegComiteHistorial> TbDetalleRegComiteHistorial { get; set; } = new List<TbDetalleRegComiteHistorial>();

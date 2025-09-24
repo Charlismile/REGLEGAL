@@ -12,4 +12,6 @@ public partial class TbEstadoSolicitud
     public virtual ICollection<TbDetalleRegAsociacionHistorial> TbDetalleRegAsociacionHistorial { get; set; } = new List<TbDetalleRegAsociacionHistorial>();
 
     public virtual ICollection<TbDetalleRegComiteHistorial> TbDetalleRegComiteHistorial { get; set; } = new List<TbDetalleRegComiteHistorial>();
+
+    public virtual ICollection<TbSolicitud> TbSolicitud { get; set; } = new List<TbSolicitud>();
 }

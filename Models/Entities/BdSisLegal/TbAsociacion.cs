@@ -17,7 +17,11 @@ public partial class TbAsociacion
 
     public string? Actividad { get; set; }
 
+    public DateTime FechaResolucion { get; set; }
+
     public virtual TbApoderadoLegal ApoderadoLegal { get; set; } = null!;
 
     public virtual TbRepresentanteLegal RepresentanteLegal { get; set; } = null!;
+
+    public virtual ICollection<TbDetalleRegAsociacion> TbDetalleRegAsociacion { get; set; } = new List<TbDetalleRegAsociacion>();
 }
