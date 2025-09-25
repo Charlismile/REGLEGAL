@@ -19,7 +19,6 @@ public partial class RegistroAsociacion : ComponentBase
 
     protected override void OnInitialized()
     {
-        // El cargo del representante legal siempre es Presidente
         AModel.CargoRepLegal = "Presidente";
     }
 
@@ -60,7 +59,7 @@ public partial class RegistroAsociacion : ComponentBase
 
         try
         {
-            // ✅ Validación extra si pertenece a firma
+            // Validación de firma si aplica
             if (AModel.PerteneceAFirma)
             {
                 if (string.IsNullOrWhiteSpace(AModel.NombreFirma) ||
@@ -73,15 +72,13 @@ public partial class RegistroAsociacion : ComponentBase
                 }
             }
 
-            // ✅ Crear asociación en la BD
             var resultado = await _RegistroAsociacionService.CrearAsociacion(AModel);
 
             if (resultado.Success)
             {
-                // Guardamos el ID en el modelo por si se usa después
                 AModel.AsociacionId = resultado.AsociacionId;
 
-                // ✅ Guardar archivos relacionados
+                // Guardar archivos
                 foreach (var archivo in AModel.DocumentosSubir)
                 {
                     var guardado = await _Commonservice.GuardarArchivoAsync(
@@ -91,13 +88,13 @@ public partial class RegistroAsociacion : ComponentBase
                     );
 
                     if (!guardado.ok)
-                        MensajeError += guardado.mensaje + "\n";
+                        MensajeError += $"No se pudo guardar {archivo.Name}: {guardado.mensaje}\n";
                 }
 
-                // ✅ Si toda salió bien
                 if (string.IsNullOrEmpty(MensajeError))
                 {
                     MensajeExito = "Asociación registrada con éxito.";
+                    await Task.Delay(1500);
                     Navigation.NavigateTo("/asociaciones");
                 }
             }
@@ -115,5 +112,6 @@ public partial class RegistroAsociacion : ComponentBase
             IsSubmitting = false;
         }
     }
+
     private void Cancelar() => Navigation.NavigateTo("/asociaciones");
 }

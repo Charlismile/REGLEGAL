@@ -8,7 +8,6 @@ public class AsociacionModel
     // ===============================
     // DATOS DE LA ASOCIACIÓN (TbAsociacion)
     // ===============================
-
     public int AsociacionId { get; set; } = 0;
 
     [Required(ErrorMessage = "El nombre de la asociación es obligatorio")]
@@ -25,7 +24,6 @@ public class AsociacionModel
     // ===============================
     // REPRESENTANTE LEGAL (TbRepresentanteLegal)
     // ===============================
-
     public int RepLegalId { get; set; } = 0;
 
     [Required(ErrorMessage = "La cédula del representante es obligatoria")]
@@ -57,7 +55,6 @@ public class AsociacionModel
     // ===============================
     // APODERADO LEGAL (TbApoderadoLegal)
     // ===============================
-
     public int ApoAbogadoId { get; set; } = 0;
 
     [Required(ErrorMessage = "El nombre del apoderado es obligatorio")]
@@ -92,11 +89,9 @@ public class AsociacionModel
     // ===============================
     // FIRMA LEGAL (TbApoderadoFirma)
     // ===============================
-
     public bool PerteneceAFirma { get; set; } = false;
 
     public int? ApoderadoFirmaId { get; set; }
-
     [StringLength(200)]
     public string NombreFirma { get; set; } = "";
 
@@ -114,35 +109,24 @@ public class AsociacionModel
     // ===============================
     // DETALLE REGISTRO (TbDetalleRegAsociacion)
     // ===============================
-
     public int NumRegAsecuencia { get; set; }
-
     public int NomRegAanio { get; set; }
-
     public int NumRegAmes { get; set; }
-
     public string? NumRegAcompleta { get; set; }
-    
 
     // ===============================
     // TRÁMITE / ESTADO / AUDITORÍA
     // ===============================
-
-    [Required(ErrorMessage = "El tipo de trámite es obligatorio")]
-    [Range(1, int.MaxValue)]
-    // public int TipoTramiteId { get; set; }
-
     public bool EditMode { get; set; } = true;
-
     public DateTime? CreadaEn { get; set; }
-
     public string CreadaPor { get; set; } = "";
-
     public DateTime FechaResolucion { get; set; } = DateTime.Now;
 
-    
-    //listas
-    public List<ArchivoModel> Archivos { get; set; } = new();
-
+    // ===============================
+    // ARCHIVOS / DOCUMENTOS
+    // ===============================
+    public List<AArchivoModel> Archivos { get; set; } = new();
     public List<IBrowserFile> DocumentosSubir { get; set; } = new();
 }
+
+

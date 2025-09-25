@@ -11,7 +11,7 @@
     <fieldset class="bloque-form">
         <legend>Tipo de Trámite</legend>
         <div class="d-flex flex-wrap gap-4">
-            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum" @onchaged="OnTipoTramiteChanged">
+            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum" @onchange="OnTipoTramiteChanged">
                 <div class="form-check">
                     <InputRadio class="form-check-input" Value="TipoTramite.Personeria" id="Personeria" />
                     <label class="form-check-label" for="Personeria">Personería</label>
@@ -29,24 +29,26 @@
         </div>
     </fieldset>
 
-    <!-- DATOS DEL COMITÉ (solo lectura si no es personería) -->
+    <!-- DATOS DEL COMITÉ -->
     <fieldset class="bloque-form">
         <legend>Información del Comité</legend>
         <div class="mb-3">
             <label class="form-label fw-semibold">Nombre del Comité de Salud *</label>
-            <InputText @bind-Value="CModel.NombreComiteSalud" class="form-control" placeholder="Ej: Comité de Salud de San Miguelito"
+            <InputText @bind-Value="CModel.NombreComiteSalud" class="form-control"
+                       placeholder="Ej: Comité de Salud de San Miguelito"
                        readonly="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)" />
             <ValidationMessage For="@(() => CModel.NombreComiteSalud)" class="text-danger small"/>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-semibold">Comunidad</label>
-            <InputText @bind-Value="CModel.Comunidad" class="form-control" placeholder="Ej: Barrio, corregimiento, etc."
+            <InputText @bind-Value="CModel.Comunidad" class="form-control"
+                       placeholder="Ej: Barrio, corregimiento, etc."
                        readonly="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)" />
         </div>
     </fieldset>
 
-    <!-- UBICACIÓN GEOGRÁFICA --> 
+    <!-- UBICACIÓN GEOGRÁFICA -->
     <fieldset class="bloque-form">
         <legend>Ubicación Geográfica</legend>
         <div class="row g-3 mb-2">
@@ -54,7 +56,7 @@
                 <label class="form-label">Región</label>
                 <InputSelect TValue="int?" class="form-select"
                              Value="@CModel.RegionSaludId"
-                             ValueChanged="@(async (int? RegionId) => await RegionChanged(RegionId ?? 0))"
+                             ValueChanged="@(async (int? id) => await RegionChanged(id ?? 0))"
                              ValueExpression="@(() => CModel.RegionSaludId)"
                              disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
                     <option value="">--Seleccione--</option>
@@ -68,7 +70,7 @@
                 <label class="form-label">Provincia</label>
                 <InputSelect TValue="int?" class="form-select"
                              Value="@CModel.ProvinciaId"
-                             ValueChanged="@(async (int? ProvinciaId) => await ProvinciaChanged(ProvinciaId ?? 0))"
+                             ValueChanged="@(async (int? id) => await ProvinciaChanged(id ?? 0))"
                              ValueExpression="@(() => CModel.ProvinciaId)"
                              disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
                     <option value="">--Seleccione--</option>
@@ -82,7 +84,7 @@
                 <label class="form-label">Distrito</label>
                 <InputSelect TValue="int?" class="form-select"
                              Value="@CModel.DistritoId"
-                             ValueChanged="@(async (int? DistritoId) => await DistritoChanged(DistritoId ?? 0))"
+                             ValueChanged="@(async (int? id) => await DistritoChanged(id ?? 0))"
                              ValueExpression="@(() => CModel.DistritoId)"
                              disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
                     <option value="">--Seleccione--</option>
@@ -96,7 +98,7 @@
                 <label class="form-label">Corregimiento</label>
                 <InputSelect TValue="int?" class="form-select"
                              Value="@CModel.CorregimientoId"
-                             ValueChanged="@(async (int? CorregimientoId) => CModel.CorregimientoId = CorregimientoId)"
+                             ValueChanged="@(async (int? id) => CModel.CorregimientoId = id)"
                              ValueExpression="@(() => CModel.CorregimientoId)"
                              disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
                     <option value="">--Seleccione--</option>
@@ -117,17 +119,17 @@
             <p class="text-muted">Agregue hasta 7 miembros de la junta directiva.</p>
             @foreach (var miembro in CModel.Miembros)
             {
-                <div @key="miembro.MiembroId" class="mb-2">
-                    <InputText @bind-Value="miembro.NombreMiembro" placeholder="Nombre" />
-                    <InputText @bind-Value="miembro.ApellidoMiembro" placeholder="Apellido" />
-                    <InputText @bind-Value="miembro.CedulaMiembro" placeholder="Cédula" />
-                    <InputSelect @bind-Value="miembro.CargoId">
+                <div @key="miembro.MiembroId" class="mb-2 d-flex gap-2 align-items-center">
+                    <InputText @bind-Value="miembro.NombreMiembro" placeholder="Nombre" class="form-control" />
+                    <InputText @bind-Value="miembro.ApellidoMiembro" placeholder="Apellido" class="form-control" />
+                    <InputText @bind-Value="miembro.CedulaMiembro" placeholder="Cédula" class="form-control" />
+                    <InputSelect @bind-Value="miembro.CargoId" class="form-select">
                         @foreach (var cargo in Cargos)
                         {
                             <option value="@cargo.Id">@cargo.Name</option>
                         }
                     </InputSelect>
-                    <button type="button" @onclick="() => RemoverMiembro(miembro.MiembroId)">Eliminar</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" @onclick="() => RemoverMiembro(miembro.MiembroId)">Eliminar</button>
                 </div>
             }
 
@@ -156,7 +158,7 @@
                     </div>
                     <div class="col-sm-4">
                         <label class="form-label">Cargo</label>
-                        <InputSelect @bind-Value="CModel.MiembrosInterventores[i].CargoId">
+                        <InputSelect @bind-Value="CModel.MiembrosInterventores[i].CargoId" class="form-select">
                             @foreach (var cargo in Cargos)
                             {
                                 <option value="@cargo.Id">@cargo.Name</option>
@@ -168,70 +170,25 @@
         }
     </fieldset>
 
+    <!-- ARCHIVO RESOLUCIÓN -->
+    <fieldset class="bloque-form">
+        <legend>Archivo de Resolución</legend>
+        <InputFile OnChange="OnFileSelected" />
+        @if (!string.IsNullOrEmpty(FileName))
+        {
+            <div class="mt-2">
+                <strong>Archivo seleccionado:</strong> @FileName
+            </div>
+        }
+        <ValidationMessage For="@(() => _archivoResolucion)" class="text-danger small"/>
+    </fieldset>
+
     <div class="mt-4 d-flex gap-2">
         <button type="submit" class="btn btn-primary px-4" disabled="@IsSubmitting">
-            @(IsSubmitting ? "Registrando..." : "Registrar Asociación")
+            @(IsSubmitting ? "Registrando..." : "Registrar Comité")
         </button>
         <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancelar" disabled="@IsSubmitting">
             Cancelar
         </button>
     </div>
 </EditForm>
-
-<style>
-    .formulario-comite {
-        max-width: 900px;
-        margin: auto;
-        font-family: "Segoe UI", Arial, sans-serif;
-    }
-
-    .titulo-form {
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        color: #0d6efd;
-        text-align: center;
-    }
-
-    .bloque-form {
-        border: 1px solid #dee2e6;
-        border-radius: .6rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        background-color: #f9fafb;
-    }
-
-    .bloque-form legend {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #495057;
-        padding: 0 .6rem;
-    }
-
-    .form-label {
-        color: #495057;
-    }
-
-    .form-control, .form-select {
-        border-radius: .4rem;
-        box-shadow: none;
-        transition: border-color .2s ease;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, .25);
-    }
-
-    .btn {
-        border-radius: .4rem;
-    }
-
-    .btn-primary {
-        background: linear-gradient(90deg, #0d6efd, #0b5ed7);
-        border: none;
-    }
-
-    .btn-outline-secondary {
-        border: 1px solid #adb5bd;
-    }
-</style>
