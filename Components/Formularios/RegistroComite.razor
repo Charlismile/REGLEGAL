@@ -54,10 +54,7 @@
         <div class="row g-3 mb-2">
             <div class="col-sm-3">
                 <label class="form-label">Región</label>
-                <InputSelect TValue="int?" class="form-select"
-                             Value="@CModel.RegionSaludId"
-                             ValueChanged="@(async (int? id) => await RegionChanged(id ?? 0))"
-                             ValueExpression="@(() => CModel.RegionSaludId)"
+                <InputSelect class="form-select" @bind-Value="CModel.RegionSaludId" @onchange="RegionChanged"
                              disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
                     <option value="">--Seleccione--</option>
                     @foreach (var x in comiteRegioneslist)
@@ -68,10 +65,7 @@
             </div>
             <div class="col-sm-3">
                 <label class="form-label">Provincia</label>
-                <InputSelect TValue="int?" class="form-select"
-                             Value="@CModel.ProvinciaId"
-                             ValueChanged="@(async (int? id) => await ProvinciaChanged(id ?? 0))"
-                             ValueExpression="@(() => CModel.ProvinciaId)"
+                <InputSelect class="form-select" @bind-Value="CModel.ProvinciaId" @onchange="ProvinciaChanged"
                              disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
                     <option value="">--Seleccione--</option>
                     @foreach (var x in comiteProvinciaList)
@@ -82,10 +76,7 @@
             </div>
             <div class="col-sm-3">
                 <label class="form-label">Distrito</label>
-                <InputSelect TValue="int?" class="form-select"
-                             Value="@CModel.DistritoId"
-                             ValueChanged="@(async (int? id) => await DistritoChanged(id ?? 0))"
-                             ValueExpression="@(() => CModel.DistritoId)"
+                <InputSelect class="form-select" @bind-Value="CModel.DistritoId" @onchange="DistritoChanged"
                              disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
                     <option value="">--Seleccione--</option>
                     @foreach (var x in comiteDistritoList)
@@ -96,10 +87,7 @@
             </div>
             <div class="col-sm-3">
                 <label class="form-label">Corregimiento</label>
-                <InputSelect TValue="int?" class="form-select"
-                             Value="@CModel.CorregimientoId"
-                             ValueChanged="@(async (int? id) => CModel.CorregimientoId = id)"
-                             ValueExpression="@(() => CModel.CorregimientoId)"
+                <InputSelect class="form-select" @bind-Value="CModel.CorregimientoId"
                              disabled="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)">
                     <option value="">--Seleccione--</option>
                     @foreach (var x in comiteCorregimientoList)
@@ -112,63 +100,33 @@
     </fieldset>
 
     <!-- MIEMBROS DEL COMITÉ -->
-    <fieldset class="bloque-form">
-        <legend>Miembros del Comité</legend>
-        @if (CModel.TipoTramiteEnum == TipoTramite.Personeria || CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva)
-        {
-            <p class="text-muted">Agregue hasta 7 miembros de la junta directiva.</p>
-            @foreach (var miembro in CModel.Miembros)
-            {
-                <div @key="miembro.MiembroId" class="mb-2 d-flex gap-2 align-items-center">
-                    <InputText @bind-Value="miembro.NombreMiembro" placeholder="Nombre" class="form-control" />
-                    <InputText @bind-Value="miembro.ApellidoMiembro" placeholder="Apellido" class="form-control" />
-                    <InputText @bind-Value="miembro.CedulaMiembro" placeholder="Cédula" class="form-control" />
-                    <InputSelect @bind-Value="miembro.CargoId" class="form-select">
-                        @foreach (var cargo in Cargos)
-                        {
-                            <option value="@cargo.Id">@cargo.Name</option>
-                        }
-                    </InputSelect>
-                    <button type="button" class="btn btn-outline-danger btn-sm" @onclick="() => RemoverMiembro(miembro.MiembroId)">Eliminar</button>
-                </div>
-            }
+    <h3>Miembros del Comité</h3>
 
-            @if (CModel.Miembros.Count < 7)
-            {
-                <button type="button" class="btn btn-outline-primary btn-sm mt-2" @onclick="AgregarMiembro">➕ Agregar miembro</button>
-            }
-        }
-        else if (CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
+    <div>
+        @for (int i = 0; i < CModel.Miembros.Count; i++)
         {
-            <p class="text-muted">Seleccione hasta 2 personas de la directiva existente (Presidente y Tesorero).</p>
-            @for (int i = 0; i < CModel.MiembrosInterventores.Count; i++)
-            {
-                <div @key="CModel.MiembrosInterventores[i].MiembroId" class="row g-3 mb-2">
-                    <div class="col-sm-4">
-                        <label class="form-label">Nombre *</label>
-                        <InputText @bind-Value="CModel.MiembrosInterventores[i].NombreMiembro" class="form-control" />
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label">Apellido *</label>
-                        <InputText @bind-Value="CModel.MiembrosInterventores[i].ApellidoMiembro" class="form-control" />
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label">Cédula *</label>
-                        <InputText @bind-Value="CModel.MiembrosInterventores[i].CedulaMiembro" class="form-control" />
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label">Cargo</label>
-                        <InputSelect @bind-Value="CModel.MiembrosInterventores[i].CargoId" class="form-select">
-                            @foreach (var cargo in Cargos)
-                            {
-                                <option value="@cargo.Id">@cargo.Name</option>
-                            }
-                        </InputSelect>
-                    </div>
-                </div>
-            }
+            <div class="mb-2" @key="CModel.Miembros[i]">
+                <input class="form-control d-inline-block w-50"
+                       placeholder="Nombre del miembro"
+                       @bind="CModel.Miembros[i].NombreMiembro" />
+
+                <input class="form-control d-inline-block w-25 ms-2"
+                       placeholder="Cargo"
+                       @bind="CModel.Miembros[i].NombreCargo" />
+
+                <button type="button" class="btn btn-danger ms-2"
+                        @onclick="@(() => RemoverMiembro(i))">
+                    Remover
+                </button>
+            </div>
         }
-    </fieldset>
+
+        <button type="button" class="btn btn-primary mt-2"
+                @onclick="AgregarMiembro">
+            Agregar Miembro
+        </button>
+    </div>
+
 
     <!-- ARCHIVO RESOLUCIÓN -->
     <fieldset class="bloque-form">

@@ -33,6 +33,8 @@ public partial class DbContextLegal : DbContext
 
     public virtual DbSet<TbDatosMiembros> TbDatosMiembros { get; set; }
 
+    public virtual DbSet<TbDatosMiembrosHistorial> TbDatosMiembrosHistorial { get; set; }
+
     public virtual DbSet<TbDetalleRegAsociacion> TbDetalleRegAsociacion { get; set; }
 
     public virtual DbSet<TbDetalleRegAsociacionHistorial> TbDetalleRegAsociacionHistorial { get; set; }
@@ -217,6 +219,29 @@ public partial class DbContextLegal : DbContext
                 .HasForeignKey(d => d.DcomiteId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_DatosMiembros_Comite");
+        });
+
+        modelBuilder.Entity<TbDatosMiembrosHistorial>(entity =>
+        {
+            entity.HasKey(e => e.HistorialMiembroId).HasName("PK__TbDatosM__8D04E3D81C0A68A8");
+
+            entity.Property(e => e.ApellidoMiembro)
+                .HasMaxLength(150)
+                .HasDefaultValue("");
+            entity.Property(e => e.CedulaMiembro)
+                .HasMaxLength(20)
+                .HasDefaultValue("");
+            entity.Property(e => e.CorreoMiembro).HasMaxLength(150);
+            entity.Property(e => e.DcomiteId).HasColumnName("DComiteId");
+            entity.Property(e => e.DmiembroId).HasColumnName("DMiembroId");
+            entity.Property(e => e.FechaCambio)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.FechaModificacion).HasColumnType("datetime");
+            entity.Property(e => e.NombreMiembro)
+                .HasMaxLength(150)
+                .HasDefaultValue("");
+            entity.Property(e => e.TelefonoMiembro).HasMaxLength(20);
         });
 
         modelBuilder.Entity<TbDetalleRegAsociacion>(entity =>

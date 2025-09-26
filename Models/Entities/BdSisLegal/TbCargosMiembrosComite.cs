@@ -11,7 +11,7 @@ public partial class TbCargosMiembrosComite
 
     public bool IsActivo { get; set; }
 
-    public int MiembroId { get; set; }
+    public int? MiembroId { get; set; }
 
     public virtual ICollection<TbDatosMiembros> TbDatosMiembros { get; set; } = new List<TbDatosMiembros>();
 }

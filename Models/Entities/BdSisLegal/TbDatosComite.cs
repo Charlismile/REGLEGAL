@@ -11,13 +11,13 @@ public partial class TbDatosComite
 
     public string? Comunidad { get; set; }
 
-    public int RegionSaludId { get; set; }
+    public int? RegionSaludId { get; set; }
 
-    public int ProvinciaId { get; set; }
+    public int? ProvinciaId { get; set; }
 
-    public int DistritoId { get; set; }
+    public int? DistritoId { get; set; }
 
-    public int CorregimientoId { get; set; }
+    public int? CorregimientoId { get; set; }
 
     public virtual ICollection<TbDatosMiembros> TbDatosMiembros { get; set; } = new List<TbDatosMiembros>();
 }

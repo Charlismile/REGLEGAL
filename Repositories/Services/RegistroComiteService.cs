@@ -1,125 +1,95 @@
-﻿using BlazorBootstrap;
-using Microsoft.EntityFrameworkCore;
-using REGISTROLEGAL.Models.Entities.BdSisLegal;
+﻿using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace REGISTROLEGAL.Repositories.Services;
 
 public class RegistroComiteService : IRegistroComite
 {
-    private readonly IDbContextFactory<DbContextLegal> _context;
+    private readonly DbContextLegal _context;
 
-    public RegistroComiteService(IDbContextFactory<DbContextLegal> context)
+    public RegistroComiteService(DbContextLegal context)
     {
         _context = context;
     }
-    private async Task<TbRegSecuencia> ObtenerOSincronizarSecuencia(DbContextLegal context)
-    {
-        var sec = await context.TbRegSecuencia.FirstOrDefaultAsync(s => s.Activo);
-        if (sec != null) return sec;
 
-        var ahora = DateTime.UtcNow;
-        var nuevaSecuencia = new TbRegSecuencia
-        {
-            Anio = ahora.Year,
-            Numeracion = 1,
-            Activo = true,
-            EntidadId = 0
-        };
-        context.TbRegSecuencia.Add(nuevaSecuencia);
-        await context.SaveChangesAsync();
-        return nuevaSecuencia;
-    }
-    
+    #region COMITÉ CRUD
+
     public async Task<ResultModel> CrearComite(ComiteModel model)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        var sec = await ObtenerOSincronizarSecuencia(context);
-        var ahora = DateTime.UtcNow;
-        var numeracion = sec.Anio < ahora.Year ? 1 : sec.Numeracion;
-        var anio = sec.Anio < ahora.Year ? ahora.Year : sec.Anio;
-        var numCompleto = $"SOL-{anio}-{ahora.Month:00}-{numeracion.ToString().PadLeft(10, '0')}";
-
-        await using var tx = await context.Database.BeginTransactionAsync();
         try
         {
-            if (sec.Anio == anio) sec.Numeracion++;
-            else
-            {
-                sec.Anio = anio;
-                sec.Numeracion = 2;
-            }
-            await context.SaveChangesAsync();
-
-            var nuevoComite = new TbDatosComite
+            var comite = new TbDatosComite
             {
                 NombreComiteSalud = model.NombreComiteSalud,
                 Comunidad = model.Comunidad,
-                RegionSaludId = model.RegionSaludId ?? 0,
-                ProvinciaId = model.ProvinciaId ?? 0,
-                DistritoId = model.DistritoId ?? 0,
-                CorregimientoId = model.CorregimientoId ?? 0
+                RegionSaludId = model.RegionSaludId,
+                ProvinciaId = model.ProvinciaId,
+                DistritoId = model.DistritoId,
+                CorregimientoId = model.CorregimientoId
             };
-            context.TbDatosComite.Add(nuevoComite);
-            await context.SaveChangesAsync();
+            _context.TbDatosComite.Add(comite);
+            await _context.SaveChangesAsync();
 
-            var sol = new TbDetalleRegComite()
-            {
-                CreadaEn = ahora,
-                CreadaPor = model.CreadaPor,
-                ComiteId = nuevoComite.DcomiteId,
-                NomRegCoAnio = anio,
-                NumRegCoMes = (byte)ahora.Month,
-                NumRegCoCompleta = numCompleto,
-                TipoTramiteId = (int)model.TipoTramiteEnum
-            };
-            context.TbDetalleRegComite.Add(sol);
-            await context.SaveChangesAsync();
+            if (model.Miembros?.Any() == true)
+                foreach (var miembro in model.Miembros)
+                    await AgregarMiembro(comite.DcomiteId, miembro);
 
-            await tx.CommitAsync();
-
-            return new ResultModel { Success = true, Message = "Comité creado exitosamente" };
+            return new ResultModel { Success = true, Message = "Comité creado correctamente", Data = comite.DcomiteId };
         }
         catch (Exception ex)
         {
-            await tx.RollbackAsync();
-            return new ResultModel { Success = false, Message = $"Error al crear comité: {ex.Message}" };
+            return new ResultModel { Success = false, Message = ex.Message };
         }
     }
 
     public async Task<ResultModel> ActualizarComite(ComiteModel model)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        var comite = await context.TbDatosComite.FindAsync(model.ComiteId);
-        if (comite == null) return new ResultModel { Success = false, Message = "Comité no encontrado" };
+        try
+        {
+            var entity = await _context.TbDatosComite.FindAsync(model.ComiteId);
+            if (entity == null) return new ResultModel { Success = false, Message = "Comité no encontrado" };
 
-        comite.NombreComiteSalud = model.NombreComiteSalud;
-        comite.Comunidad = model.Comunidad;
-        comite.RegionSaludId = model.RegionSaludId ?? 0;
-        comite.ProvinciaId = model.ProvinciaId ?? 0;
-        comite.DistritoId = model.DistritoId ?? 0;
-        comite.CorregimientoId = model.CorregimientoId ?? 0;
+            entity.NombreComiteSalud = model.NombreComiteSalud;
+            entity.Comunidad = model.Comunidad;
+            entity.RegionSaludId = model.RegionSaludId ?? entity.RegionSaludId;
+            entity.ProvinciaId = model.ProvinciaId ?? entity.ProvinciaId;
+            entity.DistritoId = model.DistritoId ?? entity.DistritoId;
+            entity.CorregimientoId = model.CorregimientoId ?? entity.CorregimientoId;
 
-        await context.SaveChangesAsync();
-        return new ResultModel { Success = true, Message = "Comité actualizado" };
+            _context.TbDatosComite.Update(entity);
+            await _context.SaveChangesAsync();
+
+            return new ResultModel { Success = true, Message = "Comité actualizado correctamente" };
+        }
+        catch (Exception ex)
+        {
+            return new ResultModel { Success = false, Message = ex.Message };
+        }
     }
 
     public async Task<ResultModel> EliminarComite(int comiteId)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        var comite = await context.TbDatosComite.FindAsync(comiteId);
-        if (comite == null) return new ResultModel { Success = false, Message = "Comité no encontrado" };
+        try
+        {
+            var entity = await _context.TbDatosComite.FindAsync(comiteId);
+            if (entity == null) return new ResultModel { Success = false, Message = "Comité no encontrado" };
 
-        context.TbDatosComite.Remove(comite);
-        await context.SaveChangesAsync();
-        return new ResultModel { Success = true, Message = "Comité eliminado" };
+            _context.TbDatosComite.Remove(entity);
+            await _context.SaveChangesAsync();
+
+            return new ResultModel { Success = true, Message = "Comité eliminado correctamente" };
+        }
+        catch (Exception ex)
+        {
+            return new ResultModel { Success = false, Message = ex.Message };
+        }
     }
 
     public async Task<List<ComiteModel>> ObtenerTodos()
     {
-        await using var context = await _context.CreateDbContextAsync();
-        var lista = await context.TbDatosComite
+        return await _context.TbDatosComite
             .Select(c => new ComiteModel
             {
                 ComiteId = c.DcomiteId,
@@ -130,170 +100,243 @@ public class RegistroComiteService : IRegistroComite
                 DistritoId = c.DistritoId,
                 CorregimientoId = c.CorregimientoId
             }).ToListAsync();
-        return lista;
     }
 
-    public async Task<ComiteModel?> GetComiteByIdAsync(int comiteId)
+    public async Task<ComiteModel?> ObtenerComiteCompletoAsync(int comiteId)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        var comite = await context.TbDatosComite
-            .Include(c => c.TbDatosMiembros)
+        var entity = await _context.TbDatosComite
+            .Include(c => c.TbDatosMiembros).ThenInclude(m => m.Cargo)
             .FirstOrDefaultAsync(c => c.DcomiteId == comiteId);
 
-        if (comite == null) return null;
+        if (entity == null) return null;
 
         return new ComiteModel
         {
-            ComiteId = comite.DcomiteId,
-            NombreComiteSalud = comite.NombreComiteSalud,
-            Comunidad = comite.Comunidad,
-            RegionSaludId = comite.RegionSaludId,
-            ProvinciaId = comite.ProvinciaId,
-            DistritoId = comite.DistritoId,
-            CorregimientoId = comite.CorregimientoId,
-            Miembros = comite.TbDatosMiembros.Select(m => new MiembroComiteModel
-            {
-                MiembroId = m.DmiembroId,
-                NombreMiembro = m.NombreMiembro,
-                ApellidoMiembro = m.ApellidoMiembro,
-                CedulaMiembro = m.CedulaMiembro,
-                CargoId = m.CargoId,
-                CorreoMiembro = m.CorreoMiembro,
-                TelefonoMiembro = m.TelefonoMiembro
-            }).ToList()
+            ComiteId = entity.DcomiteId,
+            NombreComiteSalud = entity.NombreComiteSalud,
+            Comunidad = entity.Comunidad,
+            RegionSaludId = entity.RegionSaludId,
+            ProvinciaId = entity.ProvinciaId,
+            DistritoId = entity.DistritoId,
+            CorregimientoId = entity.CorregimientoId,
+            Miembros = entity.TbDatosMiembros
+                .Select(m => new MiembroComiteModel
+                {
+                    MiembroId = m.DmiembroId,
+                    ComiteId = m.DcomiteId ?? 0,
+                    NombreMiembro = m.NombreMiembro,
+                    ApellidoMiembro = m.ApellidoMiembro,
+                    CedulaMiembro = m.CedulaMiembro,
+                    CargoId = m.CargoId,
+                    TelefonoMiembro = m.TelefonoMiembro,
+                    CorreoMiembro = m.CorreoMiembro,
+                    NombreCargo = m.Cargo.NombreCargo
+                }).ToList()
         };
     }
-    
+
+    // 🔹 Nuevo método: último comité con miembros
+    public async Task<ComiteModel?> ObtenerUltimoComiteConMiembrosAsync()
+    {
+        var entity = await _context.TbDatosComite
+            .Include(c => c.TbDatosMiembros)
+            .ThenInclude(m => m.Cargo)
+            .OrderByDescending(c => c.DcomiteId)
+            .FirstOrDefaultAsync();
+
+        if (entity == null) return null;
+
+        return new ComiteModel
+        {
+            ComiteId = entity.DcomiteId,
+            NombreComiteSalud = entity.NombreComiteSalud,
+            Comunidad = entity.Comunidad,
+            RegionSaludId = entity.RegionSaludId,
+            ProvinciaId = entity.ProvinciaId,
+            DistritoId = entity.DistritoId,
+            CorregimientoId = entity.CorregimientoId,
+            Miembros = entity.TbDatosMiembros
+                .Select(m => new MiembroComiteModel
+                {
+                    MiembroId = m.DmiembroId,
+                    ComiteId = m.DcomiteId ?? 0,
+                    NombreMiembro = m.NombreMiembro,
+                    ApellidoMiembro = m.ApellidoMiembro,
+                    CedulaMiembro = m.CedulaMiembro,
+                    CargoId = m.CargoId,
+                    TelefonoMiembro = m.TelefonoMiembro,
+                    CorreoMiembro = m.CorreoMiembro,
+                    NombreCargo = m.Cargo.NombreCargo
+                }).ToList()
+        };
+    }
+
+    #endregion
+
+    #region MIEMBROS
+
     public async Task<TbDatosMiembros> AgregarMiembro(int comiteId, MiembroComiteModel miembro)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        var nuevo = new TbDatosMiembros
+        var entity = new TbDatosMiembros
         {
+            DcomiteId = comiteId,
             NombreMiembro = miembro.NombreMiembro,
             ApellidoMiembro = miembro.ApellidoMiembro,
-            CargoId = miembro.CargoId,
             CedulaMiembro = miembro.CedulaMiembro,
+            CargoId = miembro.CargoId,
             TelefonoMiembro = miembro.TelefonoMiembro,
-            CorreoMiembro = miembro.CorreoMiembro,
-            DcomiteId = comiteId
+            CorreoMiembro = miembro.CorreoMiembro
         };
-        context.TbDatosMiembros.Add(nuevo);
-        await context.SaveChangesAsync();
-        return nuevo;
+        _context.TbDatosMiembros.Add(entity);
+        await _context.SaveChangesAsync();
+        return entity;
     }
 
     public async Task<ResultModel> ActualizarMiembro(MiembroComiteModel miembro)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        var m = await context.TbDatosMiembros.FindAsync(miembro.MiembroId);
-        if (m == null) return new ResultModel { Success = false, Message = "Miembro no encontrado" };
+        var entity = await _context.TbDatosMiembros.FindAsync(miembro.MiembroId);
+        if (entity == null) return new ResultModel { Success = false, Message = "Miembro no encontrado" };
 
-        m.NombreMiembro = miembro.NombreMiembro;
-        m.ApellidoMiembro = miembro.ApellidoMiembro;
-        m.CargoId = miembro.CargoId;
-        m.CedulaMiembro = miembro.CedulaMiembro;
-        m.CorreoMiembro = miembro.CorreoMiembro;
-        m.TelefonoMiembro = miembro.TelefonoMiembro;
+        entity.NombreMiembro = miembro.NombreMiembro;
+        entity.ApellidoMiembro = miembro.ApellidoMiembro;
+        entity.CedulaMiembro = miembro.CedulaMiembro;
+        entity.CargoId = miembro.CargoId;
+        entity.TelefonoMiembro = miembro.TelefonoMiembro;
+        entity.CorreoMiembro = miembro.CorreoMiembro;
 
-        await context.SaveChangesAsync();
-        return new ResultModel { Success = true, Message = "Miembro actualizado" };
+        _context.TbDatosMiembros.Update(entity);
+        await _context.SaveChangesAsync();
+
+        return new ResultModel { Success = true, Message = "Miembro actualizado correctamente" };
     }
 
     public async Task<ResultModel> EliminarMiembro(int miembroId)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        var miembro = await context.TbDatosMiembros.FindAsync(miembroId);
-        if (miembro == null) return new ResultModel { Success = false, Message = "Miembro no encontrado" };
+        var entity = await _context.TbDatosMiembros.FindAsync(miembroId);
+        if (entity == null) return new ResultModel { Success = false, Message = "Miembro no encontrado" };
 
-        context.TbDatosMiembros.Remove(miembro);
-        await context.SaveChangesAsync();
-        return new ResultModel { Success = true, Message = "Miembro eliminado" };
+        _context.TbDatosMiembros.Remove(entity);
+        await _context.SaveChangesAsync();
+
+        return new ResultModel { Success = true, Message = "Miembro eliminado correctamente" };
     }
 
     public async Task<List<MiembroComiteModel>> ObtenerMiembros(int comiteId)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        return await context.TbDatosMiembros
+        return await _context.TbDatosMiembros
             .Where(m => m.DcomiteId == comiteId)
             .Select(m => new MiembroComiteModel
             {
                 MiembroId = m.DmiembroId,
+                ComiteId = m.DcomiteId ?? 0,
                 NombreMiembro = m.NombreMiembro,
                 ApellidoMiembro = m.ApellidoMiembro,
-                CargoId = m.CargoId,
                 CedulaMiembro = m.CedulaMiembro,
+                CargoId = m.CargoId,
                 TelefonoMiembro = m.TelefonoMiembro,
                 CorreoMiembro = m.CorreoMiembro
             }).ToListAsync();
     }
-    
+
+    public async Task<List<CargoModel>> ObtenerCargos()
+    {
+        return await _context.TbCargosMiembrosComite
+            .Where(c => c.IsActivo)
+            .Select(c => new CargoModel { CargoId = c.CargoId, NombreCargo = c.NombreCargo })
+            .ToListAsync();
+    }
+
+    #endregion
+
+    #region ARCHIVOS
+
     public async Task<ResultModel> AgregarArchivo(int comiteId, CArchivoModel archivo)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        var nuevo = new TbComiteArchivos
+        var entity = new TbComiteArchivos
         {
-            ComiteArchivoId = comiteId, // FK correcto
+            DetRegComiteId = comiteId,
+            Categoria = "General",
             NombreOriginal = archivo.NombreArchivo,
+            NombreArchivoGuardado = archivo.RutaArchivo,
             Url = archivo.RutaArchivo,
-            FechaSubida = DateTime.UtcNow
+            FechaSubida = DateTime.Now,
+            Version = 1,
+            IsActivo = true
         };
-        context.TbComiteArchivos.Add(nuevo);
-        await context.SaveChangesAsync();
-        return new ResultModel { Success = true, Message = "Archivo agregado" };
+        _context.TbComiteArchivos.Add(entity);
+        await _context.SaveChangesAsync();
+
+        return new ResultModel { Success = true, Message = "Archivo agregado correctamente" };
     }
 
     public async Task<ResultModel> EliminarArchivo(int archivoId)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        var archivo = await context.TbComiteArchivos.FindAsync(archivoId);
-        if (archivo == null) return new ResultModel { Success = false, Message = "Archivo no encontrado" };
+        var entity = await _context.TbComiteArchivos.FindAsync(archivoId);
+        if (entity == null) return new ResultModel { Success = false, Message = "Archivo no encontrado" };
 
-        context.TbComiteArchivos.Remove(archivo);
-        await context.SaveChangesAsync();
-        return new ResultModel { Success = true, Message = "Archivo eliminado" };
+        _context.TbComiteArchivos.Remove(entity);
+        await _context.SaveChangesAsync();
+
+        return new ResultModel { Success = true, Message = "Archivo eliminado correctamente" };
     }
 
     public async Task<List<CArchivoModel>> ObtenerArchivos(int comiteId)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        return await context.TbComiteArchivos
-            .Where(a => a.ComiteArchivoId == comiteId)
+        return await _context.TbComiteArchivos
+            .Where(a => a.DetRegComiteId == comiteId && a.IsActivo)
             .Select(a => new CArchivoModel
             {
                 ComiteArchivoId = a.ComiteArchivoId,
+                ComiteId = a.DetRegComiteId,
                 NombreArchivo = a.NombreOriginal,
                 RutaArchivo = a.Url,
                 SubidoEn = a.FechaSubida
             }).ToListAsync();
     }
-    public async Task<List<CargoModel>> ObtenerCargos()
-    {
-        await using var context = await _context.CreateDbContextAsync();
 
-        var cargos = await context.TbCargosMiembrosComite
-            .Where(c => c.IsActivo)
-            .Select(c => new CargoModel
-            {
-                CargoId = c.CargoId,
-                NombreCargo = c.NombreCargo
-            })
-            .ToListAsync();
+    #endregion
 
-        return cargos;
-    }
+    #region HISTORIAL
 
     public async Task<List<DetalleRegComiteModel>> ObtenerDetalleHistorial(int comiteId)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        return await context.TbDetalleRegComite
-            .Where(d => d.ComiteId == comiteId)
-            .Select(d => new DetalleRegComiteModel
+        return await _context.TbDetalleRegComiteHistorial
+            .Where(h => h.ComiteId == comiteId)
+            .Include(h => h.CoEstadoSolicitud)
+            .Select(h => new DetalleRegComiteModel
             {
-                DetalleRegComiteId = d.DetalleRegComiteId,
-                CreadaEn = d.CreadaEn,
-                CreadaPor = d.CreadaPor,
-                NumRegCoCompleta = d.NumRegCoCompleta,
-                TipoTramiteId= d.TipoTramiteId
+                DetalleRegComiteId = h.RegComiteSolId,
+                CreadaEn = h.FechaCambioCo,
+                CreadaPor = h.UsuarioRevisorCo,
+                NumRegCoCompleta = h.Comite.NumRegCoCompleta,
+                TipoTramiteId = h.Comite.TipoTramiteId
             }).ToListAsync();
     }
+
+    public async Task GuardarHistorialMiembros(int comiteId, List<MiembroComiteModel> miembros)
+    {
+        if (miembros == null || miembros.Count == 0)
+            return;
+
+        foreach (var miembro in miembros)
+        {
+            var historial = new TbDatosMiembrosHistorial
+            {
+                DcomiteId = comiteId,
+                NombreMiembro = miembro.NombreMiembro,
+                ApellidoMiembro = miembro.ApellidoMiembro,
+                CedulaMiembro = miembro.CedulaMiembro,
+                CargoId = miembro.CargoId,
+                TelefonoMiembro = miembro.TelefonoMiembro,
+                CorreoMiembro = miembro.CorreoMiembro,
+                FechaCambio = DateTime.Now
+            };
+
+            _context.TbDatosMiembrosHistorial.Add(historial);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    #endregion
 }

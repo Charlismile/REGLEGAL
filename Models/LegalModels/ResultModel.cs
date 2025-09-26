@@ -8,5 +8,6 @@
         public string Message { get; set; } = String.Empty;
         public List<string> Errores { get; set; } = new List<string>();
         public int AsociacionId { get; set; }
+        public object? Data { get; set; }
     }
 }

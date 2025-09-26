@@ -18,6 +18,9 @@ public class MiembroComiteModel
     [Required(ErrorMessage = "El cargo del miembro es obligatorio")]
     public int CargoId { get; set; }
 
+    // Opcional: para mostrar en UI
+    public string? NombreCargo { get; set; }
+
     [Required(ErrorMessage = "El número de cédula es obligatorio")]
     [StringLength(20, ErrorMessage = "Máximo 20 caracteres")]
     public string CedulaMiembro { get; set; } = "";

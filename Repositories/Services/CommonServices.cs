@@ -128,8 +128,6 @@ public class CommonServices : ICommon
         }
         catch (Exception ex)
         {
-            // Opcional: loggear ex.Message o usar ILogger
-            // Nunca ignores excepciones en producción
             throw new Exception("Error al obtener los cargos.", ex);
         }
         return Lista;
