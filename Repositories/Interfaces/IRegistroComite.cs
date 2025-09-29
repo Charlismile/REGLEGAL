@@ -1,4 +1,5 @@
-﻿using REGISTROLEGAL.Models.Entities.BdSisLegal;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
 
 namespace REGISTROLEGAL.Repositories.Interfaces;
@@ -24,10 +25,10 @@ public interface IRegistroComite
     Task<ResultModel> AgregarArchivo(int comiteId, CArchivoModel archivo);
     Task<ResultModel> EliminarArchivo(int archivoId);
     Task<List<CArchivoModel>> ObtenerArchivos(int comiteId);
+    Task<ResultModel> GuardarResolucionAsync(int comiteId, IBrowserFile archivo);
+
 
     // Historial / detalles
     Task<List<DetalleRegComiteModel>> ObtenerDetalleHistorial(int comiteId);
     Task GuardarHistorialMiembros(int comiteId, List<MiembroComiteModel> miembros);
-
-
 }

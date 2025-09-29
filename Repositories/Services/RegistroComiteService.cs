@@ -1,4 +1,5 @@
-﻿using REGISTROLEGAL.Models.Entities.BdSisLegal;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -293,6 +294,38 @@ public class RegistroComiteService : IRegistroComite
                 SubidoEn = a.FechaSubida
             }).ToListAsync();
     }
+    public async Task<ResultModel> GuardarResolucionAsync(int comiteId, IBrowserFile archivo)
+    {
+        try
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "resoluciones");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(archivo.Name)}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            await using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await archivo.OpenReadStream(10 * 1024 * 1024).CopyToAsync(stream); // máx 10MB
+            }
+
+            var archivoModel = new CArchivoModel
+            {
+                ComiteId = comiteId,
+                NombreArchivo = archivo.Name,
+                RutaArchivo = $"/uploads/resoluciones/{uniqueFileName}",
+                SubidoEn = DateTime.Now
+            };
+
+            return await AgregarArchivo(comiteId, archivoModel);
+        }
+        catch (Exception ex)
+        {
+            return new ResultModel { Success = false, Message = $"Error al guardar resolución: {ex.Message}" };
+        }
+    }
+
 
     #endregion
 

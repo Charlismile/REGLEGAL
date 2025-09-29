@@ -14,40 +14,48 @@ public class ComiteModel
 {
     public int ComiteId { get; set; }
 
-    // TRÁMITE
     [Required(ErrorMessage = "El tipo de trámite es obligatorio")]
-    [Range(1, int.MaxValue, ErrorMessage = "Seleccione un tipo de trámite válido")]
     public TipoTramite TipoTramiteEnum { get; set; }
-
-    [Required]
     public string CreadaPor { get; set; } = null!;
 
     [Required(ErrorMessage = "El nombre del comité es obligatorio")]
-    [StringLength(200, ErrorMessage = "El nombre no puede superar los 200 caracteres")]
+    [StringLength(200)]
     public string NombreComiteSalud { get; set; } = null!;
 
     [Required(ErrorMessage = "El nombre de la comunidad es obligatorio")]
-    [StringLength(150, ErrorMessage = "El nombre de la comunidad no puede superar los 150 caracteres")]
+    [StringLength(150)]
     public string? Comunidad { get; set; }
 
-    // UBICACIÓN
+    // 📌 Fechas y resolución
+    [Required(ErrorMessage = "La fecha de creación es obligatoria")]
+    public DateTime FechaCreacion { get; set; }
+
+    [Required(ErrorMessage = "La fecha de elección es obligatoria")]
+    public DateTime FechaEleccion { get; set; }
+
+    [Required(ErrorMessage = "El número de resolución es obligatorio")]
+    [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
+    public string NumeroResolucion { get; set; } = "";
+
+    [Required(ErrorMessage = "La fecha de resolución es obligatoria")]
+    public DateTime FechaResolucion { get; set; }
+
+    // 📌 Ubicación
     public int? RegionSaludId { get; set; }
     public int? ProvinciaId { get; set; }
     public int? DistritoId { get; set; }
     public int? CorregimientoId { get; set; }
 
-    // MIEMBROS
+    // 📌 Miembros
     [MinLength(1, ErrorMessage = "Debe agregar al menos 1 miembro")]
     public List<MiembroComiteModel> Miembros { get; set; } = new();
 
     public List<MiembroComiteModel> MiembrosInterventores { get; set; } = new();
 
-    // ARCHIVOS DEL COMITÉ
+    // 📌 Archivos
     public List<CArchivoModel> Archivos { get; set; } = new();
-
-    // Para carga temporal de documentos en formulario (no mapeado en DB directamente)
     public List<IBrowserFile> DocumentosSubir { get; set; } = new();
 
-    // HISTORIAL / DETALLES
+    // 📌 Historial
     public List<DetalleRegComiteModel> Historial { get; set; } = new();
 }

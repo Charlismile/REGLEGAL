@@ -10,103 +10,122 @@ public class CommonServices : ICommon
 {
     private readonly IDbContextFactory<DbContextLegal> _context;
 
-    private readonly string _rutaBaseArchivos = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "documentos-legales");
+    private readonly string _rutaBaseArchivos =
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "documentos-legales");
+
     public CommonServices(IDbContextFactory<DbContextLegal> context)
     {
         _context = context;
     }
 
-    #region generales
+
     // servicios generales
- public async Task<List<ListModel>> GetRegiones()
+
+    #region Ubicación jerárquica
+
+    #region Ubicación Geográfica
+
+    public async Task<List<ListModel>> GetRegiones()
     {
-        List<ListModel> Lista = new List<ListModel>();
+        List<ListModel> lista = new List<ListModel>();
         try
         {
             using (var localContext = await _context.CreateDbContextAsync())
             {
-                Lista = await localContext.TbRegionSalud
-                    .Select(x => new ListModel()
+                lista = await localContext.TbRegionSalud
+                    .Select(x => new ListModel
                     {
                         Id = x.RegionSaludId,
-                        Name = x.NombreRegion ?? "",
-                    }).ToListAsync();
+                        Name = x.NombreRegion ?? ""
+                    })
+                    .OrderBy(x => x.Name)
+                    .ToListAsync();
             }
         }
         catch (Exception)
         {
+            // manejar errores si deseas
         }
-        return Lista;
+
+        return lista;
     }
-    
-    public async Task<List<ListModel>> GetProvincias(int RegionId)
+
+    public async Task<List<ListModel>> GetProvincias(int regionId)
     {
-        List<ListModel> Lista = new List<ListModel>();
+        List<ListModel> lista = new List<ListModel>();
         try
         {
             using (var localContext = await _context.CreateDbContextAsync())
             {
-                Lista = await localContext.TbProvincia.Where(x => x.ProvinciaId == RegionId)
-                    .Select(x => new ListModel()
+                lista = await localContext.TbProvincia
+                    .Where(x => x.RegionSaludId == regionId) // filtramos por RegionSaludId
+                    .Select(x => new ListModel
                     {
                         Id = x.ProvinciaId,
-                        Name = x.NombreProvincia ?? "",
-                    }).ToListAsync();
-
-                Lista = Lista.OrderBy(x => x.Name).ToList();
+                        Name = x.NombreProvincia ?? ""
+                    })
+                    .OrderBy(x => x.Name)
+                    .ToListAsync();
             }
         }
         catch (Exception)
         {
         }
-        return Lista;
+
+        return lista;
     }
-    
-    public async Task<List<ListModel>> GetDistritos(int ProvinciaId)
+
+    public async Task<List<ListModel>> GetDistritos(int provinciaId)
     {
-        List<ListModel> Lista = new List<ListModel>();
+        List<ListModel> lista = new List<ListModel>();
         try
         {
             using (var localContext = await _context.CreateDbContextAsync())
             {
-                Lista = await localContext.TbDistrito.Where(x => x.ProvinciaId == ProvinciaId)
-                    .Select(x => new ListModel()
+                lista = await localContext.TbDistrito
+                    .Where(x => x.ProvinciaId == provinciaId) // filtramos por ProvinciaId
+                    .Select(x => new ListModel
                     {
                         Id = x.DistritoId,
-                        Name = x.NombreDistrito ?? "",
-                    }).ToListAsync();
-
-                Lista = Lista.OrderBy(x => x.Name).ToList();
+                        Name = x.NombreDistrito ?? ""
+                    })
+                    .OrderBy(x => x.Name)
+                    .ToListAsync();
             }
         }
         catch (Exception)
         {
         }
-        return Lista;
+
+        return lista;
     }
 
-    public async Task<List<ListModel>> GetCorregimientos(int DistritoId)
+    public async Task<List<ListModel>> GetCorregimientos(int distritoId)
     {
-        List<ListModel> Lista = new List<ListModel>();
+        List<ListModel> lista = new List<ListModel>();
         try
         {
             using (var localContext = await _context.CreateDbContextAsync())
             {
-                Lista = await localContext.TbCorregimiento.Where(x => x.DistritoId == DistritoId)
-                    .Select(x => new ListModel()
+                lista = await localContext.TbCorregimiento
+                    .Where(x => x.DistritoId == distritoId) // filtramos por DistritoId
+                    .Select(x => new ListModel
                     {
                         Id = x.CorregimientoId,
-                        Name = x.NombreCorregimiento ?? "",
-                    }).ToListAsync();
-
-                Lista = Lista.OrderBy(x => x.Name).ToList();
+                        Name = x.NombreCorregimiento ?? ""
+                    })
+                    .OrderBy(x => x.Name)
+                    .ToListAsync();
             }
         }
         catch (Exception)
         {
         }
-        return Lista;
+
+        return lista;
     }
+
+    #endregion
 
 
     public async Task<List<ListModel>> GetCargos()
@@ -130,8 +149,10 @@ public class CommonServices : ICommon
         {
             throw new Exception("Error al obtener los cargos.", ex);
         }
+
         return Lista;
     }
+
     public async Task<(bool ok, string mensaje)> GuardarArchivoAsync(
         IBrowserFile archivo,
         string categoria,
@@ -157,5 +178,6 @@ public class CommonServices : ICommon
             return (false, $"Error al guardar archivo {archivo.Name}: {ex.Message}");
         }
     }
+
     #endregion
 }
