@@ -20,4 +20,6 @@ public partial class TbDatosComite
     public int? CorregimientoId { get; set; }
 
     public virtual ICollection<TbDatosMiembros> TbDatosMiembros { get; set; } = new List<TbDatosMiembros>();
+
+    public virtual ICollection<TbDetalleRegComite> TbDetalleRegComite { get; set; } = new List<TbDetalleRegComite>();
 }

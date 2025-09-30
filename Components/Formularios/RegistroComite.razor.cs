@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
@@ -15,7 +16,7 @@ namespace REGISTROLEGAL.Components.Formularios
         [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
         [Inject] private IRegistroComite RegistroComiteService { get; set; } = default!;
-        
+
         private ComiteModel CModel { get; set; } = new();
         private EditContext editContext;
         private ValidationMessageStore messageStore;
@@ -24,13 +25,21 @@ namespace REGISTROLEGAL.Components.Formularios
         private List<ListModel> comiteProvinciaList { get; set; } = new();
         private List<ListModel> comiteDistritoList { get; set; } = new();
         private List<ListModel> comiteCorregimientoList { get; set; } = new();
+        private List<ComiteModel> comitesRegistrados { get; set; } = new();
         private List<ListModel> Cargos { get; set; } = new();
-        private List<ComiteModel> comitesRegistrados = new();
         
+        private string selectedComiteNombre
+        {
+            get => CModel.NombreComiteSalud;
+            set => CModel.NombreComiteSalud = value;
+        }
+
+
         private bool IsSubmitting = false;
 
         private IBrowserFile _archivoResolucion;
         private string FileName;
+        
 
         protected override void OnInitialized()
         {
@@ -71,11 +80,12 @@ namespace REGISTROLEGAL.Components.Formularios
         private void OnValidationRequested(object? sender, ValidationRequestedEventArgs e)
         {
             messageStore.Clear();
-            
+
             // Validar miembros según el tipo de trámite
-            if (CModel.TipoTramiteEnum == TipoTramite.Personeria || CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva)
+            if (CModel.TipoTramiteEnum == TipoTramite.Personeria ||
+                CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva)
             {
-                if (CModel.Miembros == null || CModel.Miembros.Count != 7 || 
+                if (CModel.Miembros == null || CModel.Miembros.Count != 7 ||
                     CModel.Miembros.Any(m => string.IsNullOrWhiteSpace(m.NombreMiembro) ||
                                              string.IsNullOrWhiteSpace(m.ApellidoMiembro) ||
                                              string.IsNullOrWhiteSpace(m.CedulaMiembro) ||
@@ -92,7 +102,8 @@ namespace REGISTROLEGAL.Components.Formularios
                                              string.IsNullOrWhiteSpace(m.CedulaMiembro) ||
                                              m.CargoId == null || m.CargoId == 0))
                 {
-                    messageStore.Add(() => CModel.Miembros, "Debe registrar exactamente 2 miembros (Presidente y Tesorero) con todos sus datos.");
+                    messageStore.Add(() => CModel.Miembros,
+                        "Debe registrar exactamente 2 miembros (Presidente y Tesorero) con todos sus datos.");
                 }
             }
 
@@ -118,24 +129,6 @@ namespace REGISTROLEGAL.Components.Formularios
                     messageStore.Add(() => _archivoResolucion, "El archivo no puede superar 10 MB.");
             }
         }
-
-        // private async Task RegionChanged(ChangeEventArgs e)
-        // {
-        //     if (int.TryParse(e.Value?.ToString(), out int id))
-        //         await RegionChanged(id);
-        // }
-        //
-        // private async Task ProvinciaChanged(ChangeEventArgs e)
-        // {
-        //     if (int.TryParse(e.Value?.ToString(), out int id))
-        //         await ProvinciaChanged(id);
-        // }
-        //
-        // private async Task DistritoChanged(ChangeEventArgs e)
-        // {
-        //     if (int.TryParse(e.Value?.ToString(), out int id))
-        //         await DistritoChanged(id);
-        // }
 
         private async Task RegionChanged(int id)
         {
@@ -189,7 +182,7 @@ namespace REGISTROLEGAL.Components.Formularios
             }
 
             // 2. Guardar historial si aplica
-            if (CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva || 
+            if (CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva ||
                 CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
             {
                 await RegistroComiteService.GuardarHistorialMiembros(result.Id, CModel.Miembros);
@@ -211,101 +204,110 @@ namespace REGISTROLEGAL.Components.Formularios
                     return;
                 }
             }
+
             Navigation.NavigateTo("/comites");
         }
 
 
-        private async Task OnTipoTramiteChanged(ChangeEventArgs e)
+        private async Task OnTipoTramiteChanged()
         {
-            if (Enum.TryParse<TipoTramite>(e.Value?.ToString(), out var tipo))
+            var tipo = CModel.TipoTramiteEnum; // ya está actualizado por el bind
+
+            switch (tipo)
             {
-                CModel.TipoTramiteEnum = tipo;
-
-                switch (tipo)
-                {
-                    case TipoTramite.Personeria:
-                        // Inicializamos con 7 miembros vacíos
-                        CModel.Miembros = new List<MiembroComiteModel>();
-                        var cargosFijos = await _Commonservice.GetCargos();
-                        foreach (var cargo in cargosFijos)
-                        {
-                            CModel.Miembros.Add(new MiembroComiteModel
-                            {
-                                CargoId = cargo.Id,
-                                NombreCargo = cargo.Name
-                            });
-                        }
-
-                        break;
-
-                    case TipoTramite.CambioDirectiva:
-                        var ultimoComite = await RegistroComiteService.ObtenerUltimoComiteConMiembrosAsync();
-                        if (ultimoComite != null)
-                        {
-                            CModel.NombreComiteSalud = ultimoComite.NombreComiteSalud;
-                            CModel.Comunidad = ultimoComite.Comunidad;
-                            CModel.RegionSaludId = ultimoComite.RegionSaludId ?? 0;
-                            CModel.ProvinciaId = ultimoComite.ProvinciaId ?? 0;
-                            CModel.DistritoId = ultimoComite.DistritoId ?? 0;
-                            CModel.CorregimientoId = ultimoComite.CorregimientoId ?? 0;
-
-                            // Copiamos miembros actuales
-                            CModel.Miembros = ultimoComite.Miembros.ToList();
-                        }
-
-                        break;
-
-                    case TipoTramite.JuntaInterventora:
-                        var comite = await RegistroComiteService.ObtenerUltimoComiteConMiembrosAsync();
-                        if (comite != null)
-                        {
-                            CModel.NombreComiteSalud = comite.NombreComiteSalud;
-                            CModel.Comunidad = comite.Comunidad;
-
-                            // Solo presidente y tesorero
-                            CModel.Miembros = comite.Miembros
-                                .Where(m => m.CargoId == 1 || m.CargoId == 5) // ej: 1=Presidente, 5=Tesorero
-                                .ToList();
-                        }
-                        break;
-                }
-            }
-        }
-        
-        private async Task ComiteSeleccionado(ChangeEventArgs e)
-        {
-            if (int.TryParse(e.Value?.ToString(), out int comiteId) && comiteId > 0)
-            {
-                var comite = await RegistroComiteService.ObtenerComiteCompletoAsync(comiteId);
-                if (comite != null)
-                {
-                    // Solo se actualizan los datos según tipo de trámite
-                    if (CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva)
+                case TipoTramite.Personeria:
+                    CModel.Miembros = new List<MiembroComiteModel>();
+                    var cargosFijos = await _Commonservice.GetCargos();
+                    foreach (var cargo in cargosFijos)
                     {
-                        CModel.NombreComiteSalud = comite.NombreComiteSalud;
-                        CModel.Comunidad = comite.Comunidad;
-                        CModel.RegionSaludId = comite.RegionSaludId ?? 0;
-                        CModel.ProvinciaId = comite.ProvinciaId ?? 0;
-                        CModel.DistritoId = comite.DistritoId ?? 0;
-                        CModel.CorregimientoId = comite.CorregimientoId ?? 0;
-
-                        CModel.Miembros = comite.Miembros.ToList(); // todos los miembros
+                        CModel.Miembros.Add(new MiembroComiteModel
+                        {
+                            CargoId = cargo.Id,
+                            NombreCargo = cargo.Name
+                        });
                     }
-                    else if (CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
-                    {
-                        CModel.NombreComiteSalud = comite.NombreComiteSalud;
-                        CModel.Comunidad = comite.Comunidad;
+                    break;
 
-                        // Solo presidente y tesorero
-                        CModel.Miembros = comite.Miembros
-                            .Where(m => m.CargoId == 1 || m.CargoId == 5) // ajusta IDs según tus cargos
-                            .ToList();
-                    }
-                }
+                case TipoTramite.CambioDirectiva:
+                case TipoTramite.JuntaInterventora:
+                    comitesRegistrados = await RegistroComiteService.ObtenerComites();
+                    CModel.ComiteId = 0;
+                    CModel.Miembros = new List<MiembroComiteModel>(); // limpiamos miembros hasta seleccionar comité
+                    break;
             }
         }
 
-        
+
+
+        // Método para filtrar comités según el texto de búsqueda
+        private async Task<AutoCompleteDataProviderResult<ComiteModel>> AutoCompleteComiteDataProvider(
+            AutoCompleteDataProviderRequest<ComiteModel> request)
+        {
+            var filtro = (request.Filter?.Value?.ToString() ?? "").ToUpper();
+
+            var comites = await RegistroComiteService.ObtenerComites();
+
+            var filtrados = comites
+                .Where(c => !string.IsNullOrEmpty(c.NombreComiteSalud) &&
+                            c.NombreComiteSalud.ToUpper().Contains(filtro))
+                .ToList();
+
+            return new AutoCompleteDataProviderResult<ComiteModel>
+            {
+                Data = filtrados,
+                TotalCount = filtrados.Count
+            };
+        }
+
+        private async Task OnAutoCompleteComiteChanged(ComiteModel? sel)
+        {
+            if (sel != null)
+            {
+                CModel.ComiteId = sel.ComiteId;
+                CModel.NombreComiteSalud = sel.NombreComiteSalud;
+                await CargarDatosComite(sel.ComiteId);
+            }
+            else
+            {
+                // Limpiar selección
+                CModel.ComiteId = 0;
+                CModel.NombreComiteSalud = string.Empty;
+                CModel.Comunidad = string.Empty;
+                CModel.Miembros.Clear();
+            }
+        }
+
+
+
+// Método para cargar datos completos del comité seleccionado
+        private async Task CargarDatosComite(int comiteId)
+        {
+            var comite = await RegistroComiteService.ObtenerComiteCompletoAsync(comiteId);
+            if (comite != null)
+            {
+                CModel.NombreComiteSalud = comite.NombreComiteSalud;
+                CModel.Comunidad = comite.Comunidad;
+                CModel.RegionSaludId = comite.RegionSaludId;
+                CModel.ProvinciaId = comite.ProvinciaId;
+                CModel.DistritoId = comite.DistritoId;
+                CModel.CorregimientoId = comite.CorregimientoId;
+
+                // Cargar miembros
+                CModel.Miembros = comite.Miembros?.Select(m => new MiembroComiteModel
+                {
+                    MiembroId = m.MiembroId,
+                    ComiteId = m.ComiteId,
+                    NombreMiembro = m.NombreMiembro,
+                    ApellidoMiembro = m.ApellidoMiembro,
+                    CedulaMiembro = m.CedulaMiembro,
+                    CargoId = m.CargoId,
+                    NombreCargo = m.NombreCargo,
+                    TelefonoMiembro = m.TelefonoMiembro,
+                    CorreoMiembro = m.CorreoMiembro
+                }).ToList() ?? new List<MiembroComiteModel>();
+            }
+        }
+
         private void AgregarMiembro()
         {
             CModel.Miembros.Add(new MiembroComiteModel());
@@ -316,6 +318,7 @@ namespace REGISTROLEGAL.Components.Formularios
             if (CModel.Miembros.Contains(miembro))
                 CModel.Miembros.Remove(miembro);
         }
+
         private void Cancelar() => Navigation.NavigateTo("/comites");
 
         private void OnFileSelected(InputFileChangeEventArgs e)

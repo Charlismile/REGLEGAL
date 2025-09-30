@@ -1,5 +1,7 @@
 ﻿@page "/registro-comite"
+@using BlazorBootstrap
 @using REGISTROLEGAL.Models.LegalModels
+
 
 <EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit"
           class="formulario-comite shadow-sm rounded p-4 bg-white">
@@ -12,43 +14,45 @@
     <fieldset class="bloque-form">
         <legend>Tipo de Trámite</legend>
         <div class="d-flex flex-wrap gap-4">
-            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum" @onchange="OnTipoTramiteChanged">
+            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum" 
+                             @onchange="async _ => await OnTipoTramiteChanged()">
                 <div class="form-check">
-                    <InputRadio class="form-check-input" Value="TipoTramite.Personeria" id="Personeria" readonly="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)"
-                                disabled="@(CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva || CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)" />
+                    <InputRadio class="form-check-input" Value="TipoTramite.Personeria" id="Personeria" />
                     <label class="form-check-label" for="Personeria">Personería</label>
                 </div>
                 <div class="form-check">
-                    <InputRadio class="form-check-input" Value="TipoTramite.CambioDirectiva" id="Directiva" readonly="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)"
-                                disabled="@(CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva || CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)" />
+                    <InputRadio class="form-check-input" Value="TipoTramite.CambioDirectiva" id="Directiva" />
                     <label class="form-check-label" for="Directiva">Cambio de Junta Directiva</label>
                 </div>
                 <div class="form-check">
-                    <InputRadio class="form-check-input" Value="TipoTramite.JuntaInterventora" id="Interventora" readonly="@(CModel.TipoTramiteEnum != TipoTramite.Personeria)"
-                                disabled="@(CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva || CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)" />
+                    <InputRadio class="form-check-input" Value="TipoTramite.JuntaInterventora" id="Interventora" />
                     <label class="form-check-label" for="Interventora">Junta Interventora</label>
                 </div>
             </InputRadioGroup>
+
             <ValidationMessage For="@(() => CModel.TipoTramiteEnum)" class="text-danger small"/>
         </div>
     </fieldset>
     
-    @if (CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva || 
-         CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
+    @if (CModel.TipoTramiteEnum is TipoTramite.CambioDirectiva or TipoTramite.JuntaInterventora)
     {
-        <div class="mb-3">
-            <label for="comiteSelect">Seleccione Comité:</label>
-            <InputSelect @bind-Value="CModel.ComiteId" class="form-control"
-                         @onchange="ComiteSeleccionado">
-                <option value="0">-- Seleccione un comité --</option>
-                @foreach (var comite in comitesRegistrados)
-                {
-                    <option value="@comite.ComiteId">@comite.NombreComiteSalud</option>
-                }
-            </InputSelect>
+        <div class="col-sm-6">
+            <label class="form-label">Seleccione Comité</label>
+
+            <AutoComplete @bind-Value="selectedComiteNombre"
+                          TItem="ComiteModel"
+                          DataProvider="AutoCompleteComiteDataProvider"
+                          OnChanged="OnAutoCompleteComiteChanged"
+                          PropertyName="NombreComiteSalud"
+                          class="form-control"
+                          Placeholder="Seleccione un comité" />
+
+            <ValidationMessage For="@(() => CModel.NombreComiteSalud)" class="text-danger"/>
         </div>
     }
 
+
+    
     <!-- DATOS DEL COMITÉ -->
     <fieldset class="bloque-form">
         <legend>Información del Comité</legend>

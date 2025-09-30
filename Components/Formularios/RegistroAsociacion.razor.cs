@@ -27,9 +27,9 @@ public partial class RegistroAsociacion : ComponentBase
         MensajeError = "";
         foreach (var file in e.GetMultipleFiles())
         {
-            if (file.Size > 10 * 1024 * 1024)
+            if (file.Size > 40 * 1024 * 1024)
             {
-                MensajeError += $"El archivo {file.Name} excede 10 MB.\n";
+                MensajeError += $"El archivo {file.Name} excede 40 MB.\n";
                 continue;
             }
 

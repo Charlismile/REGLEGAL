@@ -25,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Components\Asociaciones\" />
       <Folder Include="wwwroot\uploads\documentos-legales\" />
     </ItemGroup>
 

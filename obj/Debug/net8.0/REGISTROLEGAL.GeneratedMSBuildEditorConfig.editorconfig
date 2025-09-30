@@ -176,6 +176,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Comites/Comites.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21pdGVzXENvbWl0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Comites/EditComite.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21pdGVzXEVkaXRDb21pdGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Formularios/RegistroAsociacion.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xGb3JtdWxhcmlvc1xSZWdpc3Ryb0Fzb2NpYWNpb24ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 

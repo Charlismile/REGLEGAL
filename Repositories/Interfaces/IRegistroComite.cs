@@ -10,9 +10,9 @@ public interface IRegistroComite
     Task<ResultModel> CrearComite(ComiteModel model);
     Task<ResultModel> ActualizarComite(ComiteModel model);
     Task<ResultModel> EliminarComite(int comiteId);
-    Task<List<ComiteModel>> ObtenerTodos();
+    Task<List<ComiteModel>> ObtenerComites();
     Task<ComiteModel?> ObtenerComiteCompletoAsync(int comiteId);
-    Task<ComiteModel?> ObtenerUltimoComiteConMiembrosAsync(); // 🔹 Método nuevo
+    Task<ComiteModel?> ObtenerUltimoComiteConMiembrosAsync();
 
     // Gestión de miembros
     Task<TbDatosMiembros> AgregarMiembro(int comiteId, MiembroComiteModel miembro);
@@ -26,7 +26,6 @@ public interface IRegistroComite
     Task<ResultModel> EliminarArchivo(int archivoId);
     Task<List<CArchivoModel>> ObtenerArchivos(int comiteId);
     Task<ResultModel> GuardarResolucionAsync(int comiteId, IBrowserFile archivo);
-
 
     // Historial / detalles
     Task<List<DetalleRegComiteModel>> ObtenerDetalleHistorial(int comiteId);

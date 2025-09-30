@@ -296,6 +296,7 @@ public partial class DbContextLegal : DbContext
         {
             entity.HasKey(e => e.DetalleRegComiteId).HasName("PK__TbDetall__EFD6F2462EE9028E");
 
+            entity.Property(e => e.Comunidad).HasMaxLength(100);
             entity.Property(e => e.CreadaEn)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -303,9 +304,15 @@ public partial class DbContextLegal : DbContext
             entity.Property(e => e.FechaEleccion).HasColumnType("datetime");
             entity.Property(e => e.FechaRegistro).HasColumnType("datetime");
             entity.Property(e => e.FechaResolucion).HasColumnType("datetime");
+            entity.Property(e => e.NombreComiteSalud).HasMaxLength(100);
             entity.Property(e => e.NumRegCoCompleta).HasMaxLength(50);
             entity.Property(e => e.NumeroNota).HasMaxLength(50);
             entity.Property(e => e.NumeroResolucion).HasMaxLength(50);
+
+            entity.HasOne(d => d.Comite).WithMany(p => p.TbDetalleRegComite)
+                .HasForeignKey(d => d.ComiteId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DetalleRegComite_DatosComite");
 
             entity.HasOne(d => d.TipoTramite).WithMany(p => p.TbDetalleRegComite)
                 .HasForeignKey(d => d.TipoTramiteId)

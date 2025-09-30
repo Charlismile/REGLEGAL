@@ -28,17 +28,17 @@ public class ComiteModel
 
     // 📌 Fechas y resolución
     [Required(ErrorMessage = "La fecha de creación es obligatoria")]
-    public DateTime FechaCreacion { get; set; }
+    public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
     [Required(ErrorMessage = "La fecha de elección es obligatoria")]
-    public DateTime FechaEleccion { get; set; }
+    public DateTime FechaEleccion { get; set; } = DateTime.Now;
 
     [Required(ErrorMessage = "El número de resolución es obligatorio")]
     [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
     public string NumeroResolucion { get; set; } = "";
 
     [Required(ErrorMessage = "La fecha de resolución es obligatoria")]
-    public DateTime FechaResolucion { get; set; }
+    public DateTime FechaResolucion { get; set; } = DateTime.Now;
 
     // 📌 Ubicación
     public int? RegionSaludId { get; set; }

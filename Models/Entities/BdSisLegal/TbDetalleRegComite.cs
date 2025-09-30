@@ -33,6 +33,12 @@ public partial class TbDetalleRegComite
 
     public DateTime? FechaResolucion { get; set; }
 
+    public string? NombreComiteSalud { get; set; }
+
+    public string? Comunidad { get; set; }
+
+    public virtual TbDatosComite Comite { get; set; } = null!;
+
     public virtual ICollection<TbComiteArchivos> TbComiteArchivos { get; set; } = new List<TbComiteArchivos>();
 
     public virtual ICollection<TbDetalleRegComiteHistorial> TbDetalleRegComiteHistorial { get; set; } = new List<TbDetalleRegComiteHistorial>();

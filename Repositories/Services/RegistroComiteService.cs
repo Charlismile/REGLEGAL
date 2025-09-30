@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using BlazorBootstrap;
+using Microsoft.AspNetCore.Components.Forms;
 using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
@@ -34,8 +35,10 @@ public class RegistroComiteService : IRegistroComite
             await _context.SaveChangesAsync();
 
             if (model.Miembros?.Any() == true)
+            {
                 foreach (var miembro in model.Miembros)
                     await AgregarMiembro(comite.DcomiteId, miembro);
+            }
 
             return new ResultModel { Success = true, Message = "Comité creado correctamente", Data = comite.DcomiteId };
         }
@@ -49,7 +52,10 @@ public class RegistroComiteService : IRegistroComite
     {
         try
         {
-            var entity = await _context.TbDatosComite.FindAsync(model.ComiteId);
+            var entity = await _context.TbDatosComite
+                .Include(c => c.TbDatosMiembros)
+                .FirstOrDefaultAsync(c => c.DcomiteId == model.ComiteId);
+
             if (entity == null) return new ResultModel { Success = false, Message = "Comité no encontrado" };
 
             entity.NombreComiteSalud = model.NombreComiteSalud;
@@ -59,9 +65,25 @@ public class RegistroComiteService : IRegistroComite
             entity.DistritoId = model.DistritoId ?? entity.DistritoId;
             entity.CorregimientoId = model.CorregimientoId ?? entity.CorregimientoId;
 
-            _context.TbDatosComite.Update(entity);
-            await _context.SaveChangesAsync();
+            // Actualizar miembros existentes
+            if (model.Miembros?.Any() == true)
+            {
+                foreach (var miembro in model.Miembros)
+                {
+                    var existente = entity.TbDatosMiembros.FirstOrDefault(m => m.DmiembroId == miembro.MiembroId);
+                    if (existente != null)
+                    {
+                        existente.NombreMiembro = miembro.NombreMiembro;
+                        existente.ApellidoMiembro = miembro.ApellidoMiembro;
+                        existente.CedulaMiembro = miembro.CedulaMiembro;
+                        existente.CargoId = miembro.CargoId;
+                        existente.TelefonoMiembro = miembro.TelefonoMiembro;
+                        existente.CorreoMiembro = miembro.CorreoMiembro;
+                    }
+                }
+            }
 
+            await _context.SaveChangesAsync();
             return new ResultModel { Success = true, Message = "Comité actualizado correctamente" };
         }
         catch (Exception ex)
@@ -88,7 +110,7 @@ public class RegistroComiteService : IRegistroComite
         }
     }
 
-    public async Task<List<ComiteModel>> ObtenerTodos()
+    public async Task<List<ComiteModel>> ObtenerComites()
     {
         return await _context.TbDatosComite
             .Select(c => new ComiteModel
@@ -100,13 +122,15 @@ public class RegistroComiteService : IRegistroComite
                 ProvinciaId = c.ProvinciaId,
                 DistritoId = c.DistritoId,
                 CorregimientoId = c.CorregimientoId
-            }).ToListAsync();
+            })
+            .ToListAsync();
     }
 
     public async Task<ComiteModel?> ObtenerComiteCompletoAsync(int comiteId)
     {
         var entity = await _context.TbDatosComite
-            .Include(c => c.TbDatosMiembros).ThenInclude(m => m.Cargo)
+            .Include(c => c.TbDatosMiembros)
+                .ThenInclude(m => m.Cargo)
             .FirstOrDefaultAsync(c => c.DcomiteId == comiteId);
 
         if (entity == null) return null;
@@ -136,40 +160,36 @@ public class RegistroComiteService : IRegistroComite
         };
     }
 
-    // 🔹 Nuevo método: último comité con miembros
     public async Task<ComiteModel?> ObtenerUltimoComiteConMiembrosAsync()
     {
-        var entity = await _context.TbDatosComite
+        return await _context.TbDatosComite
             .Include(c => c.TbDatosMiembros)
-            .ThenInclude(m => m.Cargo)
+                .ThenInclude(m => m.Cargo)
             .OrderByDescending(c => c.DcomiteId)
+            .Select(c => new ComiteModel
+            {
+                ComiteId = c.DcomiteId,
+                NombreComiteSalud = c.NombreComiteSalud,
+                Comunidad = c.Comunidad,
+                RegionSaludId = c.RegionSaludId,
+                ProvinciaId = c.ProvinciaId,
+                DistritoId = c.DistritoId,
+                CorregimientoId = c.CorregimientoId,
+                Miembros = c.TbDatosMiembros
+                    .Select(m => new MiembroComiteModel
+                    {
+                        MiembroId = m.DmiembroId,
+                        ComiteId = m.DcomiteId ?? 0,
+                        NombreMiembro = m.NombreMiembro,
+                        ApellidoMiembro = m.ApellidoMiembro,
+                        CedulaMiembro = m.CedulaMiembro,
+                        CargoId = m.CargoId,
+                        TelefonoMiembro = m.TelefonoMiembro,
+                        CorreoMiembro = m.CorreoMiembro,
+                        NombreCargo = m.Cargo.NombreCargo
+                    }).ToList()
+            })
             .FirstOrDefaultAsync();
-
-        if (entity == null) return null;
-
-        return new ComiteModel
-        {
-            ComiteId = entity.DcomiteId,
-            NombreComiteSalud = entity.NombreComiteSalud,
-            Comunidad = entity.Comunidad,
-            RegionSaludId = entity.RegionSaludId,
-            ProvinciaId = entity.ProvinciaId,
-            DistritoId = entity.DistritoId,
-            CorregimientoId = entity.CorregimientoId,
-            Miembros = entity.TbDatosMiembros
-                .Select(m => new MiembroComiteModel
-                {
-                    MiembroId = m.DmiembroId,
-                    ComiteId = m.DcomiteId ?? 0,
-                    NombreMiembro = m.NombreMiembro,
-                    ApellidoMiembro = m.ApellidoMiembro,
-                    CedulaMiembro = m.CedulaMiembro,
-                    CargoId = m.CargoId,
-                    TelefonoMiembro = m.TelefonoMiembro,
-                    CorreoMiembro = m.CorreoMiembro,
-                    NombreCargo = m.Cargo.NombreCargo
-                }).ToList()
-        };
     }
 
     #endregion
@@ -294,6 +314,7 @@ public class RegistroComiteService : IRegistroComite
                 SubidoEn = a.FechaSubida
             }).ToListAsync();
     }
+
     public async Task<ResultModel> GuardarResolucionAsync(int comiteId, IBrowserFile archivo)
     {
         try
@@ -305,10 +326,8 @@ public class RegistroComiteService : IRegistroComite
             var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(archivo.Name)}";
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-            await using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await archivo.OpenReadStream(10 * 1024 * 1024).CopyToAsync(stream); // máx 10MB
-            }
+            await using var stream = new FileStream(filePath, FileMode.Create);
+            await archivo.OpenReadStream(10 * 1024 * 1024).CopyToAsync(stream); // máx 10MB
 
             var archivoModel = new CArchivoModel
             {
@@ -325,7 +344,6 @@ public class RegistroComiteService : IRegistroComite
             return new ResultModel { Success = false, Message = $"Error al guardar resolución: {ex.Message}" };
         }
     }
-
 
     #endregion
 
