@@ -9,13 +9,14 @@ namespace REGISTROLEGAL.Repositories.Services;
 public class CommonServices : ICommon
 {
     private readonly IDbContextFactory<DbContextLegal> _context;
-
+    private readonly IWebHostEnvironment _env;
     private readonly string _rutaBaseArchivos =
         Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "documentos-legales");
 
-    public CommonServices(IDbContextFactory<DbContextLegal> context)
+    public CommonServices(IDbContextFactory<DbContextLegal> context, IWebHostEnvironment env)
     {
         _context = context;
+        _env = env;
     }
 
 
@@ -153,7 +154,7 @@ public class CommonServices : ICommon
         return Lista;
     }
 
-    public async Task<(bool ok, string mensaje)> GuardarArchivoAsync(
+    public async Task<(bool ok, string mensaje)> GuardarArchivoAsociacionAsync(
         IBrowserFile archivo,
         string categoria,
         int asociacionId
@@ -165,11 +166,29 @@ public class CommonServices : ICommon
             if (!Directory.Exists(rutaCategoria))
                 Directory.CreateDirectory(rutaCategoria);
 
-            var filePath = Path.Combine(rutaCategoria, archivo.Name);
+            var nombreArchivoGuardado = Guid.NewGuid() + Path.GetExtension(archivo.Name);
+            var filePath = Path.Combine(rutaCategoria, nombreArchivoGuardado);
 
             await using var stream = archivo.OpenReadStream(10 * 1024 * 1024); // 10 MB
             await using var fileStream = new FileStream(filePath, FileMode.Create);
             await stream.CopyToAsync(fileStream);
+
+            using var context = await _context.CreateDbContextAsync();
+
+            var registro = new TbAsociacionArchivos
+            {
+                AsociacionArchivoId = asociacionId,
+                Categoria = categoria,
+                NombreOriginal = archivo.Name,
+                NombreArchivoGuardado = nombreArchivoGuardado,
+                Url = $"/uploads/documentos-legales/{categoria}/{asociacionId}/{nombreArchivoGuardado}",
+                FechaSubida = DateTime.Now,
+                Version = 1,
+                IsActivo = true
+            };
+
+            await context.TbAsociacionArchivos.AddAsync(registro);
+            await context.SaveChangesAsync();
 
             return (true, "Archivo guardado correctamente.");
         }
@@ -178,6 +197,51 @@ public class CommonServices : ICommon
             return (false, $"Error al guardar archivo {archivo.Name}: {ex.Message}");
         }
     }
+
+    public async Task<(bool ok, string mensaje)> GuardarArchivoComiteAsync(
+        IBrowserFile archivo,
+        string categoria,
+        int comiteId
+    )
+    {
+        try
+        {
+            var rutaCategoria = Path.Combine(_rutaBaseArchivos, categoria, comiteId.ToString());
+            if (!Directory.Exists(rutaCategoria))
+                Directory.CreateDirectory(rutaCategoria);
+
+            var nombreArchivoGuardado = Guid.NewGuid() + Path.GetExtension(archivo.Name);
+            var filePath = Path.Combine(rutaCategoria, nombreArchivoGuardado);
+
+            await using var stream = archivo.OpenReadStream(10 * 1024 * 1024); // 10 MB
+            await using var fileStream = new FileStream(filePath, FileMode.Create);
+            await stream.CopyToAsync(fileStream);
+
+            using var context = await _context.CreateDbContextAsync();
+
+            var registro = new TbComiteArchivos
+            {
+                DetRegComiteId = comiteId,
+                Categoria = categoria,
+                NombreOriginal = archivo.Name,
+                NombreArchivoGuardado = nombreArchivoGuardado,
+                Url = $"/uploads/documentos-legales/{categoria}/{comiteId}/{nombreArchivoGuardado}",
+                FechaSubida = DateTime.Now,
+                Version = 1,
+                IsActivo = true
+            };
+
+            await context.TbComiteArchivos.AddAsync(registro);
+            await context.SaveChangesAsync();
+
+            return (true, "Archivo guardado correctamente.");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Error al guardar archivo {archivo.Name}: {ex.Message}");
+        }
+    }
+
 
     #endregion
 }

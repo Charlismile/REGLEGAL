@@ -227,13 +227,17 @@
             <ValidationMessage For="@(() => CModel.FechaResolucion)" />
         </div>
         <legend>Archivo de Resolución</legend>
-        <InputFile OnChange="OnFileSelected"/>
-        @if (!string.IsNullOrEmpty(FileName))
-        {
-            <div class="mt-2">
-                <strong>Archivo seleccionado:</strong> @FileName
-            </div>
-        }
+        <InputFile OnChange="CargarDocumentos" multiple />
+
+        <ul>
+            @foreach (var doc in CModel.DocumentosSubir)
+            {
+                <li>
+                    @doc.Name 
+                    <button type="button" @onclick="() => RemoverDocumento(doc)">Quitar</button>
+                </li>
+            }
+        </ul>
         <ValidationMessage For="@(() => _archivoResolucion)" class="text-danger small"/>
     </fieldset>
 

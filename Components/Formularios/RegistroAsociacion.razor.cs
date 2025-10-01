@@ -11,17 +11,14 @@ public partial class RegistroAsociacion : ComponentBase
     [Inject] private IRegistroAsociacion _RegistroAsociacionService { get; set; } = default!;
     [Inject] private ICommon _Commonservice { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
-
     private AsociacionModel AModel = new();
     private bool IsSubmitting = false;
     private string MensajeExito = "";
     private string MensajeError = "";
-
     protected override void OnInitialized()
     {
         AModel.CargoRepLegal = "Presidente";
     }
-
     private async Task CargarDocumentos(InputFileChangeEventArgs e)
     {
         MensajeError = "";
@@ -44,13 +41,11 @@ public partial class RegistroAsociacion : ComponentBase
             AModel.DocumentosSubir.Add(file);
         }
     }
-
     private void RemoverDocumento(int index)
     {
         if (index >= 0 && index < AModel.DocumentosSubir.Count)
             AModel.DocumentosSubir.RemoveAt(index);
     }
-
     private async Task HandleValidSubmit()
     {
         IsSubmitting = true;
@@ -81,16 +76,14 @@ public partial class RegistroAsociacion : ComponentBase
                 // Guardar archivos
                 foreach (var archivo in AModel.DocumentosSubir)
                 {
-                    var guardado = await _Commonservice.GuardarArchivoAsync(
+                    var guardado = await _Commonservice.GuardarArchivoAsociacionAsync(
                         archivo,
                         categoria: "DocumentosAsociacion",
                         asociacionId: resultado.AsociacionId
                     );
-
                     if (!guardado.ok)
                         MensajeError += $"No se pudo guardar {archivo.Name}: {guardado.mensaje}\n";
                 }
-
                 if (string.IsNullOrEmpty(MensajeError))
                 {
                     MensajeExito = "Asociación registrada con éxito.";
@@ -112,6 +105,5 @@ public partial class RegistroAsociacion : ComponentBase
             IsSubmitting = false;
         }
     }
-
     private void Cancelar() => Navigation.NavigateTo("/asociaciones");
 }

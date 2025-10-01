@@ -27,7 +27,7 @@ namespace REGISTROLEGAL.Components.Formularios
         private List<ListModel> comiteCorregimientoList { get; set; } = new();
         private List<ComiteModel> comitesRegistrados { get; set; } = new();
         private List<ListModel> Cargos { get; set; } = new();
-        
+
         private string selectedComiteNombre
         {
             get => CModel.NombreComiteSalud;
@@ -39,7 +39,7 @@ namespace REGISTROLEGAL.Components.Formularios
 
         private IBrowserFile _archivoResolucion;
         private string FileName;
-        
+
 
         protected override void OnInitialized()
         {
@@ -204,14 +204,23 @@ namespace REGISTROLEGAL.Components.Formularios
                     return;
                 }
             }
+            
+            // Guardar los documentos asociados al comité
+            foreach (var archivo in CModel.DocumentosSubir)
+            {
+                await _Commonservice.GuardarArchivoComiteAsync(
+                    archivo,
+                    categoria: "DocumentosComite",
+                    comiteId: result.Id  
+                );
+            }
 
             Navigation.NavigateTo("/comites");
         }
 
-
         private async Task OnTipoTramiteChanged()
         {
-            var tipo = CModel.TipoTramiteEnum; // ya está actualizado por el bind
+            var tipo = CModel.TipoTramiteEnum; 
 
             switch (tipo)
             {
@@ -226,6 +235,7 @@ namespace REGISTROLEGAL.Components.Formularios
                             NombreCargo = cargo.Name
                         });
                     }
+
                     break;
 
                 case TipoTramite.CambioDirectiva:
@@ -236,8 +246,6 @@ namespace REGISTROLEGAL.Components.Formularios
                     break;
             }
         }
-
-
 
         // Método para filtrar comités según el texto de búsqueda
         private async Task<AutoCompleteDataProviderResult<ComiteModel>> AutoCompleteComiteDataProvider(
@@ -277,8 +285,6 @@ namespace REGISTROLEGAL.Components.Formularios
             }
         }
 
-
-
 // Método para cargar datos completos del comité seleccionado
         private async Task CargarDatosComite(int comiteId)
         {
@@ -306,6 +312,23 @@ namespace REGISTROLEGAL.Components.Formularios
                     CorreoMiembro = m.CorreoMiembro
                 }).ToList() ?? new List<MiembroComiteModel>();
             }
+        }
+
+        // Cargar documentos al modelo de comité
+        private async Task CargarDocumentos(InputFileChangeEventArgs e)
+        {
+            foreach (var archivo in e.GetMultipleFiles())
+            {
+                CModel.DocumentosSubir.Add(archivo);
+            }
+
+            await InvokeAsync(StateHasChanged);
+        }
+
+// Remover un documento cargado
+        private void RemoverDocumento(IBrowserFile archivo)
+        {
+            CModel.DocumentosSubir.Remove(archivo);
         }
 
         private void AgregarMiembro()
