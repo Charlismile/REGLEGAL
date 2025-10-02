@@ -177,7 +177,7 @@ public class CommonServices : ICommon
 
             var registro = new TbAsociacionArchivos
             {
-                AsociacionArchivoId = asociacionId,
+                DetRegAsociacionId = asociacionId, 
                 Categoria = categoria,
                 NombreOriginal = archivo.Name,
                 NombreArchivoGuardado = nombreArchivoGuardado,
@@ -186,6 +186,7 @@ public class CommonServices : ICommon
                 Version = 1,
                 IsActivo = true
             };
+
 
             await context.TbAsociacionArchivos.AddAsync(registro);
             await context.SaveChangesAsync();
