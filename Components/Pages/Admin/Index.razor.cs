@@ -10,7 +10,7 @@ public partial class Index : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        totalComites = await _context.TbDatosComite.CountAsync();
+        totalComites = await _context.TbComite.CountAsync();
         totalAsociaciones = await _context.TbAsociacion.CountAsync();
     }
 }

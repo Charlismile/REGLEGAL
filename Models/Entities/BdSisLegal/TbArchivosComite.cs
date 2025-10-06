@@ -3,13 +3,11 @@ using System.Collections.Generic;
 
 namespace REGISTROLEGAL.Models.Entities.BdSisLegal;
 
-public partial class TbArchivos
+public partial class TbArchivosComite
 {
     public int ArchivoId { get; set; }
 
-    public int? DetRegAsociacionId { get; set; }
-
-    public int? DetRegComiteId { get; set; }
+    public int ComiteId { get; set; }
 
     public string Categoria { get; set; } = null!;
 
@@ -25,7 +23,5 @@ public partial class TbArchivos
 
     public bool IsActivo { get; set; }
 
-    public virtual TbDetalleRegAsociacion? DetRegAsociacion { get; set; }
-
-    public virtual TbDetalleRegComite? DetRegComite { get; set; }
+    public virtual TbComite Comite { get; set; } = null!;
 }

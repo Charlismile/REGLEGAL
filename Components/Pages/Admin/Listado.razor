@@ -23,7 +23,7 @@
                 <td>@c.DcomiteId</td>
                 <td>@c.NombreComiteSalud</td>
                 <td>@c.Comunidad</td>
-                <td>@c.TbDatosMiembros</td>
+                <td>@c.TbMiembrosComite</td>
             </tr>
         }
         </tbody>
@@ -54,12 +54,12 @@
 </div>
 
 @code {
-    private List<TbDatosComite> comites = new();
+    private List<TbComite> comites = new();
     private List<TbAsociacion> asociaciones = new();
 
     protected override async Task OnInitializedAsync()
     {
-        comites = await _context.TbDatosComite.ToListAsync();
+        comites = await _context.TbComite.ToListAsync();
         asociaciones = await _context.TbAsociacion.ToListAsync();
     }
 }

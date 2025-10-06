@@ -12,4 +12,6 @@ public partial class TbCorregimiento
     public int DistritoId { get; set; }
 
     public virtual TbDistrito Distrito { get; set; } = null!;
+
+    public virtual ICollection<TbComite> TbComite { get; set; } = new List<TbComite>();
 }

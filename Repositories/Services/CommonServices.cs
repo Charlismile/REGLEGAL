@@ -175,9 +175,9 @@ public class CommonServices : ICommon
 
             using var context = await _context.CreateDbContextAsync();
 
-            var registro = new TbAsociacionArchivos
+            var registro = new TbArchivosAsociacion
             {
-                DetRegAsociacionId = asociacionId, 
+                ArchivoId = asociacionId, 
                 Categoria = categoria,
                 NombreOriginal = archivo.Name,
                 NombreArchivoGuardado = nombreArchivoGuardado,
@@ -188,7 +188,7 @@ public class CommonServices : ICommon
             };
 
 
-            await context.TbAsociacionArchivos.AddAsync(registro);
+            await context.TbArchivosAsociacion.AddAsync(registro);
             await context.SaveChangesAsync();
 
             return (true, "Archivo guardado correctamente.");
@@ -220,9 +220,9 @@ public class CommonServices : ICommon
 
             using var context = await _context.CreateDbContextAsync();
 
-            var registro = new TbComiteArchivos
+            var registro = new TbArchivosComite
             {
-                DetRegComiteId = comiteId,
+                ArchivoId = comiteId,
                 Categoria = categoria,
                 NombreOriginal = archivo.Name,
                 NombreArchivoGuardado = nombreArchivoGuardado,
@@ -232,7 +232,7 @@ public class CommonServices : ICommon
                 IsActivo = true
             };
 
-            await context.TbComiteArchivos.AddAsync(registro);
+            await context.TbArchivosComite.AddAsync(registro);
             await context.SaveChangesAsync();
 
             return (true, "Archivo guardado correctamente.");

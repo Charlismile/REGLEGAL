@@ -14,7 +14,7 @@
     <fieldset class="bloque-form">
         <legend>Tipo de Trámite</legend>
         <div class="d-flex flex-wrap gap-4">
-            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum" 
+            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum"
                              @onchange="async _ => await OnTipoTramiteChanged()">
                 <div class="form-check">
                     <InputRadio class="form-check-input" Value="TipoTramite.Personeria" id="Personeria" />
@@ -33,7 +33,7 @@
             <ValidationMessage For="@(() => CModel.TipoTramiteEnum)" class="text-danger small"/>
         </div>
     </fieldset>
-    
+
     @if (CModel.TipoTramiteEnum is TipoTramite.CambioDirectiva or TipoTramite.JuntaInterventora)
     {
         <div class="col-sm-6">
@@ -52,7 +52,7 @@
     }
 
 
-    
+
     <!-- DATOS DEL COMITÉ -->
     <fieldset class="bloque-form">
         <legend>Información del Comité</legend>
@@ -193,7 +193,7 @@
                         }
                     </InputSelect>
                 </div>
-                
+
                 <!-- Botón remover -->
                 <div class="col-md-1 text-end">
                     <button type="button" class="btn btn-danger"
@@ -205,12 +205,10 @@
             <ValidationMessage For="@(() => CModel.Miembros)" class="text-danger small"/>
         }
 
-        <button type="button" class="btn btn-primary mt-2"
-                @onclick="AgregarMiembro"
-                disabled="@(CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora && CModel.Miembros.Count >= 2)">
+        <button type="button" class="btn btn-primary mt-2" @onclick="AgregarMiembroAlModelo">
             <i class="bi bi-plus-circle"></i> Agregar Miembro
         </button>
-
+        
         <br/>
     </div>
 
@@ -233,7 +231,7 @@
             @foreach (var doc in CModel.DocumentosSubir)
             {
                 <li>
-                    @doc.Name 
+                    @doc.Name
                     <button type="button" @onclick="() => RemoverDocumento(doc)">Quitar</button>
                 </li>
             }

@@ -26,4 +26,10 @@ public partial class TbDatosMiembrosHistorial
     public string? CorreoMiembro { get; set; }
 
     public DateTime FechaCambio { get; set; }
+
+    public virtual TbCargosMiembrosComite Cargo { get; set; } = null!;
+
+    public virtual TbComite? Dcomite { get; set; }
+
+    public virtual TbMiembrosComite Dmiembro { get; set; } = null!;
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace REGISTROLEGAL.Models.Entities.BdSisLegal;
 
-public partial class TbDetalleRegComite
+public partial class TbComite
 {
-    public int DetalleRegComiteId { get; set; }
+    public int DcomiteId { get; set; }
 
     public int ComiteId { get; set; }
 
@@ -37,11 +37,29 @@ public partial class TbDetalleRegComite
 
     public string? Comunidad { get; set; }
 
-    public virtual TbDatosComite Comite { get; set; } = null!;
+    public int? RegionSaludId { get; set; }
 
-    public virtual ICollection<TbComiteArchivos> TbComiteArchivos { get; set; } = new List<TbComiteArchivos>();
+    public int? ProvinciaId { get; set; }
+
+    public int? DistritoId { get; set; }
+
+    public int? CorregimientoId { get; set; }
+
+    public virtual TbCorregimiento? Corregimiento { get; set; }
+
+    public virtual TbDistrito? Distrito { get; set; }
+
+    public virtual TbProvincia? Provincia { get; set; }
+
+    public virtual TbRegionSalud? RegionSalud { get; set; }
+
+    public virtual ICollection<TbArchivosComite> TbArchivosComite { get; set; } = new List<TbArchivosComite>();
+
+    public virtual ICollection<TbDatosMiembrosHistorial> TbDatosMiembrosHistorial { get; set; } = new List<TbDatosMiembrosHistorial>();
 
     public virtual ICollection<TbDetalleRegComiteHistorial> TbDetalleRegComiteHistorial { get; set; } = new List<TbDetalleRegComiteHistorial>();
+
+    public virtual ICollection<TbMiembrosComite> TbMiembrosComite { get; set; } = new List<TbMiembrosComite>();
 
     public virtual TbTipoTramite TipoTramite { get; set; } = null!;
 }

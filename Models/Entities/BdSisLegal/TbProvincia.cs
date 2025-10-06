@@ -9,9 +9,9 @@ public partial class TbProvincia
 
     public string NombreProvincia { get; set; } = null!;
 
-    public int RegionSaludId { get; set; }
+    public int? RegionSaludId { get; set; }
 
-    public virtual TbRegionSalud RegionSalud { get; set; } = null!;
+    public virtual ICollection<TbComite> TbComite { get; set; } = new List<TbComite>();
 
     public virtual ICollection<TbDistrito> TbDistrito { get; set; } = new List<TbDistrito>();
 }

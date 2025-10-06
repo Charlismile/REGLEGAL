@@ -11,5 +11,5 @@ public partial class TbTipoTramite
 
     public bool IsActivo { get; set; }
 
-    public virtual ICollection<TbDetalleRegComite> TbDetalleRegComite { get; set; } = new List<TbDetalleRegComite>();
+    public virtual ICollection<TbComite> TbComite { get; set; } = new List<TbComite>();
 }

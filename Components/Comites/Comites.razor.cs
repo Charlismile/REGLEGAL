@@ -7,11 +7,11 @@ namespace REGISTROLEGAL.Components.Comites;
 
 public partial class Comites : ComponentBase
 {
-    private List<TbDetalleRegComite>? comites;
+    private List<TbComite>? comites;
 
     protected override async Task OnInitializedAsync()
     {
-        comites = await _context.TbDetalleRegComite
+        comites = await _context.TbComite
             .OrderByDescending(c => c.FechaRegistro)
             .ToListAsync();
     }

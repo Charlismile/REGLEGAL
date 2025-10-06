@@ -1,12 +1,9 @@
-﻿using System.Security.Claims;
-using BlazorBootstrap;
+﻿using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
-using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
-using REGISTROLEGAL.Repositories.Services;
 
 namespace REGISTROLEGAL.Components.Formularios
 {
@@ -34,12 +31,9 @@ namespace REGISTROLEGAL.Components.Formularios
             set => CModel.NombreComiteSalud = value;
         }
 
-
         private bool IsSubmitting = false;
-
         private IBrowserFile _archivoResolucion;
         private string FileName;
-
 
         protected override void OnInitialized()
         {
@@ -75,7 +69,6 @@ namespace REGISTROLEGAL.Components.Formularios
                 comiteCorregimientoList = await _Commonservice.GetCorregimientos(CModel.DistritoId.Value);
             }
         }
-
 
         private void OnValidationRequested(object? sender, ValidationRequestedEventArgs e)
         {
@@ -126,47 +119,9 @@ namespace REGISTROLEGAL.Components.Formularios
                 if (!allowedExtensions.Contains(ext))
                     messageStore.Add(() => _archivoResolucion, "Formato no permitido. Solo PDF o DOCX.");
                 if (_archivoResolucion.Size > 50 * 1024 * 1024)
-                    messageStore.Add(() => _archivoResolucion, "El archivo no puede superar 10 MB.");
+                    messageStore.Add(() => _archivoResolucion, "El archivo no puede superar 50 MB.");
             }
         }
-
-        private async Task RegionChanged(int id)
-        {
-            CModel.RegionSaludId = id;
-
-            // Cargar provincias de la región seleccionada
-            comiteProvinciaList = await _Commonservice.GetProvincias(id);
-            CModel.ProvinciaId = null;
-
-            // Limpiar distritos y corregimientos
-            comiteDistritoList.Clear();
-            CModel.DistritoId = null;
-            comiteCorregimientoList.Clear();
-            CModel.CorregimientoId = null;
-        }
-
-        private async Task ProvinciaChanged(int id)
-        {
-            CModel.ProvinciaId = id;
-
-            // Cargar distritos de la provincia seleccionada
-            comiteDistritoList = await _Commonservice.GetDistritos(id);
-            CModel.DistritoId = null;
-
-            // Limpiar corregimientos
-            comiteCorregimientoList.Clear();
-            CModel.CorregimientoId = null;
-        }
-
-        private async Task DistritoChanged(int id)
-        {
-            CModel.DistritoId = id;
-
-            // Cargar corregimientos del distrito seleccionado
-            comiteCorregimientoList = await _Commonservice.GetCorregimientos(id);
-            CModel.CorregimientoId = null;
-        }
-
 
         private async Task HandleValidSubmit()
         {
@@ -188,7 +143,7 @@ namespace REGISTROLEGAL.Components.Formularios
                 await RegistroComiteService.GuardarHistorialMiembros(result.Id, CModel.Miembros);
             }
 
-            // 3. Guardar miembros actuales
+            // 3. Guardar miembros actuales usando el servicio
             foreach (var miembro in CModel.Miembros)
             {
                 await RegistroComiteService.AgregarMiembro(result.Id, miembro);
@@ -204,14 +159,14 @@ namespace REGISTROLEGAL.Components.Formularios
                     return;
                 }
             }
-            
-            // Guardar los documentos asociados al comité
+
+            // Guardar documentos asociados al comité
             foreach (var archivo in CModel.DocumentosSubir)
             {
                 await _Commonservice.GuardarArchivoComiteAsync(
                     archivo,
                     categoria: "DocumentosComite",
-                    comiteId: result.Id  
+                    comiteId: result.Id
                 );
             }
 
@@ -220,7 +175,7 @@ namespace REGISTROLEGAL.Components.Formularios
 
         private async Task OnTipoTramiteChanged()
         {
-            var tipo = CModel.TipoTramiteEnum; 
+            var tipo = CModel.TipoTramiteEnum;
 
             switch (tipo)
             {
@@ -235,14 +190,13 @@ namespace REGISTROLEGAL.Components.Formularios
                             NombreCargo = cargo.Name
                         });
                     }
-
                     break;
 
                 case TipoTramite.CambioDirectiva:
                 case TipoTramite.JuntaInterventora:
                     comitesRegistrados = await RegistroComiteService.ObtenerComites();
                     CModel.ComiteId = 0;
-                    CModel.Miembros = new List<MiembroComiteModel>(); // limpiamos miembros hasta seleccionar comité
+                    CModel.Miembros = new List<MiembroComiteModel>();
                     break;
             }
         }
@@ -277,7 +231,6 @@ namespace REGISTROLEGAL.Components.Formularios
             }
             else
             {
-                // Limpiar selección
                 CModel.ComiteId = 0;
                 CModel.NombreComiteSalud = string.Empty;
                 CModel.Comunidad = string.Empty;
@@ -285,7 +238,6 @@ namespace REGISTROLEGAL.Components.Formularios
             }
         }
 
-// Método para cargar datos completos del comité seleccionado
         private async Task CargarDatosComite(int comiteId)
         {
             var comite = await RegistroComiteService.ObtenerComiteCompletoAsync(comiteId);
@@ -314,7 +266,6 @@ namespace REGISTROLEGAL.Components.Formularios
             }
         }
 
-        // Cargar documentos al modelo de comité
         private async Task CargarDocumentos(InputFileChangeEventArgs e)
         {
             foreach (var archivo in e.GetMultipleFiles())
@@ -325,15 +276,21 @@ namespace REGISTROLEGAL.Components.Formularios
             await InvokeAsync(StateHasChanged);
         }
 
-// Remover un documento cargado
         private void RemoverDocumento(IBrowserFile archivo)
         {
             CModel.DocumentosSubir.Remove(archivo);
         }
 
-        private void AgregarMiembro()
+        // ⚡ Método renombrado para evitar conflicto
+        private async Task AgregarMiembroAlModelo()
         {
-            CModel.Miembros.Add(new MiembroComiteModel());
+            var miembro = new MiembroComiteModel();
+            CModel.Miembros.Add(miembro);
+
+            if (CModel.ComiteId != 0)
+            {
+                await RegistroComiteService.AgregarMiembro(CModel.ComiteId, miembro);
+            }
         }
 
         private void RemoverMiembro(MiembroComiteModel miembro)
@@ -348,6 +305,38 @@ namespace REGISTROLEGAL.Components.Formularios
         {
             _archivoResolucion = e.File;
             FileName = e.File.Name;
+        }
+
+        private async Task RegionChanged(int id)
+        {
+            CModel.RegionSaludId = id;
+
+            comiteProvinciaList = await _Commonservice.GetProvincias(id);
+            CModel.ProvinciaId = null;
+
+            comiteDistritoList.Clear();
+            CModel.DistritoId = null;
+            comiteCorregimientoList.Clear();
+            CModel.CorregimientoId = null;
+        }
+
+        private async Task ProvinciaChanged(int id)
+        {
+            CModel.ProvinciaId = id;
+
+            comiteDistritoList = await _Commonservice.GetDistritos(id);
+            CModel.DistritoId = null;
+
+            comiteCorregimientoList.Clear();
+            CModel.CorregimientoId = null;
+        }
+
+        private async Task DistritoChanged(int id)
+        {
+            CModel.DistritoId = id;
+
+            comiteCorregimientoList = await _Commonservice.GetCorregimientos(id);
+            CModel.CorregimientoId = null;
         }
     }
 }

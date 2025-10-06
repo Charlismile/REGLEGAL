@@ -5,19 +5,25 @@ namespace REGISTROLEGAL.Models.Entities.BdSisLegal;
 
 public partial class TbDetalleRegAsociacionHistorial
 {
-    public int RegAsociacionSolId { get; set; }
+    public int HistorialId { get; set; }
+
+    public int DetRegAsociacionId { get; set; }
 
     public int AsociacionId { get; set; }
 
-    public int AsEstadoSolicitudId { get; set; }
+    public string UsuarioId { get; set; } = null!;
 
-    public string? ComentarioAso { get; set; }
+    public DateTime FechaModificacion { get; set; }
 
-    public string UsuarioRevisorAso { get; set; } = null!;
+    public string? NumeroResolucion { get; set; }
 
-    public DateTime FechaCambioAso { get; set; }
+    public DateTime? FechaResolucion { get; set; }
 
-    public virtual TbEstadoSolicitud AsEstadoSolicitud { get; set; } = null!;
+    public string Accion { get; set; } = null!;
 
-    public virtual TbDetalleRegAsociacion Asociacion { get; set; } = null!;
+    public string? Comentario { get; set; }
+
+    public virtual TbAsociacion Asociacion { get; set; } = null!;
+
+    public virtual TbDetalleRegAsociacion DetRegAsociacion { get; set; } = null!;
 }

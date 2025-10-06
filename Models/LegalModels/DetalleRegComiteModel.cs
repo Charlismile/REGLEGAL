@@ -1,19 +1,23 @@
-﻿namespace REGISTROLEGAL.Models.LegalModels;
+﻿// using REGISTROLEGAL.Models.Entities.BdSisLegal;
 
-public class DetalleRegComiteModel
+namespace REGISTROLEGAL.Models.LegalModels
 {
-    public int DetalleRegComiteId { get; set; }
+    public class DetalleRegComiteModel
+    {
+        public int RegComiteSolId { get; set; }
+        public int ComiteId { get; set; }
+        public int CoEstadoSolicitudId { get; set; }
+        public string? ComentarioCo { get; set; }
+        public string UsuarioRevisorCo { get; set; } = string.Empty;
+        public DateTime FechaCambioCo { get; set; }
 
-    // Fecha y usuario que creó el registro
-    public DateTime? CreadaEn { get; set; }
-    public string CreadaPor { get; set; } = string.Empty;
+        // Agregamos estas propiedades para mapear TbDatosMiembrosHistorial
+        public int DMiembroId { get; set; }
+        public string NombreMiembro { get; set; } = string.Empty;
+        public int CargoId { get; set; }
+        public DateTime FechaCambio { get; set; }
 
-    // Numeración del registro del comité
-    public int NumRegCoSecuencia { get; set; }   // Secuencia interna
-    public int NomRegCoAnio { get; set; }        // Año del registro
-    public int NumRegCoMes { get; set; }         // Mes del registro
-    public string? NumRegCoCompleta { get; set; } // Formato completo: SOL-YYYY-MM-XXXXXXXXXX
-
-    // Tipo de trámite (1=Personería, 2=CambioDirectiva, 3=JuntaInterventora)
-    public int TipoTramiteId { get; set; }
+        // Relación con el comité (opcional, si usas EF Core)
+        // public virtual TbComite? Comite { get; set; }
+    }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace REGISTROLEGAL.Models.Entities.BdSisLegal;
 
-public partial class TbDatosMiembros
+public partial class TbMiembrosComite
 {
     public int DmiembroId { get; set; }
 
@@ -17,11 +17,9 @@ public partial class TbDatosMiembros
 
     public string? ApellidoMiembro { get; set; }
 
-    public string? TelefonoMiembro { get; set; }
-
-    public string? CorreoMiembro { get; set; }
-
     public virtual TbCargosMiembrosComite Cargo { get; set; } = null!;
 
-    public virtual TbDatosComite? Dcomite { get; set; }
+    public virtual TbComite? Dcomite { get; set; }
+
+    public virtual ICollection<TbDatosMiembrosHistorial> TbDatosMiembrosHistorial { get; set; } = new List<TbDatosMiembrosHistorial>();
 }

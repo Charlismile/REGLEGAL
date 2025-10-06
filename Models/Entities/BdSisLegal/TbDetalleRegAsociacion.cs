@@ -27,7 +27,5 @@ public partial class TbDetalleRegAsociacion
 
     public virtual TbAsociacion Asociacion { get; set; } = null!;
 
-    public virtual ICollection<TbAsociacionArchivos> TbAsociacionArchivos { get; set; } = new List<TbAsociacionArchivos>();
-
     public virtual ICollection<TbDetalleRegAsociacionHistorial> TbDetalleRegAsociacionHistorial { get; set; } = new List<TbDetalleRegAsociacionHistorial>();
 }
