@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
-using REGISTROLEGAL.Models.Entities.BdSisLegal;
 using REGISTROLEGAL.Models.LegalModels;
 
 namespace REGISTROLEGAL.Components.Comites;
@@ -9,49 +7,46 @@ public partial class EditComite : ComponentBase
 {
     [Parameter] public int id { get; set; }
     private ComiteModel? cModel;
-    private TbComite? entidadDb;
+    private bool cargando = true;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        Console.WriteLine($"Cargando comité con id: {id}");
-
-        entidadDb = await _context.TbComite
-            .FirstOrDefaultAsync(e => e.DcomiteId == id);
-
-        if (entidadDb == null)
+        try
         {
-            Console.WriteLine($"No se encontró el comité con id: {id}");
-        }
-
-        if (entidadDb != null)
-        {
-            cModel = new ComiteModel
+            Console.WriteLine($"[DEBUG] Cargando comité con id: {id}");
+            cModel = await ComiteService.ObtenerComiteCompletoAsync(id);
+            if (cModel == null)
             {
-                ComiteId = entidadDb.ComiteId,
-                NombreComiteSalud = entidadDb.NombreComiteSalud ?? "",
-                Comunidad = entidadDb.Comunidad ?? "",
-                NumeroResolucion = entidadDb.NumeroResolucion ?? "",
-                FechaResolucion = entidadDb.FechaResolucion ?? DateTime.Now,
-                FechaCreacion    = entidadDb.FechaRegistro ?? DateTime.Now,
-                FechaEleccion    = entidadDb.FechaEleccion ?? DateTime.Now,
-                CreadaPor = entidadDb.CreadaPor ?? ""
-            };
+                Console.WriteLine($"[DEBUG] No se encontró comité con id: {id}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] {ex.Message}");
+        }
+        finally
+        {
+            cargando = false;
         }
     }
 
-
     private async Task Guardar()
     {
-        if (entidadDb != null && cModel != null)
-        {
-            entidadDb.NombreComiteSalud = cModel.NombreComiteSalud;
-            entidadDb.Comunidad = cModel.Comunidad;
-            entidadDb.NumeroResolucion = cModel.NumeroResolucion;
-            entidadDb.FechaResolucion = cModel.FechaResolucion;
-            entidadDb.FechaEleccion = cModel.FechaEleccion;
+        if (cModel == null)
+            return;
 
-            await _context.SaveChangesAsync();
+        var resultado = await ComiteService.ActualizarComite(cModel);
+
+        if (resultado.Success)
+        {
+            // Mostrar un mensaje (puedes usar MudBlazor o Bootstrap Toasts si prefieres)
+            Console.WriteLine("✅ Comité actualizado correctamente.");
             Navigation.NavigateTo("/comites");
+        }
+        else
+        {
+            Console.WriteLine($"❌ Error al actualizar: {resultado.Message}");
+            
         }
     }
 

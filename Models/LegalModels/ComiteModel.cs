@@ -24,7 +24,7 @@ public class ComiteModel
 
     [Required(ErrorMessage = "El nombre de la comunidad es obligatorio")]
     [StringLength(150)]
-    public string? Comunidad { get; set; }
+    public string Comunidad { get; set; }
 
     // 📌 Fechas y resolución
     [Required(ErrorMessage = "La fecha de creación es obligatoria")]

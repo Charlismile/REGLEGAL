@@ -23,11 +23,11 @@
             <tr>
                 <td>@c.NombreComiteSalud</td>
                 <td>@c.Comunidad</td>
-                <td>@c.FechaRegistro?.ToString("dd/MM/yyyy")</td>
+                <td>@c.FechaRegistro.ToString("dd/MM/yyyy")</td>
                 <td>@c.NumeroResolucion</td>
                 <td>
                     <button class="btn btn-sm btn-primary"
-                            @onclick="() => Editar(c.ComiteId)">
+                            @onclick="() => Editar(c.DcomiteId)">
                         Editar
                     </button>
 

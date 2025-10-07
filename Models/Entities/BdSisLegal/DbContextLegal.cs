@@ -51,8 +51,6 @@ public partial class DbContextLegal : DbContext
 
     public virtual DbSet<TbRepresentanteLegal> TbRepresentanteLegal { get; set; }
 
-    public virtual DbSet<TbTipoTramite> TbTipoTramite { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
 
@@ -126,7 +124,6 @@ public partial class DbContextLegal : DbContext
 
             entity.HasOne(d => d.Comite).WithMany(p => p.TbArchivosComite)
                 .HasForeignKey(d => d.ComiteId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ArchivosComite_Comite");
         });
 
@@ -159,21 +156,20 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbComite>(entity =>
         {
-            entity.HasKey(e => e.DcomiteId).HasName("PK__TbDetall__EFD6F24607CE910F");
+            entity.HasKey(e => e.DcomiteId).HasName("PK__TbComite__F23C595157D2F484");
 
             entity.Property(e => e.DcomiteId).HasColumnName("DComiteId");
-            entity.Property(e => e.Comunidad).HasMaxLength(100);
-            entity.Property(e => e.CreadaEn)
+            entity.Property(e => e.Comunidad).HasMaxLength(150);
+            entity.Property(e => e.CreadaPor).HasMaxLength(150);
+            entity.Property(e => e.FechaEleccion).HasColumnType("datetime");
+            entity.Property(e => e.FechaRegistro)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.CreadaPor).HasMaxLength(450);
-            entity.Property(e => e.FechaEleccion).HasColumnType("datetime");
-            entity.Property(e => e.FechaRegistro).HasColumnType("datetime");
             entity.Property(e => e.FechaResolucion).HasColumnType("datetime");
-            entity.Property(e => e.NombreComiteSalud).HasMaxLength(100);
-            entity.Property(e => e.NumRegCoCompleta).HasMaxLength(50);
+            entity.Property(e => e.NombreComiteSalud).HasMaxLength(200);
             entity.Property(e => e.NumeroNota).HasMaxLength(50);
             entity.Property(e => e.NumeroResolucion).HasMaxLength(50);
+            entity.Property(e => e.TipoTramite).HasDefaultValue(1);
 
             entity.HasOne(d => d.Corregimiento).WithMany(p => p.TbComite)
                 .HasForeignKey(d => d.CorregimientoId)
@@ -190,11 +186,6 @@ public partial class DbContextLegal : DbContext
             entity.HasOne(d => d.RegionSalud).WithMany(p => p.TbComite)
                 .HasForeignKey(d => d.RegionSaludId)
                 .HasConstraintName("FK_Comite_RegionSalud");
-
-            entity.HasOne(d => d.TipoTramite).WithMany(p => p.TbComite)
-                .HasForeignKey(d => d.TipoTramiteId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DetalleRegComite_TipoTramite");
         });
 
         modelBuilder.Entity<TbCorregimiento>(entity =>
@@ -238,6 +229,7 @@ public partial class DbContextLegal : DbContext
 
             entity.HasOne(d => d.Dcomite).WithMany(p => p.TbDatosMiembrosHistorial)
                 .HasForeignKey(d => d.DcomiteId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_HistorialDatosMiembros_Comite");
 
             entity.HasOne(d => d.Dmiembro).WithMany(p => p.TbDatosMiembrosHistorial)
@@ -311,7 +303,6 @@ public partial class DbContextLegal : DbContext
 
             entity.HasOne(d => d.Comite).WithMany(p => p.TbDetalleRegComiteHistorial)
                 .HasForeignKey(d => d.ComiteId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ComiteHistorial_DetalleRegComite");
         });
 
@@ -340,13 +331,9 @@ public partial class DbContextLegal : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.NombreMiembro).HasMaxLength(200);
 
-            entity.HasOne(d => d.Cargo).WithMany(p => p.TbMiembrosComite)
-                .HasForeignKey(d => d.CargoId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DatosMiembros_CargosMiembros");
-
             entity.HasOne(d => d.Dcomite).WithMany(p => p.TbMiembrosComite)
                 .HasForeignKey(d => d.DcomiteId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_DatosMiembros_Comite");
         });
 
@@ -385,14 +372,6 @@ public partial class DbContextLegal : DbContext
             entity.Property(e => e.TelefonoRepLegal)
                 .HasMaxLength(20)
                 .IsUnicode(false);
-        });
-
-        modelBuilder.Entity<TbTipoTramite>(entity =>
-        {
-            entity.HasKey(e => e.TramiteId).HasName("PK__TbTipoTr__BDB793165BD37495");
-
-            entity.Property(e => e.IsActivo).HasDefaultValue(true);
-            entity.Property(e => e.NombreTramite).HasMaxLength(100);
         });
 
         OnModelCreatingPartial(modelBuilder);

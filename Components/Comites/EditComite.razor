@@ -1,47 +1,74 @@
-﻿@page "/comite/editar/{id:int}"
-@using REGISTROLEGAL.Models.Entities.BdSisLegal
-@using REGISTROLEGAL.Models.LegalModels
-@inject DbContextLegal _context
+﻿@page "/editcomite/{id:int}"
+@using REGISTROLEGAL.Repositories.Interfaces
+@inject IRegistroComite ComiteService
 @inject NavigationManager Navigation
 
-<h3>Editar Comité</h3>
+<PageTitle>Editar Comité</PageTitle>
 
-@if (cModel == null)
+<h3 class="mb-3">Editar Comité de Salud</h3>
+
+@if (cargando)
 {
-    <p><em>Cargando...</em></p>
+    <div class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Cargando datos del comité... (ID: @id)</p>
+    </div>
 }
+else if (cModel == null)
+{
+    <div class="alert alert-danger">No se encontró el comité con el ID: @id</div>
+}
+
 else
 {
-    <EditForm Model="@cModel" OnValidSubmit="Guardar">
+    <EditForm Model="cModel" OnValidSubmit="Guardar">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <div class="mb-3">
-            <label class="form-label">Nombre Comité</label>
-            <InputText class="form-control" @bind-Value="cModel.NombreComiteSalud" />
-            <ValidationMessage For="@(() => cModel.NombreComiteSalud)" />
-        </div>
+        <div class="card shadow-sm p-4">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Nombre del Comité</label>
+                    <InputText class="form-control" @bind-Value="cModel.NombreComiteSalud" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Comunidad</label>
+                    <InputText class="form-control" @bind-Value="cModel.Comunidad" />
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Comunidad</label>
-            <InputText class="form-control" @bind-Value="cModel.Comunidad" />
-            <ValidationMessage For="@(() => cModel.Comunidad)" />
-        </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Número de Resolución</label>
+                    <InputText class="form-control" @bind-Value="cModel.NumeroResolucion" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Fecha de Resolución</label>
+                    <InputDate class="form-control" @bind-Value="cModel.FechaResolucion" />
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Número Resolución</label>
-            <InputText class="form-control" @bind-Value="cModel.NumeroResolucion" />
-            <ValidationMessage For="@(() => cModel.NumeroResolucion)" />
-        </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Fecha de Elección</label>
+                    <InputDate class="form-control" @bind-Value="cModel.FechaEleccion" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Creado Por</label>
+                    <InputText class="form-control" @bind-Value="cModel.CreadaPor" disabled />
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Fecha Resolución</label>
-            <InputDate class="form-control" @bind-Value="cModel.FechaResolucion" />
-            <ValidationMessage For="@(() => cModel.FechaResolucion)" />
+            <div class="text-end mt-4">
+                <button type="button" class="btn btn-secondary me-2" @onclick="Volver">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Guardar Cambios
+                </button>
+            </div>
         </div>
-
-        <button type="submit" class="btn btn-success">Guardar Cambios</button>
-        <button type="button" class="btn btn-secondary" @onclick="Volver">Cancelar</button>
     </EditForm>
 }
+
 

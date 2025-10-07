@@ -15,7 +15,7 @@ public interface ICommon
     #endregion
     
     #region Archivos
-    Task<(bool ok, string mensaje)> GuardarArchivoComiteAsync(IBrowserFile archivo, string categoria, int comiteId);
-    Task<(bool ok, string mensaje)> GuardarArchivoAsociacionAsync(IBrowserFile archivo, string categoria, int asociacionId);
+    // Task<(bool ok, string mensaje)> GuardarArchivoComiteAsync(IBrowserFile archivo, string categoria, int comiteId);
+    // Task<(bool ok, string mensaje)> GuardarArchivoAsociacionAsync(IBrowserFile archivo, string categoria, int asociacionId);
     #endregion
 }

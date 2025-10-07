@@ -16,9 +16,8 @@ namespace REGISTROLEGAL.Repositories.Services
         }
 
         // ========================
-        // CRUD Comités
+        // CRUD Comités Mejorado
         // ========================
-
         public async Task<ResultModel> CrearComite(ComiteModel model)
         {
             try
@@ -28,7 +27,6 @@ namespace REGISTROLEGAL.Repositories.Services
                     NombreComiteSalud = model.NombreComiteSalud,
                     Comunidad = model.Comunidad,
                     CreadaPor = model.CreadaPor,
-                    TipoTramiteId = (int)model.TipoTramiteEnum,
                     FechaRegistro = model.FechaCreacion,
                     FechaEleccion = model.FechaEleccion,
                     NumeroResolucion = model.NumeroResolucion,
@@ -36,18 +34,26 @@ namespace REGISTROLEGAL.Repositories.Services
                     RegionSaludId = model.RegionSaludId,
                     ProvinciaId = model.ProvinciaId,
                     DistritoId = model.DistritoId,
-                    CorregimientoId = model.CorregimientoId
+                    CorregimientoId = model.CorregimientoId,
+                    TipoTramite = (int)model.TipoTramiteEnum
                 };
 
                 _context.TbComite.Add(entity);
                 await _context.SaveChangesAsync();
 
-                // Agregar miembros si existen
-                if (model.Miembros.Any())
+                // Agregar miembros limitados a 7
+                if (model.Miembros != null && model.Miembros.Any())
                 {
-                    foreach (var miembro in model.Miembros)
+                    var miembros = model.Miembros.Take(7).ToList();
+                    await AgregarMiembrosComite(entity.DcomiteId, miembros);
+                }
+
+                // Guardar archivos si existen
+                if (model.Archivos != null && model.Archivos.Any())
+                {
+                    foreach (var archivo in model.Archivos)
                     {
-                        await AgregarMiembro(entity.ComiteId, miembro);
+                        await AgregarArchivo(entity.DcomiteId, archivo);
                     }
                 }
 
@@ -68,7 +74,6 @@ namespace REGISTROLEGAL.Repositories.Services
 
                 entity.NombreComiteSalud = model.NombreComiteSalud;
                 entity.Comunidad = model.Comunidad;
-                entity.TipoTramiteId = (int)model.TipoTramiteEnum;
                 entity.FechaEleccion = model.FechaEleccion;
                 entity.NumeroResolucion = model.NumeroResolucion;
                 entity.FechaResolucion = model.FechaResolucion;
@@ -76,8 +81,28 @@ namespace REGISTROLEGAL.Repositories.Services
                 entity.ProvinciaId = model.ProvinciaId;
                 entity.DistritoId = model.DistritoId;
                 entity.CorregimientoId = model.CorregimientoId;
+                entity.TipoTramite = (int)model.TipoTramiteEnum;
 
                 await _context.SaveChangesAsync();
+
+                // Actualizar miembros
+                if (model.Miembros != null)
+                {
+                    var miembros = model.Miembros.Take(7).ToList(); // máximo 7
+                    await AgregarMiembrosComite(entity.DcomiteId, miembros);
+                }
+
+                // Actualizar archivos
+                if (model.Archivos != null)
+                {
+                    foreach (var archivo in model.Archivos)
+                    {
+                        // Si no tiene ID, es nuevo
+                        if (archivo.ComiteArchivoId == 0)
+                            await AgregarArchivo(entity.DcomiteId, archivo);
+                    }
+                }
+
                 return new ResultModel { Success = true, Message = "Comité actualizado correctamente" };
             }
             catch (Exception ex)
@@ -85,6 +110,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 return new ResultModel { Success = false, Message = ex.Message };
             }
         }
+
 
         public async Task<ResultModel> EliminarComite(int comiteId)
         {
@@ -108,11 +134,10 @@ namespace REGISTROLEGAL.Repositories.Services
             return await _context.TbComite
                 .Select(c => new ComiteModel
                 {
-                    ComiteId = c.ComiteId,
+                    ComiteId = c.DcomiteId,
                     NombreComiteSalud = c.NombreComiteSalud,
                     Comunidad = c.Comunidad,
-                    TipoTramiteEnum = c.TipoTramiteId != null ? (TipoTramite)c.TipoTramiteId : TipoTramite.Personeria,
-                    FechaCreacion = c.FechaRegistro ?? DateTime.Now,
+                    FechaCreacion = c.FechaRegistro,
                     FechaEleccion = c.FechaEleccion ?? DateTime.Now,
                     NumeroResolucion = c.NumeroResolucion,
                     FechaResolucion = c.FechaResolucion ?? DateTime.Now
@@ -124,14 +149,13 @@ namespace REGISTROLEGAL.Repositories.Services
             return await _context.TbComite
                 .Include(c => c.TbMiembrosComite)
                 .Include(c => c.TbArchivosComite)
-                .Where(c => c.ComiteId == comiteId)
+                .Where(c => c.DcomiteId == comiteId)
                 .Select(c => new ComiteModel
                 {
-                    ComiteId = c.ComiteId,
+                    ComiteId = c.DcomiteId,
                     NombreComiteSalud = c.NombreComiteSalud,
                     Comunidad = c.Comunidad,
-                    TipoTramiteEnum = c.TipoTramiteId != null ? (TipoTramite)c.TipoTramiteId : TipoTramite.Personeria,
-                    FechaCreacion = c.FechaRegistro ?? DateTime.Now,
+                    FechaCreacion = c.FechaRegistro,
                     FechaEleccion = c.FechaEleccion ?? DateTime.Now,
                     NumeroResolucion = c.NumeroResolucion,
                     FechaResolucion = c.FechaResolucion ?? DateTime.Now,
@@ -159,11 +183,10 @@ namespace REGISTROLEGAL.Repositories.Services
                 .OrderByDescending(c => c.FechaRegistro)
                 .Select(c => new ComiteModel
                 {
-                    ComiteId = c.ComiteId,
+                    ComiteId = c.DcomiteId,
                     NombreComiteSalud = c.NombreComiteSalud,
                     Comunidad = c.Comunidad,
-                    TipoTramiteEnum = c.TipoTramiteId != null ? (TipoTramite)c.TipoTramiteId : TipoTramite.Personeria,
-                    FechaCreacion = c.FechaRegistro ?? DateTime.Now,
+                    FechaCreacion = c.FechaRegistro,
                     Miembros = c.TbMiembrosComite.Select(m => new MiembroComiteModel
                     {
                         MiembroId = m.DmiembroId,
@@ -178,6 +201,45 @@ namespace REGISTROLEGAL.Repositories.Services
         // ========================
         // Miembros
         // ========================
+
+        public async Task<ResultModel> AgregarMiembrosComite(int comiteId, List<MiembroComiteModel> miembros)
+        {
+            // Limitar a 7 miembros
+            if (miembros.Count > 7)
+                return new ResultModel { Success = false, Message = "No se pueden agregar más de 7 miembros." };
+
+            var miembrosExistentes = await _context.TbMiembrosComite
+                .Where(m => m.DcomiteId == comiteId)
+                .ToListAsync();
+
+            // Eliminar los que ya no estén en la lista nueva
+            foreach (var miembroDb in miembrosExistentes)
+            {
+                if (!miembros.Any(m => m.CedulaMiembro == miembroDb.CedulaMiembro))
+                {
+                    _context.TbMiembrosComite.Remove(miembroDb);
+                }
+            }
+
+            // Agregar o actualizar los miembros
+            foreach (var miembro in miembros)
+            {
+                var existing = miembrosExistentes.FirstOrDefault(m => m.CedulaMiembro == miembro.CedulaMiembro);
+                if (existing != null)
+                {
+                    existing.NombreMiembro = miembro.NombreMiembro;
+                    existing.ApellidoMiembro = miembro.ApellidoMiembro;
+                    existing.CargoId = miembro.CargoId;
+                }
+                else
+                {
+                    await AgregarMiembro(comiteId, miembro);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return new ResultModel { Success = true, Message = "Miembros actualizados correctamente" };
+        }
 
         public async Task<TbMiembrosComite> AgregarMiembro(int comiteId, MiembroComiteModel miembro)
         {
@@ -283,9 +345,37 @@ namespace REGISTROLEGAL.Repositories.Services
 
         public async Task<ResultModel> GuardarResolucionAsync(int comiteId, IBrowserFile archivo)
         {
-            // Implementar guardado físico + registro
+            if (archivo == null) return new ResultModel { Success = false, Message = "No se recibió archivo" };
+
+            var rutaCategoria = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "comites",
+                comiteId.ToString());
+            if (!Directory.Exists(rutaCategoria)) Directory.CreateDirectory(rutaCategoria);
+
+            var nombreArchivo = Guid.NewGuid() + Path.GetExtension(archivo.Name);
+            var filePath = Path.Combine(rutaCategoria, nombreArchivo);
+
+            await using var stream = archivo.OpenReadStream(10 * 1024 * 1024); // 10MB
+            await using var fileStream = new FileStream(filePath, FileMode.Create);
+            await stream.CopyToAsync(fileStream);
+
+            var entity = new TbArchivosComite
+            {
+                ComiteId = comiteId,
+                NombreOriginal = archivo.Name,
+                NombreArchivoGuardado = nombreArchivo,
+                Url = $"/uploads/comites/{comiteId}/{nombreArchivo}",
+                Categoria = "RESOLUCION",
+                FechaSubida = DateTime.Now,
+                Version = 1,
+                IsActivo = true
+            };
+
+            _context.TbArchivosComite.Add(entity);
+            await _context.SaveChangesAsync();
+
             return new ResultModel { Success = true, Message = "Resolución guardada correctamente" };
         }
+
 
         // ========================
         // Historial
@@ -300,7 +390,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     DMiembroId = h.DmiembroId,
                     NombreMiembro = h.NombreMiembro,
                     CargoId = h.CargoId,
-                    FechaCambio = h.FechaCambio 
+                    FechaCambio = h.FechaCambio
                 }).ToListAsync();
         }
 
@@ -318,6 +408,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 };
                 _context.TbDatosMiembrosHistorial.Add(historial);
             }
+
             await _context.SaveChangesAsync();
         }
     }
