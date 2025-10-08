@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "3zHyE/nelaXrP2CdjglvfxD+YhfXCP70ypErsTg4Yg4=",
+  "Hash": "hSQJU0vrllazmRxLyDrHmy+ABBz1u4H1zPyA3Gskwxs=",
   "Source": "REGISTROLEGAL",
   "BasePath": "_content/REGISTROLEGAL",
   "Mode": "Default",
@@ -220,8 +220,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "ScopedCss",
       "AssetTraitValue": "ApplicationBundle",
-      "Fingerprint": "tv6wdcg3oo",
-      "Integrity": "J3iIEMPJewrjM5kt0qWNZTyaWQy7+8RSKWDr6o3lpy0=",
+      "Fingerprint": "43e5ofopcd",
+      "Integrity": "kEr40KtrEOxF81To8xXBe1tLBovLtijN+govclERwxU=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\obj\\Debug\\net8.0\\scopedcss\\bundle\\REGISTROLEGAL.styles.css"
@@ -241,8 +241,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "ScopedCss",
       "AssetTraitValue": "ProjectBundle",
-      "Fingerprint": "dxepysu40e",
-      "Integrity": "0UnYFWx0f95G2mQJ/dxgJd9ByKf0DZc5R0iYTyeoXdM=",
+      "Fingerprint": "xx1pdzb8px",
+      "Integrity": "6+DHv9T2+fbO/m6npoRip/DK3OQzmLoS0uajMKpgx1U=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\REGISTROLEGAL.bundle.scp.css"
@@ -1524,6 +1524,55 @@
       ]
     },
     {
+      "Route": "REGISTROLEGAL.43e5ofopcd.styles.css",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\obj\\Debug\\net8.0\\scopedcss\\bundle\\REGISTROLEGAL.styles.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"kEr40KtrEOxF81To8xXBe1tLBovLtijN+govclERwxU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 08 Oct 2025 15:00:59 GMT"
+        },
+        {
+          "Name": "Link",
+          "Value": "<_content/Blazor.Bootstrap/Blazor.Bootstrap.7t9tbfaemk.bundle.scp.css>; rel=\"preload\"; as=\"style\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "43e5ofopcd"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-kEr40KtrEOxF81To8xXBe1tLBovLtijN+govclERwxU="
+        },
+        {
+          "Name": "label",
+          "Value": "REGISTROLEGAL.styles.css"
+        }
+      ]
+    },
+    {
       "Route": "REGISTROLEGAL.bundle.scp.css",
       "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\REGISTROLEGAL.bundle.scp.css",
       "Selectors": [],
@@ -1534,7 +1583,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "8273"
+          "Value": "8197"
         },
         {
           "Name": "Content-Type",
@@ -1542,11 +1591,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"0UnYFWx0f95G2mQJ/dxgJd9ByKf0DZc5R0iYTyeoXdM=\""
+          "Value": "\"6+DHv9T2+fbO/m6npoRip/DK3OQzmLoS0uajMKpgx1U=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 29 Aug 2025 14:42:13 GMT"
+          "Value": "Wed, 08 Oct 2025 15:00:59 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1556,52 +1605,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-0UnYFWx0f95G2mQJ/dxgJd9ByKf0DZc5R0iYTyeoXdM="
-        }
-      ]
-    },
-    {
-      "Route": "REGISTROLEGAL.dxepysu40e.bundle.scp.css",
-      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\REGISTROLEGAL.bundle.scp.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "8273"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"0UnYFWx0f95G2mQJ/dxgJd9ByKf0DZc5R0iYTyeoXdM=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Fri, 29 Aug 2025 14:42:13 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "dxepysu40e"
-        },
-        {
-          "Name": "label",
-          "Value": "REGISTROLEGAL.bundle.scp.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-0UnYFWx0f95G2mQJ/dxgJd9ByKf0DZc5R0iYTyeoXdM="
+          "Value": "sha256-6+DHv9T2+fbO/m6npoRip/DK3OQzmLoS0uajMKpgx1U="
         }
       ]
     },
@@ -1620,7 +1624,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "8356"
+          "Value": "8280"
         },
         {
           "Name": "Content-Type",
@@ -1628,11 +1632,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"J3iIEMPJewrjM5kt0qWNZTyaWQy7+8RSKWDr6o3lpy0=\""
+          "Value": "\"kEr40KtrEOxF81To8xXBe1tLBovLtijN+govclERwxU=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 29 Aug 2025 14:42:13 GMT"
+          "Value": "Wed, 08 Oct 2025 15:00:59 GMT"
         },
         {
           "Name": "Link",
@@ -1642,13 +1646,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-J3iIEMPJewrjM5kt0qWNZTyaWQy7+8RSKWDr6o3lpy0="
+          "Value": "sha256-kEr40KtrEOxF81To8xXBe1tLBovLtijN+govclERwxU="
         }
       ]
     },
     {
-      "Route": "REGISTROLEGAL.tv6wdcg3oo.styles.css",
-      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\obj\\Debug\\net8.0\\scopedcss\\bundle\\REGISTROLEGAL.styles.css",
+      "Route": "REGISTROLEGAL.xx1pdzb8px.bundle.scp.css",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\REGISTROLEGAL.bundle.scp.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1656,12 +1660,8 @@
           "Value": "bytes"
         },
         {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        },
-        {
           "Name": "Content-Length",
-          "Value": "8356"
+          "Value": "8197"
         },
         {
           "Name": "Content-Type",
@@ -1669,29 +1669,29 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"J3iIEMPJewrjM5kt0qWNZTyaWQy7+8RSKWDr6o3lpy0=\""
+          "Value": "\"6+DHv9T2+fbO/m6npoRip/DK3OQzmLoS0uajMKpgx1U=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 29 Aug 2025 14:42:13 GMT"
+          "Value": "Wed, 08 Oct 2025 15:00:59 GMT"
         },
         {
-          "Name": "Link",
-          "Value": "<_content/Blazor.Bootstrap/Blazor.Bootstrap.7t9tbfaemk.bundle.scp.css>; rel=\"preload\"; as=\"style\""
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "tv6wdcg3oo"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-J3iIEMPJewrjM5kt0qWNZTyaWQy7+8RSKWDr6o3lpy0="
+          "Value": "xx1pdzb8px"
         },
         {
           "Name": "label",
-          "Value": "REGISTROLEGAL.styles.css"
+          "Value": "REGISTROLEGAL.bundle.scp.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-6+DHv9T2+fbO/m6npoRip/DK3OQzmLoS0uajMKpgx1U="
         }
       ]
     },

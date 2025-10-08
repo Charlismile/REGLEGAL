@@ -5,7 +5,6 @@ namespace REGISTROLEGAL.Models.LegalModels;
 public class MiembroComiteModel
 {
     public int MiembroId { get; set; }   // Identificador del miembro
-    public int ComiteId { get; set; }    // Relación con comité
 
     [Required(ErrorMessage = "El nombre del miembro es obligatorio")]
     [StringLength(150, ErrorMessage = "Máximo 150 caracteres")]

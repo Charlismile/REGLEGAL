@@ -3,6 +3,55 @@
   "ManifestType": "Build",
   "Endpoints": [
     {
+      "Route": "REGISTROLEGAL.43e5ofopcd.styles.css",
+      "AssetFile": "REGISTROLEGAL.styles.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"kEr40KtrEOxF81To8xXBe1tLBovLtijN+govclERwxU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 08 Oct 2025 15:00:59 GMT"
+        },
+        {
+          "Name": "Link",
+          "Value": "<_content/Blazor.Bootstrap/Blazor.Bootstrap.7t9tbfaemk.bundle.scp.css>; rel=\"preload\"; as=\"style\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "43e5ofopcd"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-kEr40KtrEOxF81To8xXBe1tLBovLtijN+govclERwxU="
+        },
+        {
+          "Name": "label",
+          "Value": "REGISTROLEGAL.styles.css"
+        }
+      ]
+    },
+    {
       "Route": "REGISTROLEGAL.styles.css",
       "AssetFile": "REGISTROLEGAL.styles.css",
       "Selectors": [],
@@ -17,7 +66,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "8356"
+          "Value": "8280"
         },
         {
           "Name": "Content-Type",
@@ -25,11 +74,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"J3iIEMPJewrjM5kt0qWNZTyaWQy7+8RSKWDr6o3lpy0=\""
+          "Value": "\"kEr40KtrEOxF81To8xXBe1tLBovLtijN+govclERwxU=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 29 Aug 2025 14:42:13 GMT"
+          "Value": "Wed, 08 Oct 2025 15:00:59 GMT"
         },
         {
           "Name": "Link",
@@ -39,56 +88,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-J3iIEMPJewrjM5kt0qWNZTyaWQy7+8RSKWDr6o3lpy0="
-        }
-      ]
-    },
-    {
-      "Route": "REGISTROLEGAL.tv6wdcg3oo.styles.css",
-      "AssetFile": "REGISTROLEGAL.styles.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "8356"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"J3iIEMPJewrjM5kt0qWNZTyaWQy7+8RSKWDr6o3lpy0=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Fri, 29 Aug 2025 14:42:13 GMT"
-        },
-        {
-          "Name": "Link",
-          "Value": "<_content/Blazor.Bootstrap/Blazor.Bootstrap.7t9tbfaemk.bundle.scp.css>; rel=\"preload\"; as=\"style\""
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "tv6wdcg3oo"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-J3iIEMPJewrjM5kt0qWNZTyaWQy7+8RSKWDr6o3lpy0="
-        },
-        {
-          "Name": "label",
-          "Value": "REGISTROLEGAL.styles.css"
+          "Value": "sha256-kEr40KtrEOxF81To8xXBe1tLBovLtijN+govclERwxU="
         }
       ]
     },

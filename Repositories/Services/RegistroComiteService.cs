@@ -35,7 +35,8 @@ namespace REGISTROLEGAL.Repositories.Services
                     ProvinciaId = model.ProvinciaId,
                     DistritoId = model.DistritoId,
                     CorregimientoId = model.CorregimientoId,
-                    TipoTramite = (int)model.TipoTramiteEnum
+                    TipoTramite = (int)model.TipoTramiteEnum,
+                    NumeroNota = model.NumeroNota,
                 };
 
                 _context.TbComite.Add(entity);
@@ -82,6 +83,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 entity.DistritoId = model.DistritoId;
                 entity.CorregimientoId = model.CorregimientoId;
                 entity.TipoTramite = (int)model.TipoTramiteEnum;
+                entity.NumeroNota = model.NumeroNota;
 
                 await _context.SaveChangesAsync();
 
@@ -376,6 +378,7 @@ namespace REGISTROLEGAL.Repositories.Services
             return new ResultModel { Success = true, Message = "Resolución guardada correctamente" };
         }
 
+        
 
         // ========================
         // Historial
@@ -411,5 +414,6 @@ namespace REGISTROLEGAL.Repositories.Services
 
             await _context.SaveChangesAsync();
         }
+        
     }
 }

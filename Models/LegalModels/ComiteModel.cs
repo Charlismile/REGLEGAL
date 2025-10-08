@@ -36,6 +36,10 @@ public class ComiteModel
     [Required(ErrorMessage = "El número de resolución es obligatorio")]
     [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
     public string NumeroResolucion { get; set; } = "";
+    
+    [Required(ErrorMessage = "El número de resolución es obligatorio")]
+    [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
+    public string NumeroNota { get; set; } = "";
 
     [Required(ErrorMessage = "La fecha de resolución es obligatoria")]
     public DateTime FechaResolucion { get; set; } = DateTime.Now;
@@ -58,4 +62,11 @@ public class ComiteModel
 
     // 📌 Historial
     public List<DetalleRegComiteModel> Historial { get; set; } = new();
+    
+    public IBrowserFile? CedulaFile { get; set; }
+    public string? CedulaPreviewUrl { get; set; }
+
+    public IBrowserFile? PasaporteFile { get; set; }
+    public string? PasaportePreviewUrl { get; set; }
+
 }

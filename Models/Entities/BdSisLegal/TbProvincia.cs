@@ -11,6 +11,8 @@ public partial class TbProvincia
 
     public int? RegionSaludId { get; set; }
 
+    public virtual TbRegionSalud? RegionSalud { get; set; }
+
     public virtual ICollection<TbComite> TbComite { get; set; } = new List<TbComite>();
 
     public virtual ICollection<TbDistrito> TbDistrito { get; set; } = new List<TbDistrito>();

@@ -10,4 +10,6 @@ public partial class TbRegionSalud
     public string NombreRegion { get; set; } = null!;
 
     public virtual ICollection<TbComite> TbComite { get; set; } = new List<TbComite>();
+
+    public virtual ICollection<TbProvincia> TbProvincia { get; set; } = new List<TbProvincia>();
 }

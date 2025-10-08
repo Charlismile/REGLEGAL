@@ -136,6 +136,7 @@ public partial class DbContextLegal : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.NombreAsociacion).HasMaxLength(200);
+            entity.Property(e => e.NumeroResolucion).HasMaxLength(50);
 
             entity.HasOne(d => d.ApoderadoLegal).WithMany(p => p.TbAsociacion)
                 .HasForeignKey(d => d.ApoderadoLegalId)
@@ -152,6 +153,10 @@ public partial class DbContextLegal : DbContext
 
             entity.Property(e => e.IsActivo).HasDefaultValue(true);
             entity.Property(e => e.NombreCargo).HasMaxLength(100);
+
+            entity.HasOne(d => d.Miembro).WithMany(p => p.TbCargosMiembrosComite)
+                .HasForeignKey(d => d.MiembroId)
+                .HasConstraintName("FK_CargosMiembrosComite_MiembrosComite");
         });
 
         modelBuilder.Entity<TbComite>(entity =>
@@ -342,6 +347,10 @@ public partial class DbContextLegal : DbContext
             entity.HasKey(e => e.ProvinciaId).HasName("PK__TbProvin__F7CBC7770505F9FC");
 
             entity.Property(e => e.NombreProvincia).HasMaxLength(150);
+
+            entity.HasOne(d => d.RegionSalud).WithMany(p => p.TbProvincia)
+                .HasForeignKey(d => d.RegionSaludId)
+                .HasConstraintName("FK_Provincia_RegionSalud");
         });
 
         modelBuilder.Entity<TbRegSecuencia>(entity =>

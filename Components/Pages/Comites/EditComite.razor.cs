@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using REGISTROLEGAL.Models.LegalModels;
 
-namespace REGISTROLEGAL.Components.Comites;
+namespace REGISTROLEGAL.Components.Pages.Comites;
 
 public partial class EditComite : ComponentBase
 {
@@ -41,7 +41,7 @@ public partial class EditComite : ComponentBase
         {
             // Mostrar un mensaje (puedes usar MudBlazor o Bootstrap Toasts si prefieres)
             Console.WriteLine("✅ Comité actualizado correctamente.");
-            Navigation.NavigateTo("/comites");
+            Navigation.NavigateTo("/listado");
         }
         else
         {
@@ -52,6 +52,6 @@ public partial class EditComite : ComponentBase
 
     private void Volver()
     {
-        Navigation.NavigateTo("/comites");
+        Navigation.NavigateTo("/listado");
     }
 }

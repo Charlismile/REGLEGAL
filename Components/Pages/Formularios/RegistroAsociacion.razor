@@ -1,0 +1,192 @@
+﻿@page "/registro-asociacion"
+@using REGISTROLEGAL.Repositories.Interfaces
+
+
+<EditForm Model="@AModel" OnValidSubmit="@HandleValidSubmit" class="formulario-asociacion shadow-sm rounded p-4 bg-white">
+    <DataAnnotationsValidator />
+    <ValidationSummary Class="alert alert-danger mb-3 shadow-sm rounded" />
+
+    @if (!string.IsNullOrEmpty(MensajeExito))
+    {
+        <div class="alert alert-success shadow-sm rounded">@MensajeExito</div>
+    }
+
+    @if (!string.IsNullOrEmpty(MensajeError))
+    {
+        <div class="alert alert-danger shadow-sm rounded">@MensajeError</div>
+    }
+
+    <h3 class="titulo-form">Registro de Asociación sin Fines de Lucro</h3>
+
+    <!-- DATOS DE LA ASOCIACIÓN -->
+    <fieldset class="bloque-form">
+        <legend>Información de la Asociación</legend>
+        <div class="row g-3">
+            <div class="col-md-8 mb-3">
+                <label class="form-label fw-semibold">Nombre de la Asociación</label>
+                <InputText @bind-Value="AModel.NombreAsociacion" class="form-control" placeholder="Ej: Asociación de Vecinos San Miguelito" />
+                <ValidationMessage For="@(() => AModel.NombreAsociacion)" class="text-danger small"/>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold">Folio</label>
+                <InputNumber @bind-Value="AModel.Folio" class="form-control" TValue="int" />
+                <ValidationMessage For="@(() => AModel.Folio)" class="text-danger small"/>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Actividad de la Asociación</label>
+            <InputText @bind-Value="AModel.Actividad" class="form-control" placeholder="Ej: Promoción de la educación" />
+            <small class="form-text text-muted">Describa brevemente la actividad que realiza la asociación</small>
+            <ValidationMessage For="@(() => AModel.Actividad)" class="text-danger small"/>
+        </div>
+    </fieldset>
+
+    <!-- REPRESENTANTE LEGAL -->
+    <fieldset class="bloque-form">
+        <legend>Representante Legal</legend>
+        <div class="row g-3">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Nombre</label>
+                <InputText @bind-Value="AModel.NombreRepLegal" class="form-control" />
+                <ValidationMessage For="@(() => AModel.NombreRepLegal)" class="text-danger small"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Apellido</label>
+                <InputText @bind-Value="AModel.ApellidoRepLegal" class="form-control" />
+                <ValidationMessage For="@(() => AModel.ApellidoRepLegal)" class="text-danger small"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Cédula</label>
+                <InputText @bind-Value="AModel.CedulaRepLegal" class="form-control" />
+                <ValidationMessage For="@(() => AModel.CedulaRepLegal)" class="text-danger small"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Cargo</label>
+                <InputText @bind-Value="AModel.CargoRepLegal" class="form-control" readonly />
+                <small class="form-text text-muted">El cargo del representante legal siempre es Presidente</small>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Teléfono</label>
+                <InputText @bind-Value="AModel.TelefonoRepLegal" class="form-control" />
+                <ValidationMessage For="@(() => AModel.TelefonoRepLegal)" class="text-danger small"/>
+            </div>
+            <div class="col-12 mb-3">
+                <label class="form-label fw-semibold">Dirección</label>
+                <InputText @bind-Value="AModel.DireccionRepLegal" class="form-control" />
+                <ValidationMessage For="@(() => AModel.DireccionRepLegal)" class="text-danger small"/>
+            </div>
+        </div>
+    </fieldset>
+
+    <!-- APODERADO LEGAL -->
+    <fieldset class="bloque-form">
+        <legend>Apoderado Legal</legend>
+        <div class="row g-3">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Nombre</label>
+                <InputText @bind-Value="AModel.NombreApoAbogado" class="form-control" />
+                <ValidationMessage For="@(() => AModel.NombreApoAbogado)" class="text-danger small"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Apellido</label>
+                <InputText @bind-Value="AModel.ApellidoApoAbogado" class="form-control" />
+                <ValidationMessage For="@(() => AModel.ApellidoApoAbogado)" class="text-danger small"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Cédula</label>
+                <InputText @bind-Value="AModel.CedulaApoAbogado" class="form-control" />
+                <ValidationMessage For="@(() => AModel.CedulaApoAbogado)" class="text-danger small"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Teléfono</label>
+                <InputText @bind-Value="AModel.TelefonoApoAbogado" class="form-control" />
+                <ValidationMessage For="@(() => AModel.TelefonoApoAbogado)" class="text-danger small"/>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold">Correo</label>
+                <InputText @bind-Value="AModel.CorreoApoAbogado" class="form-control" type="email" />
+                <ValidationMessage For="@(() => AModel.CorreoApoAbogado)" class="text-danger small"/>
+            </div>
+            <div class="col-12 mb-3">
+                <label class="form-label fw-semibold">Dirección</label>
+                <InputText @bind-Value="AModel.DireccionApoAbogado" class="form-control" />
+                <ValidationMessage For="@(() => AModel.DireccionApoAbogado)" class="text-danger small"/>
+            </div>
+            <div class="col-12 mb-3">
+                <div class="form-check">
+                    <InputCheckbox @bind-Value="AModel.PerteneceAFirma" class="form-check-input" id="perteneceFirma" />
+                    <label class="form-check-label" for="perteneceFirma">¿El apoderado pertenece a una firma de abogados?</label>
+                </div>
+            </div>
+        </div>
+
+        @if (AModel.PerteneceAFirma)
+        {
+            <fieldset class="bloque-form mt-3">
+                <legend>Firma de Abogados</legend>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Nombre de la Firma</label>
+                        <InputText @bind-Value="AModel.NombreFirma" class="form-control" />
+                        <ValidationMessage For="@(() => AModel.NombreFirma)" class="text-danger small"/>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Correo de la Firma</label>
+                        <InputText @bind-Value="AModel.CorreoFirma" class="form-control" type="email" />
+                        <ValidationMessage For="@(() => AModel.CorreoFirma)" class="text-danger small"/>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Teléfono de la Firma</label>
+                        <InputText @bind-Value="AModel.TelefonoFirma" class="form-control" />
+                        <ValidationMessage For="@(() => AModel.TelefonoFirma)" class="text-danger small"/>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label fw-semibold">Dirección de la Firma</label>
+                        <InputText @bind-Value="AModel.DireccionFirma" class="form-control" />
+                        <ValidationMessage For="@(() => AModel.DireccionFirma)" class="text-danger small"/>
+                    </div>
+                </div>
+            </fieldset>
+        }
+    </fieldset>
+
+    <div class="mb-3">
+        <label class="form-label">Numero de Resolución</label>
+        <InputDate @bind-Value="AModel.NumeroResolucion" class="form-control" />
+        <ValidationMessage For="@(() => AModel.NumeroResolucion)" class="text-danger small"/>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Fecha de Resolución</label>
+        <InputDate @bind-Value="AModel.FechaResolucion" class="form-control" />
+        <ValidationMessage For="@(() => AModel.FechaResolucion)" class="text-danger small"/>
+    </div>
+
+    <!-- Archivos -->
+    <fieldset class="bloque-form">
+        <legend>Resolución / Documentos</legend>
+        <InputFile OnChange="CargarDocumentos" multiple class="form-control" />
+        @if (AModel.DocumentosSubir.Any())
+        {
+            <ul class="list-group mt-2">
+                @for (int i = 0; i < AModel.DocumentosSubir.Count; i++)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center" @key="AModel.DocumentosSubir[i].Name">
+                        @AModel.DocumentosSubir[i].Name
+                        <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoverDocumento(i)">Eliminar</button>
+                    </li>
+                }
+            </ul>
+        }
+    </fieldset>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+        <button type="submit" class="btn btn-primary px-4" disabled="@IsSubmitting">
+            @(IsSubmitting ? "Registrando..." : "Registrar Asociación")
+        </button>
+        <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancelar" disabled="@IsSubmitting">
+            Cancelar
+        </button>
+    </div>
+</EditForm>
+

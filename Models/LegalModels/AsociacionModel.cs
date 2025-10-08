@@ -105,6 +105,10 @@ public class AsociacionModel
 
     [StringLength(500)]
     public string DireccionFirma { get; set; } = "";
+    
+    [Required(ErrorMessage = "El número de resolución es obligatorio")]
+    [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
+    public string NumeroResolucion { get; set; } = "";
 
     // ===============================
     // DETALLE REGISTRO (TbDetalleRegAsociacion)

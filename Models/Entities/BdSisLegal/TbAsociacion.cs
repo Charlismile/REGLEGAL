@@ -19,6 +19,8 @@ public partial class TbAsociacion
 
     public DateTime FechaResolucion { get; set; }
 
+    public string? NumeroResolucion { get; set; }
+
     public virtual TbApoderadoLegal? ApoderadoLegal { get; set; }
 
     public virtual TbRepresentanteLegal? RepresentanteLegal { get; set; }
