@@ -1,0 +1,99 @@
+﻿@page "/administracion/createuser/{UserName?}"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using REGISTROLEGAL.Repositories.Interfaces
+
+@using REGISTROLEGAL.Data
+
+
+@attribute [Authorize(Roles = "user_admin")]
+@attribute [StreamRendering]
+
+@inject NavigationManager _NavigationProvider
+@inject UserManager<ApplicationUser> _UserManager
+@inject IUserData _UserService
+@inject ICommon _CommonService
+
+<div class="container-fluid">
+    <EditForm EditContext="EditContext" OnValidSubmit="RegisterUser">
+        <div class="card">
+            <div class="card-header">
+                <div class="row row-cols-lg-auto g-3 align-items-center">
+                    <div class="col-12">
+                        <h2 class="mb-0 fw-bold">Registro de Usuario</h2>
+                    </div>
+                    <div class="col-12 ms-auto">
+                        <NavLink class="btn btn-primary text-white" href="/administracion/users"
+                                 Match="NavLinkMatch.All">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Volver
+                        </NavLink>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <DataAnnotationsValidator/>
+                <ValidationSummary class="alert alert-danger"/>
+                @if (ErrorsFormMessages.Count > 0)
+                {
+                    <ul class="alert alert-danger">
+                        @foreach (var item in ErrorsFormMessages)
+                        {
+                            <li>@item</li>
+                        }
+                    </ul>
+                }
+                <h4 class="fw-bold">Datos Generales</h4>
+                <div class="row mb-3">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div class="">
+                            <label class="form-label fw-bold">Correo</label>
+                            <InputText @bind-Value="@FormData.Email" placeholder="correo@minsa.gob.pa"
+                                       class="form-control form-control-sm text-lowercase"/>
+                            <ValidationMessage For="@(() => FormData.Email)" class="text-danger"/>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 d-lg-flex justify-content-lg-start align-items-lg-end">
+                        <button type="button" class="btn btn-gob-blue" @onclick="ValidateEmail"><i
+                                class="fa-solid fa-magnifying-glass me-1"></i>Validar
+                        </button>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div>
+                            <label class="form-label fw-bold">Nombre</label>
+                            <InputText @bind-Value="@FormData.FirstName"
+                                       class="form-control form-control-sm"
+                                       disabled="@(!UserFound)"/>
+                            <ValidationMessage For="@(() => FormData.FirstName)" class="text-danger"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <div>
+                            <label class="form-label fw-bold">Apellido</label>
+                            <InputText @bind-Value="@FormData.LastName"
+                                       class="form-control form-control-sm"
+                                       disabled="@(!UserFound)"/>
+                            <ValidationMessage For="@(() => FormData.LastName)" class="text-danger"/>
+                        </div>
+                    </div>
+                </div>
+                <h3 class="fw-bold">Roles</h3>
+                <div class="form-check">
+                    <InputCheckbox id="IsAdminUser" class="form-check-input" @bind-Value="FormData.IsAdminUser"/>
+                    <label class="form-check-label" for="IsAdminUser">
+                        Administrador (Solo Para Informática)
+                    </label>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-gob-blue">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </EditForm>
+</div>

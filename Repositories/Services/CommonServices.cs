@@ -10,13 +10,20 @@ public class CommonServices : ICommon
 {
     private readonly IDbContextFactory<DbContextLegal> _context;
     private readonly IWebHostEnvironment _env;
-    private readonly string _rutaBaseArchivos =
-        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "documentos-legales");
+    private readonly string _rutaBaseArchivos = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "documentos-legales");
+    private readonly IConfiguration _Configuration;
 
-    public CommonServices(IDbContextFactory<DbContextLegal> context, IWebHostEnvironment env)
+    public CommonServices(IDbContextFactory<DbContextLegal> context, IWebHostEnvironment env, IConfiguration Configuration)
     {
         _context = context;
         _env = env;
+        _Configuration = Configuration;
+    }
+
+    public async Task<string> GetFakePassword()
+    {
+        string Password = _Configuration.GetSection("FakePass").Value ?? "";
+        return await Task.FromResult(Password);
     }
 
 

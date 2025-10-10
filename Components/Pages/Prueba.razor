@@ -1,0 +1,73 @@
+﻿@page "/Prueba"
+
+<style>
+    .icono-contenedor {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        margin: 50px;
+    }
+
+    .icono {
+        width: 30px;
+        height: 30px;
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        line-height: 30px;
+        border-radius: 50%;
+    }
+
+    .modal-contenido {
+        position: absolute;
+        bottom: 125%; /* Aparece encima del icono */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 220px; /* Ancho para el contenido */
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        padding: 10px;
+        text-align: center;
+
+        /* Oculta el contenido por defecto */
+        visibility: hidden;
+        opacity: 0;
+
+        /* Transición para un efecto suave */
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .modal-contenido img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin-bottom: 8px;
+    }
+
+    .modal-contenido p {
+        margin: 0;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .icono-contenedor:hover .modal-contenido {
+        visibility: visible;
+        opacity: 1;
+    }
+
+</style>
+<div class="icono-contenedor" justify-content="center" align-items="center">
+    <div class="icono">i</div>
+    <div class="modal-contenido">
+        <img src="favicon.png" alt="Imagen de demostración">
+        <p>Este es un texto que explica la imagen o da información adicional.</p>
+    </div>
+</div>
+
+
+
+@code {
+    
+}

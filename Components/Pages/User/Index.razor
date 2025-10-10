@@ -1,0 +1,106 @@
+﻿@page "/administracion/users"
+@using BlazorBootstrap
+@using Microsoft.AspNetCore.Authorization
+@using REGISTROLEGAL.Data
+@using REGISTROLEGAL.Repositories.Interfaces
+
+@attribute [Authorize(Roles = "user_admin")]
+@attribute [StreamRendering]
+
+@inject IUserData _UserService
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <div class="row row-cols-lg-auto g-3 align-items-center">
+                <div class="col-12">
+                    <h2 class="mb-0 fw-bold">Usuarios del Sistema</h2>
+                </div>
+                <div class="col-12 ms-auto">
+                    <NavLink class="btn btn-primary text-white" href="/administracion/createuser"
+                             Match="NavLinkMatch.All">
+                        <i class="fa-solid fa-user-plus me-1"></i>Registrar
+                    </NavLink>
+                </div>
+            </div>
+        </div>
+        <div class="card-header bg-white">
+            <div class="row row-cols-lg-auto g-3 align-items-center">
+                <div class="col-12" style="width: min(100%, 400px);">
+                    <input @bind="@Filter" class="form-control form-control-sm"
+                           placeholder="Buscar por nombre, apellido o correo."/>
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn btn-gob-blue" @onclick="ReloadGrid">
+                        <i class="fa-solid fa-magnifying-glass me-1"></i>Filtrar
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <Grid TItem="ApplicationUser"
+                  @ref="GridUsers"
+                  Class="table table-hover table-bordered table-striped"
+                  DataProvider="UsersDataProvider"
+                  AllowPaging="true"
+                  PageSize="10"
+                  Responsive="true">
+                <GridColumn TItem="ApplicationUser" HeaderText="Id" PropertyName="Id">
+                    @context.Id
+                </GridColumn>
+                <GridColumn TItem="ApplicationUser" HeaderText="Nombre">
+                    @context.FirstName @context.LastName
+                </GridColumn>
+                <GridColumn TItem="ApplicationUser" HeaderText="Correo">
+                    @context.Email
+                </GridColumn>
+                <GridColumn TItem="ApplicationUser" HeaderText="Activo">
+                    @(context.IsAproved ? "SI" : "NO")
+                </GridColumn>
+                <GridColumn TItem="ApplicationUser" HeaderText="Acciones" HeaderTextAlignment="Alignment.Center"
+                            Class="p-0"
+                            TextAlignment="Alignment.Center">
+                    <ChildContent>
+                        <div class="btn-group border my-1" role="group" aria-label="acciones">
+                            <a class="btn btn-sm btn-light" href="/administracion/createuser/@context.UserName">
+                                <Tooltip Title="Editar Usuario">
+                                    <i class="fa-solid fa-file-pen text-flat-blue"></i>
+                                </Tooltip>
+                            </a>
+                        </div>
+                    </ChildContent>
+                </GridColumn>
+            </Grid>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private Grid<ApplicationUser> GridUsers = default!;
+    private List<ApplicationUser> ListUsers = new();
+    private string Filter { get; set; } = "";
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    // }
+
+    private async Task<GridDataProviderResult<ApplicationUser>> UsersDataProvider(GridDataProviderRequest<ApplicationUser> request)
+    {
+        ListUsers = await _UserService.GetAllUsers(Filter); // call a service or an API to pull the employees
+        int TotalRows = ListUsers.Count();
+        ListUsers = ListUsers.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).ToList();
+        return await Task.FromResult(new GridDataProviderResult<ApplicationUser>
+        {
+            Data = ListUsers,
+            TotalCount = TotalRows
+        });
+    }
+
+    private async Task ReloadGrid()
+    {
+        Filter = Filter.Trim();
+        await GridUsers.RefreshDataAsync();
+        await GridUsers.ResetPageNumber();
+    }
+}

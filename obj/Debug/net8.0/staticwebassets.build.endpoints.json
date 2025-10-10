@@ -29,7 +29,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 08 Oct 2025 15:00:59 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         },
         {
           "Name": "Link",
@@ -78,7 +78,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 08 Oct 2025 15:00:59 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         },
         {
           "Name": "Link",
@@ -857,7 +857,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 25 Sep 2025 21:46:10 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -902,7 +902,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 25 Sep 2025 21:46:10 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -939,7 +939,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 24 Jul 2025 18:16:15 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -984,7 +984,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 24 Jul 2025 18:16:15 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -1021,7 +1021,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 24 Jul 2025 18:16:15 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -1066,7 +1066,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 24 Jul 2025 18:16:15 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -1103,7 +1103,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 24 Jul 2025 18:16:15 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -1140,7 +1140,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 24 Jul 2025 18:16:15 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -1185,7 +1185,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 24 Jul 2025 18:16:15 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -1222,7 +1222,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 24 Jul 2025 18:16:15 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -1237,6 +1237,88 @@
         {
           "Name": "label",
           "Value": "logo-gob.png"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION/0/0e420ea7-ad63-4c07-bf18-41d8235a4ad5.8aqhuamaeh.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION/0/0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "60687"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "8aqhuamaeh"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION/0/0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION/0/0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION/0/0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "60687"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E="
         }
       ]
     },
@@ -1267,7 +1349,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 24 Sep 2025 20:42:21 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [
@@ -1312,7 +1394,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 24 Sep 2025 20:42:21 GMT"
+          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
         }
       ],
       "EndpointProperties": [

@@ -12,5 +12,6 @@ public interface ICommon
     Task<List<ListModel>> GetDistritos(int ProvinciaId);
     Task<List<ListModel>> GetCorregimientos(int DistritoId);
     Task<List<ListModel>> GetCargos();
+    Task<string> GetFakePassword();
     #endregion
 }

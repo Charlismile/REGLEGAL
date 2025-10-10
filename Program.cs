@@ -55,9 +55,19 @@ builder.Services.AddScoped<IDatabaseProvider, DatabaseProviderService>();
 builder.Services.AddScoped<IRegistroComite, RegistroComiteService>();
 builder.Services.AddScoped<IRegistroAsociacion, RegistroAsociacionService>();
 builder.Services.AddScoped<IArchivoLegalService, ArchivoLegalService>();
+builder.Services.AddScoped<IUserData, UserDataService>();
 
 // Identity Core
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireDigit = true;
+    })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
