@@ -11,7 +11,7 @@ public partial class RegistroAsociacion : ComponentBase
     [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Inject] private IArchivoLegalService ArchivoLegalService { get; set; } = default!;
 
-    private AsociacionModel AModel = new()
+    private AsociacionModel AModel { get; set; } = new()
     {
         DocumentosSubir = new List<IBrowserFile>()
     };
@@ -105,7 +105,7 @@ public partial class RegistroAsociacion : ComponentBase
                 {
                     MensajeExito = "Asociación registrada con éxito.";
                     await Task.Delay(1500);
-                    Navigation.NavigateTo("/asociaciones");
+                    Navigation.NavigateTo("/listado");
                 }
             }
             else
@@ -123,5 +123,5 @@ public partial class RegistroAsociacion : ComponentBase
         }
     }
 
-    private void Cancelar() => Navigation.NavigateTo("/asociaciones");
+    private void Cancelar() => Navigation.NavigateTo("/listado");
 }

@@ -124,7 +124,7 @@ public class AsociacionModel
     public bool EditMode { get; set; } = true;
     public DateTime? CreadaEn { get; set; }
     public string CreadaPor { get; set; } = "";
-    public DateTime FechaResolucion { get; set; } = DateTime.Now;
+    public DateTime? FechaResolucion { get; set; }
 
     // ===============================
     // ARCHIVOS / DOCUMENTOS

@@ -11,4 +11,6 @@ public class ApplicationUser : IdentityUser
     public bool IsAproved { get; set; } = true;
     public bool IsFromActiveDirectory { get; set; } = true;
     public bool MustChangePassword { get; set; }
+    
+
 }

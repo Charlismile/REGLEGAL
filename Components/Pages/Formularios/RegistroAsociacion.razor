@@ -1,4 +1,4 @@
-﻿@page "/registro-asociacion"
+﻿@page "/formulario/registro-asociacion"
 @using REGISTROLEGAL.Repositories.Interfaces
 
 
@@ -153,7 +153,7 @@
 
     <div class="mb-3">
         <label class="form-label">Numero de Resolución</label>
-        <InputDate @bind-Value="AModel.NumeroResolucion" class="form-control" />
+        <InputText @bind-Value="AModel.NumeroResolucion" class="form-control" />
         <ValidationMessage For="@(() => AModel.NumeroResolucion)" class="text-danger small"/>
     </div>
     <div class="mb-3">

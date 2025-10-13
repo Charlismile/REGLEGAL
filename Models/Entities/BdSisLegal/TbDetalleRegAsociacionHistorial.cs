@@ -13,7 +13,7 @@ public partial class TbDetalleRegAsociacionHistorial
 
     public string UsuarioId { get; set; } = null!;
 
-    public DateTime FechaModificacion { get; set; }
+    public DateTime? FechaModificacion { get; set; }
 
     public string? NumeroResolucion { get; set; }
 

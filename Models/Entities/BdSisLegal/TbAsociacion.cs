@@ -17,7 +17,7 @@ public partial class TbAsociacion
 
     public string? Actividad { get; set; }
 
-    public DateTime FechaResolucion { get; set; }
+    public DateTime? FechaResolucion { get; set; }
 
     public string? NumeroResolucion { get; set; }
 

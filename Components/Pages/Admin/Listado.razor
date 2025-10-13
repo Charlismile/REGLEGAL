@@ -1,4 +1,4 @@
-﻿@page "/listado"
+﻿@page "/admin/listado"
 @using Microsoft.EntityFrameworkCore
 @using REGISTROLEGAL.Models.Entities.BdSisLegal
 @inject DbContextLegal _context
@@ -6,114 +6,150 @@
 
 <PageTitle>Listado</PageTitle>
 
-<div class="container mt-4">
-    <h3 class="mb-3 text-primary">Listados del Sistema</h3>
+<div class="container mt-5">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-primary text-white rounded-top-4 py-3">
+            <h4 class="mb-0 fw-bold">
+                <i class="bi bi-collection me-2"></i> Listados del Sistema
+            </h4>
+        </div>
 
-    <!-- Selector de tipo de listado -->
-    <div class="mb-4">
-        <label class="form-label fw-semibold">Seleccione qué desea ver:</label>
-        <select class="form-select w-auto d-inline-block"
-                @bind="tipoSeleccionado"
-                @bind:after="async () => await CargarDatos()">
-            <option value="">-- Seleccione --</option>
-            <option value="Comites">Comités</option>
-            <option value="Asociaciones">Asociaciones</option>
-        </select>
+        <div class="card-body bg-light">
+            <!-- Selector de tipo -->
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-secondary">
+                        <i class="bi bi-funnel"></i> Seleccione qué desea ver:
+                    </label>
+                    <select class="form-select"
+                            @bind="tipoSeleccionado"
+                            @bind:after="async () => await CargarDatos()">
+                        <option value="">-- Seleccione --</option>
+                        <option value="Comites">Comités</option>
+                        <option value="Asociaciones">Asociaciones</option>
+                    </select>
+                </div>
+
+                <!-- Botón dinámico -->
+                @if (!string.IsNullOrEmpty(tipoSeleccionado))
+                {
+                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <button class="btn btn-success shadow-sm fw-semibold px-4"
+                                @onclick="IrARegistro">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Registrar @(tipoSeleccionado == "Comites" ? "Comité" : "Asociación")
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <!-- Tabla de Comités -->
+            @if (tipoSeleccionado == "Comites" && comites?.Any() == true)
+            {
+                <h5 class="text-success mb-3">
+                    <i class="bi bi-people-fill me-2"></i>Listado de Comités
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered align-middle bg-white">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Nombre del Comité</th>
+                                <th>N° Resolución</th>
+                                <th>Fecha de Creación</th>
+                                <th class="text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in comites)
+                            {
+                                <tr>
+                                    <td>@c.NombreComiteSalud</td>
+                                    <td>@c.NumeroResolucion</td>
+                                    <td>@c.FechaRegistro</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary"
+                                                title="Editar Comité"
+                                                @onclick="() => EditarComite(c.DcomiteId)">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else if (tipoSeleccionado == "Comites" && !cargando && (comites == null || !comites.Any()))
+            {
+                <div class="alert alert-warning mt-3">
+                    <i class="bi bi-exclamation-triangle"></i> No hay comités registrados.
+                </div>
+            }
+
+            <!-- Tabla de Asociaciones -->
+            @if (tipoSeleccionado == "Asociaciones" && asociaciones?.Any() == true)
+            {
+                <h5 class="text-success mb-3">
+                    <i class="bi bi-building-fill me-2"></i>Listado de Asociaciones
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered align-middle bg-white">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Nombre de la Asociación</th>
+                                <th>Folio</th>
+                                <th>Fecha de Creación</th>
+                                <th class="text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var a in asociaciones)
+                            {
+                                <tr>
+                                    <td>@a.NombreAsociacion</td>
+                                    <td>@a.Folio</td>
+                                    <td>@a.FechaResolucion</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary"
+                                                title="Editar Asociación"
+                                                @onclick="() => EditarAsociacion(a.AsociacionId)">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else if (tipoSeleccionado == "Asociaciones" && !cargando && (asociaciones == null || !asociaciones.Any()))
+            {
+                <div class="alert alert-warning mt-3">
+                    <i class="bi bi-exclamation-triangle"></i> No hay asociaciones registradas.
+                </div>
+            }
+            
+            @if (cargando)
+            {
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-hourglass-split"></i> Cargando información...
+                </div>
+            }
+
+            <!-- Mensaje inicial -->
+            @if (string.IsNullOrEmpty(tipoSeleccionado) && !cargando)
+            {
+                <div class="alert alert-secondary mt-3">
+                    <i class="bi bi-info-circle"></i> Seleccione una opción para mostrar los registros.
+                </div>
+            }
+        </div>
     </div>
-
-    <!-- Mostrar tabla de Comités -->
-    @if (tipoSeleccionado == "Comites" && comites?.Any() == true)
-    {
-        <h5 class="text-success mb-3">Listado de Comités</h5>
-        <table class="table table-striped table-bordered align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Nombre del Comité</th>
-                    <th>N° Resolución</th>
-                    <th>Fecha de Creación</th>
-                    <th class="text-center">Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var c in comites)
-                {
-                    <tr>
-                        <td>@c.NombreComiteSalud</td>
-                        <td>@c.NumeroResolucion</td>
-                        <td>@(c.FechaRegistro.ToString("dd/MM/yyyy") ?? "-")</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-primary"
-                                    @onclick="() => EditarComite(c.DcomiteId)">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else if (tipoSeleccionado == "Comites" && !cargando && (comites == null || !comites.Any()))
-    {
-        <div class="alert alert-warning mt-3">No hay comités registrados.</div>
-    }
-
-    <!-- Mostrar tabla de Asociaciones -->
-    @if (tipoSeleccionado == "Asociaciones" && asociaciones?.Any() == true)
-    {
-        <h5 class="text-success mb-3">Listado de Asociaciones</h5>
-        <table class="table table-striped table-bordered align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Nombre de la Asociación</th>
-                    <th>Folio</th>
-                    <th>Fecha de Creación</th>
-                    <th class="text-center">Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var a in asociaciones)
-                {
-                    <tr>
-                        <td>@a.NombreAsociacion</td>
-                        <td>@a.Folio</td>
-                        <td>@(a.FechaResolucion.ToString("dd/MM/yyyy") ?? "-")</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-primary"
-                                    @onclick="() => EditarAsociacion(a.AsociacionId)">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else if (tipoSeleccionado == "Asociaciones" && !cargando && (asociaciones == null || !asociaciones.Any()))
-    {
-        <div class="alert alert-warning mt-3">No hay asociaciones registradas.</div>
-    }
-
-    <!-- Indicador de carga -->
-    @if (cargando)
-    {
-        <div class="alert alert-info mt-3">
-            <i class="bi bi-hourglass-split"></i> Cargando información...
-        </div>
-    }
-
-    <!-- Mensaje inicial -->
-    @if (string.IsNullOrEmpty(tipoSeleccionado) && !cargando)
-    {
-        <div class="alert alert-secondary mt-3">
-            <i class="bi bi-info-circle"></i> Seleccione una opción para mostrar los registros.
-        </div>
-    }
 </div>
 
 @code {
     private string? tipoSeleccionado;
     private bool cargando = false;
-
     private List<TbComite>? comites;
     private List<TbAsociacion>? asociaciones;
 
@@ -163,13 +199,21 @@
         }
     }
 
+    private void IrARegistro()
+    {
+        if (tipoSeleccionado == "Comites")
+            NavigationManager.NavigateTo("/formulario/registro-comite");
+        else if (tipoSeleccionado == "Asociaciones")
+            NavigationManager.NavigateTo("/formulario/registro-asociacion");
+    }
+
     private void EditarComite(int id)
     {
-        NavigationManager.NavigateTo($"/editcomite/{id}");
+        NavigationManager.NavigateTo($"/comites/editcomite/{id}");
     }
 
     private void EditarAsociacion(int id)
     {
-        NavigationManager.NavigateTo($"/editasociacion/{id}");
+        NavigationManager.NavigateTo($"/asociaciones/editasociacion/{id}");
     }
 }

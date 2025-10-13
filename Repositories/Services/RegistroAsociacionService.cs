@@ -135,7 +135,7 @@ public class RegistroAsociacionService : IRegistroAsociacion
             NombreAsociacion = a.NombreAsociacion,
             NombreRepLegal = a.RepresentanteLegal?.NombreRepLegal,
             NombreApoAbogado = a.ApoderadoLegal?.NombreApoAbogado,
-            FechaResolucion = a.FechaResolucion,
+            FechaResolucion = a.FechaResolucion ?? DateTime.Now,
             Archivos = a.TbArchivosAsociacion.Select(f => new AArchivoModel
             {
                 AsociacionArchivoId = f.ArchivoId,
@@ -156,7 +156,7 @@ public class RegistroAsociacionService : IRegistroAsociacion
                 NombreAsociacion = a.NombreAsociacion,
                 NombreRepLegal = a.RepresentanteLegal != null ? a.RepresentanteLegal.NombreRepLegal : null,
                 NombreApoAbogado = a.ApoderadoLegal != null ? a.ApoderadoLegal.NombreApoAbogado : null,
-                FechaResolucion = a.FechaResolucion
+                FechaResolucion = a.FechaResolucion ?? DateTime.Now
             }).ToListAsync();
     }
     
@@ -209,10 +209,12 @@ public class RegistroAsociacionService : IRegistroAsociacion
             .Select(h => new DetalleRegAsociacionModel
             {
                 DetalleRegAsociacionId = h.HistorialId,
-                CreadaEn = h.FechaModificacion,
+                CreadaEn = h.FechaModificacion ?? DateTime.Now,
                 CreadaPor = h.UsuarioId.ToString(),
-                NumRegAsecuencia = h.FechaResolucion.GetHashCode(),
-                NumRegAcompleta = h.FechaModificacion.ToString("yyyy-MM-dd HH:mm:ss")
-            }).ToListAsync();
+                NumRegAsecuencia = h.FechaResolucion.HasValue ? h.FechaResolucion.Value.DayOfYear : 0,
+                NumRegAcompleta = h.FechaModificacion != null ? h.FechaModificacion.Value.ToString() : ""
+            })
+            .ToListAsync();
     }
+
 }

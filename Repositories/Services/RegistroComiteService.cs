@@ -139,7 +139,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     ComiteId = c.DcomiteId,
                     NombreComiteSalud = c.NombreComiteSalud,
                     Comunidad = c.Comunidad,
-                    FechaCreacion = c.FechaRegistro,
+                    FechaCreacion = c.FechaRegistro ?? DateTime.Now,
                     FechaEleccion = c.FechaEleccion ?? DateTime.Now,
                     NumeroResolucion = c.NumeroResolucion,
                     FechaResolucion = c.FechaResolucion ?? DateTime.Now
@@ -157,7 +157,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     ComiteId = c.DcomiteId,
                     NombreComiteSalud = c.NombreComiteSalud,
                     Comunidad = c.Comunidad,
-                    FechaCreacion = c.FechaRegistro,
+                    FechaCreacion = c.FechaRegistro ?? DateTime.Now,
                     FechaEleccion = c.FechaEleccion ?? DateTime.Now,
                     NumeroResolucion = c.NumeroResolucion,
                     FechaResolucion = c.FechaResolucion ?? DateTime.Now,
@@ -188,7 +188,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     ComiteId = c.DcomiteId,
                     NombreComiteSalud = c.NombreComiteSalud,
                     Comunidad = c.Comunidad,
-                    FechaCreacion = c.FechaRegistro,
+                    FechaCreacion = c.FechaRegistro ?? DateTime.Now,
                     Miembros = c.TbMiembrosComite.Select(m => new MiembroComiteModel
                     {
                         MiembroId = m.DmiembroId,

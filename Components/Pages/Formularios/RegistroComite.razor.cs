@@ -270,6 +270,6 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
             CModel.CorregimientoId = null;
         }
 
-        private void Cancelar() => Navigation.NavigateTo("/");
+        private void Cancelar() => Navigation.NavigateTo("/listado");
     }
 }

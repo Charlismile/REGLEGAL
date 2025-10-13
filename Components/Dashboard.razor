@@ -1,14 +1,58 @@
 ﻿@page "/Dashboard"
-<h3>Dashboard</h3>
 
-<div class="row mt-0">
-    <div class="col-lg-6 col-md-12 col-sm-12">
-        <div class="card py-2">
-            <div class="card-body">
-                <h5 class="card-title border-bottom py-2">MINISTERIO DE SALUD</h5>
-                <p class="card-text">SISTEMA DE GESTION DE LA SUBDIRECCIÓN GENERAL DE SALUD AMBIENTAL (SDGSA)</p>
-                <p class="card-text">USUARIO: @LoggedUser.FirstName @LoggedUser.LastName</p>
+<PageTitle>Dashboard</PageTitle>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center py-3 rounded-top-4">
+                    <h4 class="mb-0 fw-bold">MINISTERIO DE SALUD</h4>
+                    <small>Sistema de Procesos de Misión Crítica (PMC)</small>
+                </div>
+                <div class="card-body bg-light text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-person-circle display-4 text-primary"></i>
+                    </div>
+                    <h5 class="fw-semibold mb-2">Bienvenido, @LoggedUser.FirstName @LoggedUser.LastName</h5>
+                    <p class="text-muted mb-4">
+                        <i class="bi bi-building"></i> Unidad: <strong>@UnidadUser</strong>
+                    </p>
+
+                    <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
+                            @onclick="IrAListado">
+                        <i class="bi bi-list-ul me-2"></i> Ver Listado
+                    </button>
+                    <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
+                            @onclick="IrAUsuarios">
+                        <i class="bi bi-list-ul me-2"></i> Ver Listado
+                    </button>
+                    <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
+                            @onclick="IrACreacion">
+                        <i class="bi bi-list-ul me-2"></i> Ver Listado
+                    </button>
+                </div>
+                <div class="card-footer text-center bg-white border-0 pb-3">
+                    <small class="text-muted">© @DateTime.Now.Year Ministerio de Salud - República de Panamá</small>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+@code {
+    private void IrAListado()
+    {
+        Navigation.NavigateTo("/admin/listado");
+    }
+    
+    private void IrAUsuarios()
+    {
+        Navigation.NavigateTo("/user/index");
+    }
+    
+    private void IrACreacion()
+    {
+        Navigation.NavigateTo("/user/createuser/{UserName?}");
+    }
+}

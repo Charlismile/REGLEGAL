@@ -15,7 +15,7 @@ public partial class TbDetalleRegComiteHistorial
 
     public string UsuarioRevisorCo { get; set; } = null!;
 
-    public DateTime FechaCambioCo { get; set; }
+    public DateTime? FechaCambioCo { get; set; }
 
     public virtual TbComite Comite { get; set; } = null!;
 }

@@ -41,7 +41,7 @@ public partial class EditAsociacion : ComponentBase
         if (resultado.Success)
         {
             Console.WriteLine("✅ Asociación actualizada correctamente.");
-            Navigation.NavigateTo("/listado");
+            Navigation.NavigateTo("/admin/listado");
         }
         else
         {
@@ -51,6 +51,6 @@ public partial class EditAsociacion : ComponentBase
 
     private void Volver()
     {
-        Navigation.NavigateTo("/listado");
+        Navigation.NavigateTo("/admin/listado");
     }
 }

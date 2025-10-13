@@ -1,13 +1,17 @@
 ﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthStateProvider
 @using IDatabaseProvider = REGISTROLEGAL.Repositories.Interfaces.IDatabaseProvider
 @inject IDatabaseProvider DatabaseProviderService
-
+@inject NavigationManager Navigation
 
 <header>
-    <div class="container height-110 d-flex justify-content-center align-items-center">
+    <div class="container height-110 d-flex justify-content-between align-items-center">
         <img src="/logo-gob.png" class="img-fluid" alt="logo gobierno" width="400" style="height: 110px">
+        @if (IsLoggedIn)
+        {
+            <button class="btn btn-outline-danger" @onclick="Logout">Cerrar sesión</button>
+        }
     </div>
-    <NavMenu/>
 </header>
 <div class="py-3 px-2">
     @if (IsDev)
@@ -23,10 +27,20 @@
 @code{
     private bool IsDev { get; set; }
     private string Connection { get; set; } = "";
-
-    protected override void OnInitialized()
+    private bool IsLoggedIn { get; set; }
+    
+    protected override async Task OnInitializedAsync()
     {
         IsDev = DatabaseProviderService.GetEnvironment();
         Connection = DatabaseProviderService.GetConnectionString();
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        IsLoggedIn = authState.User.Identity?.IsAuthenticated ?? false;
+    }
+
+    private void Logout()
+    {
+        // Redirige al endpoint de logout de Identity
+        Navigation.NavigateTo("/Account/Logout", true);
     }
 }

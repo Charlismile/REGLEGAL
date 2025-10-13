@@ -41,7 +41,7 @@ public partial class EditComite : ComponentBase
         {
             // Mostrar un mensaje (puedes usar MudBlazor o Bootstrap Toasts si prefieres)
             Console.WriteLine("✅ Comité actualizado correctamente.");
-            Navigation.NavigateTo("/listado");
+            Navigation.NavigateTo("/admin/listado");
         }
         else
         {
@@ -52,6 +52,6 @@ public partial class EditComite : ComponentBase
 
     private void Volver()
     {
-        Navigation.NavigateTo("/listado");
+        Navigation.NavigateTo("/admin/listado");
     }
 }

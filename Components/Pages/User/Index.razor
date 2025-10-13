@@ -1,4 +1,4 @@
-﻿@page "/administracion/users"
+﻿@page "/user/index"
 @using BlazorBootstrap
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Data
@@ -80,10 +80,6 @@
     private Grid<ApplicationUser> GridUsers = default!;
     private List<ApplicationUser> ListUsers = new();
     private string Filter { get; set; } = "";
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    // }
 
     private async Task<GridDataProviderResult<ApplicationUser>> UsersDataProvider(GridDataProviderRequest<ApplicationUser> request)
     {

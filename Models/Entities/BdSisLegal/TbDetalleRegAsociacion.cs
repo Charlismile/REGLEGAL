@@ -7,7 +7,7 @@ public partial class TbDetalleRegAsociacion
 {
     public int DetRegAsociacionId { get; set; }
 
-    public DateTime CreadaEn { get; set; }
+    public DateTime? CreadaEn { get; set; }
 
     public string CreadaPor { get; set; } = null!;
 

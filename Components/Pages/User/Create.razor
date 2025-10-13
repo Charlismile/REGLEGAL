@@ -1,4 +1,4 @@
-﻿@page "/administracion/createuser/{UserName?}"
+﻿@page "/user/createuser/{UserName?}"
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -85,7 +85,7 @@
                 <div class="form-check">
                     <InputCheckbox id="IsAdminUser" class="form-check-input" @bind-Value="FormData.IsAdminUser"/>
                     <label class="form-check-label" for="IsAdminUser">
-                        Administrador (Solo Para Informática)
+                        Administrador
                     </label>
                 </div>
             </div>

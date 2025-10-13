@@ -19,7 +19,7 @@ public partial class TbComite
 
     public DateTime? FechaResolucion { get; set; }
 
-    public DateTime FechaRegistro { get; set; }
+    public DateTime? FechaRegistro { get; set; }
 
     public string? CreadaPor { get; set; }
 

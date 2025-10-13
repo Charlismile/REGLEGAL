@@ -36,7 +36,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\Pages\Comites\Comites.razor" />
       <AdditionalFiles Include="Components\Pages\Comites\EditComite.razor" />
       <AdditionalFiles Include="Components\Pages\Formularios\RegistroAsociacion.razor" />
       <AdditionalFiles Include="Components\Pages\Formularios\RegistroComite.razor" />
