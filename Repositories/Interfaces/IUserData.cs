@@ -16,4 +16,5 @@ public interface IUserData
     // ACTIVE DIRECTORY
     Task<ResultModel> LoginAD(string UserName, string Password);
     Task<ResultGenericModel<ActiveDirectoryUserModel>> FindUserByEmail(string Email);
+    Task LogoutAsync();
 }

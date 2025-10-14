@@ -1,5 +1,8 @@
 ﻿@page "/formulario/registro-asociacion"
-@using REGISTROLEGAL.Repositories.Interfaces
+@layout EmptyLayout
+@attribute [Authorize(Roles = "user_admin")]
+@using Microsoft.AspNetCore.Authorization
+@using REGISTROLEGAL.Components.Layout
 
 
 <EditForm Model="@AModel" OnValidSubmit="@HandleValidSubmit" class="formulario-asociacion shadow-sm rounded p-4 bg-white">

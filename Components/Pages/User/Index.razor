@@ -3,11 +3,14 @@
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Data
 @using REGISTROLEGAL.Repositories.Interfaces
-
+@layout EmptyLayout
 @attribute [Authorize(Roles = "user_admin")]
+
+@using REGISTROLEGAL.Components.Layout
 @attribute [StreamRendering]
 
 @inject IUserData _UserService
+@inject NavigationManager Navigation
 
 <div class="container-fluid">
     <div class="card">
@@ -16,6 +19,9 @@
                 <div class="col-12">
                     <h2 class="mb-0 fw-bold">Usuarios del Sistema</h2>
                 </div>
+                <button type="button" class="btn btn-secondary me-2" @onclick="Volver">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </button>
                 <div class="col-12 ms-auto">
                     <NavLink class="btn btn-primary text-white" href="/administracion/createuser"
                              Match="NavLinkMatch.All">
@@ -98,5 +104,10 @@
         Filter = Filter.Trim();
         await GridUsers.RefreshDataAsync();
         await GridUsers.ResetPageNumber();
+    }
+    
+    private void Volver()
+    {
+        Navigation.NavigateTo("/admin/listado");
     }
 }

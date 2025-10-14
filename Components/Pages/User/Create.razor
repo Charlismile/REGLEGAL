@@ -1,6 +1,8 @@
 ﻿@page "/user/createuser/{UserName?}"
-@using System.ComponentModel.DataAnnotations
+@layout EmptyLayout
+@attribute [Authorize(Roles = "user_admin")]
 @using Microsoft.AspNetCore.Authorization
+@using REGISTROLEGAL.Components.Layout
 @using Microsoft.AspNetCore.Identity
 @using REGISTROLEGAL.Repositories.Interfaces
 
@@ -10,7 +12,6 @@
 @attribute [Authorize(Roles = "user_admin")]
 @attribute [StreamRendering]
 
-@inject NavigationManager _NavigationProvider
 @inject UserManager<ApplicationUser> _UserManager
 @inject IUserData _UserService
 @inject ICommon _CommonService
@@ -23,12 +24,9 @@
                     <div class="col-12">
                         <h2 class="mb-0 fw-bold">Registro de Usuario</h2>
                     </div>
-                    <div class="col-12 ms-auto">
-                        <NavLink class="btn btn-primary text-white" href="/administracion/users"
-                                 Match="NavLinkMatch.All">
-                            <i class="fa-solid fa-arrow-left me-1"></i> Volver
-                        </NavLink>
-                    </div>
+                    <button type="button" class="btn btn-secondary me-2" @onclick="Volver">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </button>
                 </div>
             </div>
             <div class="card-body">
@@ -93,6 +91,7 @@
                 <button type="submit" class="btn btn-gob-blue">
                     <i class="fa-solid fa-floppy-disk"></i> Guardar
                 </button>
+                
             </div>
         </div>
     </EditForm>

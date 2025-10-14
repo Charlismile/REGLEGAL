@@ -1,6 +1,9 @@
 ﻿@page "/asociaciones/editasociacion/{id:int}"
+@layout EmptyLayout
+@attribute [Authorize(Roles = "user_admin")]
+@using Microsoft.AspNetCore.Authorization
+@using REGISTROLEGAL.Components.Layout
 @using REGISTROLEGAL.Repositories.Interfaces
-@using REGISTROLEGAL.Models.LegalModels
 @inject IRegistroAsociacion AsociacionService
 @inject NavigationManager Navigation
 

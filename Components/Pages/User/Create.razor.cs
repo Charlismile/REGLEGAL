@@ -10,6 +10,7 @@ namespace REGISTROLEGAL.Components.Pages.User;
 
 public partial class Create : ComponentBase
 {
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Parameter] public string? UserName { get; set; }
 
     #region Model
@@ -141,9 +142,13 @@ public partial class Create : ComponentBase
         }
         if (Resultado.Success)
         {
-            _NavigationProvider.NavigateTo("/administracion/users");
+            Navigation.NavigateTo("/administracion/users");
         }
     }
 
     #endregion
+    private void Volver()
+    {
+        Navigation.NavigateTo("/admin/listado");
+    }
 }

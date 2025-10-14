@@ -18,10 +18,12 @@ public class UserDataService : IUserData
     private readonly string FakePassword = "";
     private readonly ActiveDirectoryApiModel ActiveDirectoryModel;
     private readonly HttpClient _HttpClient;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
     public UserDataService(UserManager<ApplicationUser> UserManager, IDbContextFactory<DbContextLegal> Context,
-        IConfiguration Configuration, HttpClient HttpClient)
+        IConfiguration Configuration, HttpClient HttpClient, SignInManager<ApplicationUser> signInManager)
     {
+        _signInManager = signInManager;
         _UserManager = UserManager;
         _Context = Context;
         _Configuration = Configuration;
@@ -263,5 +265,10 @@ public class UserDataService : IUserData
         }
 
         return ResultUserModel;
+    }
+
+    public async Task LogoutAsync()
+    {
+        await _signInManager.SignOutAsync();
     }
 }

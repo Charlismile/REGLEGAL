@@ -1,5 +1,9 @@
 ﻿@page "/formulario/registro-comite"
 @using REGISTROLEGAL.Models.LegalModels
+@layout EmptyLayout
+@attribute [Authorize(Roles = "user_admin")]
+@using Microsoft.AspNetCore.Authorization
+@using REGISTROLEGAL.Components.Layout
 
 <EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit"
           class="formulario-comite shadow-sm rounded p-4 bg-white">

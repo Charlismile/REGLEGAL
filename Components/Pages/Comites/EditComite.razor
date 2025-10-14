@@ -1,4 +1,8 @@
 ﻿@page "/comites/editcomite/{id:int}"
+@layout EmptyLayout
+@attribute [Authorize(Roles = "user_admin")]
+@using Microsoft.AspNetCore.Authorization
+@using REGISTROLEGAL.Components.Layout
 @using REGISTROLEGAL.Repositories.Interfaces
 @inject IRegistroComite ComiteService
 @inject NavigationManager Navigation

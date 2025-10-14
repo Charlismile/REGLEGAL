@@ -1,2 +1,90 @@
-﻿@inherits LayoutComponentBase
-@Body
+﻿@using REGISTROLEGAL.Repositories.Interfaces
+@using REGISTROLEGAL.Repositories.Services
+@inherits LayoutComponentBase
+@inject ILocalStorage _LocalStorageServices
+@inject IDatabaseProvider DatabaseProviderService
+
+<div class="wrapper">
+    <div class="main">
+        <nav class="navbar navbar-expand px-3 border-bottom bg-gob-blue">
+            <div class="navbar-collapse navbar py-0">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown border rounded-pill btn btn-sm btn-light py-2 px-4">
+                        <a href="#" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
+                            <AuthorizeView>
+                                <Authorized>
+                                    <i class="fa-solid fa-user me-1"></i>
+                                    @context.User.Identity?.Name
+                                    <i class="ms-1 fa-solid fa-caret-down"></i>
+                                </Authorized>
+                                <NotAuthorized>
+                                    <i class="fa-solid fa-user me-1"></i>
+                                    <strong class="mx-2">Usuario</strong>
+                                    <i class="ms-1 fa-solid fa-caret-down"></i>
+                                </NotAuthorized>
+                            </AuthorizeView>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <form action="/account/customlogout" method="post" @formname="LogoutForm">
+                                <AntiforgeryToken/>
+                                <button type="submit" class="dropdown-item">
+                                    <i class="fa-solid fa-right-from-bracket text-danger"></i> Salir
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="content px-0 py-0">
+            <div class="p-4">
+                @if (IsDev)
+                {
+                    <div class="alert alert-danger mx-5">
+                        <p>IsDev: @IsDev</p>
+                        <p>@Connection</p>
+                    </div>
+                }
+                @Body
+            </div>
+        </main>
+
+        <footer class="footer mt-auto py-3 bg-body-tertiary border-top">
+            <div class="container-fluid">
+                <div>
+                    <a href="www.minsa.gob.pa" target="_blank">
+                        <img src="favicon.png" class="img-fluid" alt="Logo MINSA" style="height: 20px;">
+                        Ministerio de Salud de Panamá, @(DateTime.Now.Year)
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+@code {
+    private bool IsDev { get; set; }
+    private string Connection { get; set; } = "";
+    private bool IsCollapsed { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Código seguro durante prerendering
+        IsDev = DatabaseProviderService.GetEnvironment();
+        Connection = DatabaseProviderService.GetConnectionString();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Solo se ejecuta en el navegador, seguro para JS interop
+            var stored = await _LocalStorageServices.GetItem("IsCollapsed");
+            IsCollapsed = !string.IsNullOrEmpty(stored) && stored == "1";
+
+            // Actualiza la UI con el valor cargado de localStorage
+            StateHasChanged();
+        }
+    }
+}

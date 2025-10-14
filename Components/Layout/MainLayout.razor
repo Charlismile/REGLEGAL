@@ -1,17 +1,20 @@
 ﻿@inherits LayoutComponentBase
 @inject AuthenticationStateProvider AuthStateProvider
-@using IDatabaseProvider = REGISTROLEGAL.Repositories.Interfaces.IDatabaseProvider
+@inject NavigationManager NavigationManager
 @inject IDatabaseProvider DatabaseProviderService
-@inject NavigationManager Navigation
+@inject IUserData UserDataService
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@using Microsoft.AspNetCore.Identity
+@using REGISTROLEGAL.Data
+@using REGISTROLEGAL.Repositories.Interfaces
 
 <header>
-    <div class="container height-110 d-flex justify-content-between align-items-center">
-        <img src="/logo-gob.png" class="img-fluid" alt="logo gobierno" width="400" style="height: 110px">
-        @if (IsLoggedIn)
-        {
-            <button class="btn btn-outline-danger" @onclick="Logout">Cerrar sesión</button>
-        }
+    <div class="container">
+        <img src="logo-gob.png" class="img-fluid" alt="Gobierno Logo" style="height: 120px;">
     </div>
+    <NavMenu/>
 </header>
 <div class="py-3 px-2">
     @if (IsDev)
@@ -27,20 +30,10 @@
 @code{
     private bool IsDev { get; set; }
     private string Connection { get; set; } = "";
-    private bool IsLoggedIn { get; set; }
-    
-    protected override async Task OnInitializedAsync()
+
+    protected override void OnInitialized()
     {
         IsDev = DatabaseProviderService.GetEnvironment();
         Connection = DatabaseProviderService.GetConnectionString();
-
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        IsLoggedIn = authState.User.Identity?.IsAuthenticated ?? false;
-    }
-
-    private void Logout()
-    {
-        // Redirige al endpoint de logout de Identity
-        Navigation.NavigateTo("/Account/Logout", true);
     }
 }

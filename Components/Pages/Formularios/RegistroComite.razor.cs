@@ -51,7 +51,7 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
                     string.IsNullOrEmpty(m.NombreMiembro) || 
                     string.IsNullOrEmpty(m.ApellidoMiembro) ||
                     string.IsNullOrEmpty(m.CedulaMiembro) ||
-                    m.CargoId == 0)) // Asumiendo que CargoId es int (no int?)
+                    m.CargoId == 0)) 
             {
                 // Mostrar mensaje de error
                 messageStore.Add(FieldIdentifier.Create(() => CModel.Miembros),

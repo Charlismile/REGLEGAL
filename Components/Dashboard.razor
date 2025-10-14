@@ -1,4 +1,9 @@
 ﻿@page "/Dashboard"
+@layout EmptyLayout
+@attribute [Authorize(Roles = "user_admin")]
+@using Microsoft.AspNetCore.Authorization
+@using REGISTROLEGAL.Components.Layout
+
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -8,7 +13,7 @@
             <div class="card shadow-lg border-0 rounded-4">
                 <div class="card-header bg-primary text-white text-center py-3 rounded-top-4">
                     <h4 class="mb-0 fw-bold">MINISTERIO DE SALUD</h4>
-                    <small>Sistema de Procesos de Misión Crítica (PMC)</small>
+                    <small>Sistema de Registro de Comités de Salud y Asociaciones Sin Fines de Lucro</small>
                 </div>
                 <div class="card-body bg-light text-center p-4">
                     <div class="mb-3">
@@ -25,11 +30,11 @@
                     </button>
                     <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
                             @onclick="IrAUsuarios">
-                        <i class="bi bi-list-ul me-2"></i> Ver Listado
+                        <i class="bi bi-person-circle me-2"></i> Ver Usuarios
                     </button>
                     <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
                             @onclick="IrACreacion">
-                        <i class="bi bi-list-ul me-2"></i> Ver Listado
+                        <i class="bi bi-person-fill-add me-2"></i> Crear Usuario
                     </button>
                 </div>
                 <div class="card-footer text-center bg-white border-0 pb-3">
@@ -41,6 +46,16 @@
 </div>
 
 @code {
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        // PARA OBTENER NOMBRE USUARIO LOGEADO
+        var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var uid = auth.User.FindFirst(c => c.Type.EndsWith("nameidentifier"))?.Value;
+        if (string.IsNullOrEmpty(uid))
+            return;
+        LoggedUser = await _UserService.GetUser(auth.User.Identity!.Name!);
+    }
     private void IrAListado()
     {
         Navigation.NavigateTo("/admin/listado");
