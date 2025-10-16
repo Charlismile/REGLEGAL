@@ -14,20 +14,18 @@
 
 <div class="container-fluid">
     <div class="card">
-        <div class="card-header">
-            <div class="row row-cols-lg-auto g-3 align-items-center">
+        <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between">
+            <div class="row row-cols-lg-auto g-3 ">
                 <div class="col-12">
                     <h2 class="mb-0 fw-bold">Usuarios del Sistema</h2>
                 </div>
                 <button type="button" class="btn btn-secondary me-2" @onclick="Volver">
                     <i class="bi bi-arrow-left"></i> Volver
                 </button>
-                <div class="col-12 ms-auto">
-                    <NavLink class="btn btn-primary text-white" href="/administracion/createuser"
+                    <NavLink class="btn btn-success text-white" href="/user/createuser"
                              Match="NavLinkMatch.All">
                         <i class="fa-solid fa-user-plus me-1"></i>Registrar
                     </NavLink>
-                </div>
             </div>
         </div>
         <div class="card-header bg-white">
@@ -68,9 +66,9 @@
                             TextAlignment="Alignment.Center">
                     <ChildContent>
                         <div class="btn-group border my-1" role="group" aria-label="acciones">
-                            <a class="btn btn-sm btn-light" href="/administracion/createuser/@context.UserName">
+                            <a class="btn btn-sm btn-light" href="/user/createuser/@context.UserName">
                                 <Tooltip Title="Editar Usuario">
-                                    <i class="fa-solid fa-file-pen text-flat-blue"></i>
+                                    <i class="bi bi-pencil-square"></i>
                                 </Tooltip>
                             </a>
                         </div>
@@ -108,6 +106,6 @@
     
     private void Volver()
     {
-        Navigation.NavigateTo("/admin/listado");
+        Navigation.NavigateTo("/Dashboard");
     }
 }

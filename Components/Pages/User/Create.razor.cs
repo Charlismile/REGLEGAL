@@ -142,13 +142,13 @@ public partial class Create : ComponentBase
         }
         if (Resultado.Success)
         {
-            Navigation.NavigateTo("/administracion/users");
+            Navigation.NavigateTo("/user/index");
         }
     }
 
     #endregion
     private void Volver()
     {
-        Navigation.NavigateTo("/admin/listado");
+        Navigation.NavigateTo("/Dashboard");
     }
 }
