@@ -1241,6 +1241,170 @@
       ]
     },
     {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/0/dd04eb9d-9fc5-4450-9129-1cbe770a0863.9u0uq9cqth.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION COMITE/0/dd04eb9d-9fc5-4450-9129-1cbe770a0863.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "304280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 17 Oct 2025 21:11:28 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "9u0uq9cqth"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION COMITE/0/dd04eb9d-9fc5-4450-9129-1cbe770a0863.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/0/dd04eb9d-9fc5-4450-9129-1cbe770a0863.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION COMITE/0/dd04eb9d-9fc5-4450-9129-1cbe770a0863.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "304280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 17 Oct 2025 21:11:28 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/0/edecfa14-09b6-4ef4-8579-63fdd7a7a8e9.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION COMITE/0/edecfa14-09b6-4ef4-8579-63fdd7a7a8e9.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "51813"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"zXlkZjuxircSRNMXLJo6SrqpggjrSCVXj9XNu8qn6JI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 17 Oct 2025 22:05:14 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-zXlkZjuxircSRNMXLJo6SrqpggjrSCVXj9XNu8qn6JI="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/0/edecfa14-09b6-4ef4-8579-63fdd7a7a8e9.tsoltr4puc.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION COMITE/0/edecfa14-09b6-4ef4-8579-63fdd7a7a8e9.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "51813"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"zXlkZjuxircSRNMXLJo6SrqpggjrSCVXj9XNu8qn6JI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 17 Oct 2025 22:05:14 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "tsoltr4puc"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-zXlkZjuxircSRNMXLJo6SrqpggjrSCVXj9XNu8qn6JI="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION COMITE/0/edecfa14-09b6-4ef4-8579-63fdd7a7a8e9.pdf"
+        }
+      ]
+    },
+    {
       "Route": "uploads/documentos-comite/RESOLUCION/0/0e420ea7-ad63-4c07-bf18-41d8235a4ad5.8aqhuamaeh.pdf",
       "AssetFile": "uploads/documentos-comite/RESOLUCION/0/0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf",
       "Selectors": [],

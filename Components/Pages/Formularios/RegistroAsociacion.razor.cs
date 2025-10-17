@@ -62,18 +62,18 @@ public partial class RegistroAsociacion : ComponentBase
 
         try
         {
-            // Validación de firma si aplica
-            if (AModel.PerteneceAFirma)
-            {
-                if (string.IsNullOrWhiteSpace(AModel.NombreFirma) ||
-                    string.IsNullOrWhiteSpace(AModel.CorreoFirma) ||
-                    string.IsNullOrWhiteSpace(AModel.TelefonoFirma) ||
-                    string.IsNullOrWhiteSpace(AModel.DireccionFirma))
-                {
-                    MensajeError = "Complete todos los datos de la firma de abogados.";
-                    return;
-                }
-            }
+            // // Validación de firma si aplica
+            // if (AModel.PerteneceAFirma)
+            // {
+            //     if (string.IsNullOrWhiteSpace(AModel.NombreFirma) ||
+            //         string.IsNullOrWhiteSpace(AModel.CorreoFirma) ||
+            //         string.IsNullOrWhiteSpace(AModel.TelefonoFirma) ||
+            //         string.IsNullOrWhiteSpace(AModel.DireccionFirma))
+            //     {
+            //         MensajeError = "Complete todos los datos de la firma de abogados.";
+            //         return;
+            //     }
+            // }
 
             var resultado = await _RegistroAsociacionService.CrearAsociacion(AModel);
 
@@ -105,7 +105,7 @@ public partial class RegistroAsociacion : ComponentBase
                 {
                     MensajeExito = "Asociación registrada con éxito.";
                     await Task.Delay(1500);
-                    Navigation.NavigateTo("/listado");
+                    Navigation.NavigateTo("/admin/listado");
                 }
             }
             else
@@ -123,5 +123,5 @@ public partial class RegistroAsociacion : ComponentBase
         }
     }
 
-    private void Cancelar() => Navigation.NavigateTo("/listado");
+    private void Cancelar() => Navigation.NavigateTo("/admin/listado");
 }

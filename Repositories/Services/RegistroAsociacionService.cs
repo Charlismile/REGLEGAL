@@ -30,10 +30,22 @@ public class RegistroAsociacionService : IRegistroAsociacion
 
             // Representante y Apoderado
             if (!string.IsNullOrEmpty(model.NombreRepLegal))
-                entity.RepresentanteLegal = new TbRepresentanteLegal { NombreRepLegal = model.NombreRepLegal };
+            {
+                entity.RepresentanteLegal = new TbRepresentanteLegal
+                {
+                    NombreRepLegal = model.NombreRepLegal,
+                    CedulaRepLegal = model.CedulaRepLegal?.Trim() ?? "" // <- obligatorio si la columna NO NULL
+                };
+            }
 
             if (!string.IsNullOrEmpty(model.NombreApoAbogado))
-                entity.ApoderadoLegal = new TbApoderadoLegal { NombreApoAbogado = model.NombreApoAbogado };
+            {
+                entity.ApoderadoLegal = new TbApoderadoLegal
+                {
+                    NombreApoAbogado = model.NombreApoAbogado,
+                    CedulaApoAbogado = model.CedulaApoAbogado?.Trim() ?? "" // <- importante
+                };
+            }
 
             _context.TbAsociacion.Add(entity);
             await _context.SaveChangesAsync();

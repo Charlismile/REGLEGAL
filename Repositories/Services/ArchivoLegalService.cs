@@ -29,8 +29,8 @@ public class ArchivoLegalService : IArchivoLegalService
         _logger = logger;
         _config = config.Value;
         _env = env;
-        _rutaBaseComite = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", "documentos-comite");
-        _rutaBaseAsociacion = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", "documentos-asociacion");
+        _rutaBaseComite = Path.Combine(_env.WebRootPath, "uploads", "documentos-comite");
+        _rutaBaseAsociacion = Path.Combine(_env.WebRootPath, "uploads", "documentos-asociacion");
     }
 
     #region Validación PDF
