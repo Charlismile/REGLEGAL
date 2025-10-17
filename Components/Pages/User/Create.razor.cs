@@ -129,6 +129,7 @@ public partial class Create : ComponentBase
         if (FormData.IsAdminUser)
         {
             Roles.Add("user_admin");
+            Roles.Add("user_estandar");
         }
 
         ResultModel Resultado;

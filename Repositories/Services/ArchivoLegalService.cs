@@ -60,6 +60,8 @@ public class ArchivoLegalService : IArchivoLegalService
     // Guardar archivo físico + registro en BD con historial/versiones
     public async Task<CArchivoModel> GuardarArchivoComiteAsync(int comiteId, IBrowserFile archivo, string categoria)
     {
+        _logger.LogInformation("Archivo recibido: {Nombre}, Tamaño: {Size}", archivo?.Name, archivo?.Size);
+
         var bytes = await ValidateAndReadPdfAsync(archivo);
 
         // Carpeta física por comité y categoría

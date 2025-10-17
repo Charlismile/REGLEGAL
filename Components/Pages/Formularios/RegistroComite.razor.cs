@@ -47,13 +47,12 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
         private async Task HandleValidSubmit()
         {
             // Validar que todos los miembros tengan datos completos
-            if (miembrosDesplegados && CModel.Miembros.Any(m => 
-                    string.IsNullOrEmpty(m.NombreMiembro) || 
+            if (miembrosDesplegados && CModel.Miembros.Any(m =>
+                    string.IsNullOrEmpty(m.NombreMiembro) ||
                     string.IsNullOrEmpty(m.ApellidoMiembro) ||
                     string.IsNullOrEmpty(m.CedulaMiembro) ||
-                    m.CargoId == 0)) 
+                    m.CargoId == 0))
             {
-                // Mostrar mensaje de error
                 messageStore.Add(FieldIdentifier.Create(() => CModel.Miembros),
                     new[] { "Todos los campos de los 7 miembros son obligatorios." });
                 editContext.NotifyValidationStateChanged();
@@ -86,7 +85,7 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
 
                 Console.WriteLine($"Comité creado con ID: {result.Id}");
 
-                // Guardar archivos en BD
+                // Guardar archivos después de crear el comité
                 await GuardarArchivos(result.Id);
 
                 Navigation.NavigateTo("/listado");
@@ -131,10 +130,12 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
 
             StateHasChanged();
         }
+        
 
         private async Task CargarDocumentos(InputFileChangeEventArgs e)
         {
             messageStore.Clear();
+            ArchivosSeleccionados.Clear();
 
             foreach (var archivo in e.GetMultipleFiles())
             {
@@ -142,39 +143,24 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
                 var extension = Path.GetExtension(archivo.Name).ToLower();
                 if (extension != ".pdf")
                 {
-                    messageStore.Add(
-                        FieldIdentifier.Create(() => _archivoResolucion),
-                        new[] { $"El archivo {archivo.Name} debe ser un PDF." }
-                    );
+                    messageStore.Add(FieldIdentifier.Create(() => _archivoResolucion),
+                        new[] { $"El archivo {archivo.Name} debe ser un PDF." });
                     continue;
                 }
 
                 // Validar tipo MIME
                 if (archivo.ContentType != "application/pdf")
                 {
-                    messageStore.Add(
-                        FieldIdentifier.Create(() => _archivoResolucion),
-                        new[] { $"Archivo {archivo.Name} no es un PDF válido." }
-                    );
+                    messageStore.Add(FieldIdentifier.Create(() => _archivoResolucion),
+                        new[] { $"Archivo {archivo.Name} no es un PDF válido." });
                     continue;
                 }
 
                 // Validar tamaño (10 MB máximo)
                 if (archivo.Size > 10 * 1024 * 1024)
                 {
-                    messageStore.Add(
-                        FieldIdentifier.Create(() => _archivoResolucion),
-                        new[] { $"Archivo {archivo.Name} excede 10 MB." }
-                    );
-                    continue;
-                }
-
-                if (archivo.Size == 0)
-                {
-                    messageStore.Add(
-                        FieldIdentifier.Create(() => _archivoResolucion),
-                        new[] { $"Archivo {archivo.Name} está vacío." }
-                    );
+                    messageStore.Add(FieldIdentifier.Create(() => _archivoResolucion),
+                        new[] { $"Archivo {archivo.Name} excede 10 MB." });
                     continue;
                 }
 
@@ -191,16 +177,32 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
             ArchivosSeleccionados.Remove(archivo);
         }
 
+        private async Task<IFormFile> ConvertToIFormFileAsync(IBrowserFile browserFile)
+        {
+            var memoryStream = new MemoryStream();
+            await browserFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+
+            return new FormFile(memoryStream, 0, memoryStream.Length, browserFile.Name, browserFile.Name)
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = browserFile.ContentType
+            };
+        }
+
         private async Task GuardarArchivos(int comiteId)
         {
+            if (!ArchivosSeleccionados.Any()) return;
+
             try
             {
                 foreach (var archivo in ArchivosSeleccionados)
                 {
+                    // Pasar el IBrowserFile directamente
                     var dto = await ArchivoLegalService.GuardarArchivoComiteAsync(
                         comiteId,
                         archivo,
-                        "RESOLUCION" // Usar mayúsculas para consistencia
+                        "RESOLUCION COMITE"
                     );
 
                     if (dto != null)
@@ -210,7 +212,7 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
                     }
                     else
                     {
-                        Console.WriteLine("Error: El servicio devolvió null");
+                        Console.WriteLine($"Error: El servicio devolvió null para {archivo.Name}");
                     }
                 }
 
@@ -220,9 +222,10 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
             catch (Exception ex)
             {
                 Console.WriteLine($"Error guardando archivos: {ex.Message}");
-                // Aquí podrías mostrar un mensaje al usuario
             }
         }
+
+
 
         private async Task OnComiteSeleccionado(int? comiteId)
         {

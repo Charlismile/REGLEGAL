@@ -371,19 +371,14 @@ namespace REGISTROLEGAL.Repositories.Services
                 Version = 1,
                 IsActivo = true
             };
-
             _context.TbArchivosComite.Add(entity);
             await _context.SaveChangesAsync();
 
             return new ResultModel { Success = true, Message = "Resolución guardada correctamente" };
         }
-
-        
-
         // ========================
         // Historial
         // ========================
-
         public async Task<List<DetalleRegComiteModel>> ObtenerDetalleHistorial(int comiteId)
         {
             return await _context.TbDatosMiembrosHistorial
