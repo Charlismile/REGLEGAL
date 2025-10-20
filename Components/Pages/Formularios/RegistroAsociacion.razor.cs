@@ -4,12 +4,30 @@ using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
 
 namespace REGISTROLEGAL.Components.Pages.Formularios;
+
 public partial class RegistroAsociacion : ComponentBase
 {
     [Inject] private IRegistroAsociacion _RegistroAsociacionService { get; set; } = default!;
     [Inject] private ICommon _Commonservice { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Inject] private IArchivoLegalService ArchivoLegalService { get; set; } = default!;
+
+    private const long MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB en bytes
+    private readonly string[] _extensionesPermitidas = { ".pdf" };
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        int order = 0;
+        double len = bytes;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+
+        return $"{len:0.##} {sizes[order]}";
+    }
 
     private AsociacionModel AModel { get; set; } = new()
     {
@@ -28,24 +46,27 @@ public partial class RegistroAsociacion : ComponentBase
     private async Task CargarDocumentos(InputFileChangeEventArgs e)
     {
         MensajeError = "";
+
         foreach (var file in e.GetMultipleFiles())
         {
-            if (file.Size > 40 * 1024 * 1024)
+            if (file.Size > MAX_FILE_SIZE_BYTES)
             {
-                MensajeError += $"El archivo {file.Name} excede 40 MB.\n";
+                MensajeError += $"❌ '{file.Name}' excede 50MB. Tamaño: {FormatFileSize(file.Size)}\n";
                 continue;
             }
 
             var extension = Path.GetExtension(file.Name).ToLower();
-            var permitidas = new[] { ".pdf", ".docx", ".jpg", ".jpeg", ".png" };
-            if (!permitidas.Contains(extension))
+            if (extension != ".pdf")
             {
-                MensajeError += $"El archivo {file.Name} no tiene formato permitido.\n";
+                MensajeError += $"❌ '{file.Name}' no es PDF.\n";
                 continue;
             }
 
             AModel.DocumentosSubir.Add(file);
+            Console.WriteLine($"✅ '{file.Name}' listo para subir. Tamaño: {FormatFileSize(file.Size)}");
         }
+
+        StateHasChanged();
     }
 
     private void RemoverDocumento(int index)
@@ -62,64 +83,71 @@ public partial class RegistroAsociacion : ComponentBase
 
         try
         {
-            // // Validación de firma si aplica
-            // if (AModel.PerteneceAFirma)
-            // {
-            //     if (string.IsNullOrWhiteSpace(AModel.NombreFirma) ||
-            //         string.IsNullOrWhiteSpace(AModel.CorreoFirma) ||
-            //         string.IsNullOrWhiteSpace(AModel.TelefonoFirma) ||
-            //         string.IsNullOrWhiteSpace(AModel.DireccionFirma))
-            //     {
-            //         MensajeError = "Complete todos los datos de la firma de abogados.";
-            //         return;
-            //     }
-            // }
+            Console.WriteLine($"📋 Iniciando proceso con {AModel.DocumentosSubir.Count} archivos");
 
+            // 1. Crear asociación
             var resultado = await _RegistroAsociacionService.CrearAsociacion(AModel);
-
-            if (resultado.Success)
+            if (!resultado.Success)
             {
-                AModel.AsociacionId = resultado.AsociacionId;
+                MensajeError = $"❌ Error al crear asociación: {resultado.Message}";
+                IsSubmitting = false;
+                StateHasChanged();
+                return;
+            }
 
-                // Guardar archivos asociados
+            AModel.AsociacionId = resultado.AsociacionId;
+            Console.WriteLine($"✅ Asociación creada ID: {AModel.AsociacionId}");
+
+            // 2. Subir archivos si existen
+            var erroresArchivos = new List<string>();
+
+            if (AModel.DocumentosSubir?.Any() == true)
+            {
                 foreach (var archivo in AModel.DocumentosSubir)
                 {
-                    try
-                    {
-                        var guardado = await ArchivoLegalService.GuardarArchivoAsociacionAsync(
-                            resultado.AsociacionId,
-                            archivo,
-                            categoria: "DocumentosAsociacion"
-                        );
+                    Console.WriteLine($"⬆️ Subiendo: {archivo.Name}");
 
-                        if (guardado == null)
-                            MensajeError += $"No se pudo guardar el archivo {archivo.Name}.\n";
-                    }
-                    catch (Exception ex)
+                    var archivoRes = await ArchivoLegalService.GuardarArchivoAsociacionAsync(
+                        AModel.AsociacionId,
+                        archivo,
+                        "DocumentosAsociacion"
+                    );
+
+                    if (archivoRes == null || !archivoRes.Success)
                     {
-                        MensajeError += $"Error al guardar {archivo.Name}: {ex.Message}\n";
+                        var errorMsg = $"❌ {archivo.Name}: {archivoRes?.Message ?? "Error desconocido"}";
+                        erroresArchivos.Add(errorMsg);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"✅ {archivo.Name} subido exitosamente");
                     }
                 }
+            }
 
-                if (string.IsNullOrEmpty(MensajeError))
-                {
-                    MensajeExito = "Asociación registrada con éxito.";
-                    await Task.Delay(1500);
-                    Navigation.NavigateTo("/admin/listado");
-                }
+            // 3. Mostrar resultados y redirigir
+            if (erroresArchivos.Any())
+            {
+                MensajeError = string.Join("\n", erroresArchivos);
+                IsSubmitting = false;
+                StateHasChanged();
             }
             else
             {
-                MensajeError = resultado.Message;
+                MensajeExito = "✅ Registro completado exitosamente!";
+                StateHasChanged();
+
+                // Esperar un momento para mostrar el mensaje y luego redirigir
+                await Task.Delay(1500);
+                Navigation.NavigateTo("/admin/listado");
             }
         }
         catch (Exception ex)
         {
-            MensajeError = $"Error inesperado: {ex.Message}";
-        }
-        finally
-        {
+            MensajeError = $"💥 Error: {ex.Message}";
+            Console.WriteLine($"💥 Error crítico: {ex}");
             IsSubmitting = false;
+            StateHasChanged();
         }
     }
 

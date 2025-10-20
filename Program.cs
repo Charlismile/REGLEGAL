@@ -83,7 +83,7 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 // Configuración de carga de archivos 
 builder.Services.Configure<IISServerOptions>(options =>
 {
-    options.MaxRequestBodySize = 50_000_000; // 50 MB
+    options.MaxRequestBodySize = 50_000_000;
 });
 
 var app = builder.Build();

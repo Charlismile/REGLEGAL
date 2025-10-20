@@ -24,7 +24,10 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
         private bool miembrosDesplegados = false;
         private const int NUMERO_MIEMBROS_FIJO = 7;
         private string UserName { get; set; } = "";
+        
         private bool IsSubmitting = false;
+        private string MensajeExito = "";
+        private string MensajeError = "";
 
         private IBrowserFile? _archivoResolucion;
         private List<IBrowserFile> ArchivosSeleccionados = new();
@@ -46,25 +49,27 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
 
         private async Task HandleValidSubmit()
         {
-            // Validar que todos los miembros tengan datos completos
-            if (miembrosDesplegados && CModel.Miembros.Any(m =>
-                    string.IsNullOrEmpty(m.NombreMiembro) ||
-                    string.IsNullOrEmpty(m.ApellidoMiembro) ||
-                    string.IsNullOrEmpty(m.CedulaMiembro) ||
-                    m.CargoId == 0))
-            {
-                messageStore.Add(FieldIdentifier.Create(() => CModel.Miembros),
-                    new[] { "Todos los campos de los 7 miembros son obligatorios." });
-                editContext.NotifyValidationStateChanged();
-                IsSubmitting = false;
-                return;
-            }
-
             IsSubmitting = true;
-            CModel.CreadaPor = UserName;
+            MensajeError = "";
+            MensajeExito = "";
 
             try
             {
+                // Validar que todos los miembros tengan datos completos
+                if (miembrosDesplegados && CModel.Miembros.Any(m =>
+                        string.IsNullOrEmpty(m.NombreMiembro) ||
+                        string.IsNullOrEmpty(m.ApellidoMiembro) ||
+                        string.IsNullOrEmpty(m.CedulaMiembro) ||
+                        m.CargoId == 0))
+                {
+                    messageStore.Add(FieldIdentifier.Create(() => CModel.Miembros),
+                        new[] { "Todos los campos de los 7 miembros son obligatorios." });
+                    editContext.NotifyValidationStateChanged();
+                    IsSubmitting = false;
+                    StateHasChanged();
+                    return;
+                }
+
                 // Validar que hay archivos antes de proceder
                 if (!ArchivosSeleccionados.Any())
                 {
@@ -72,28 +77,43 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
                         new[] { "Debe seleccionar al menos un archivo de resolución." });
                     editContext.NotifyValidationStateChanged();
                     IsSubmitting = false;
+                    StateHasChanged();
                     return;
                 }
 
+                CModel.CreadaPor = UserName;
+
+                // 1. Crear comité
                 var result = await RegistroComiteService.CrearComite(CModel);
                 if (!result.Success)
                 {
                     Console.WriteLine($"Error creando comité: {result.Message}");
+                    MensajeError = $"❌ Error al crear comité: {result.Message}";
                     IsSubmitting = false;
+                    StateHasChanged();
                     return;
                 }
 
                 Console.WriteLine($"Comité creado con ID: {result.Id}");
 
-                // Guardar archivos después de crear el comité
+                // 2. Guardar archivos después de crear el comité
+                var erroresArchivos = new List<string>();
                 await GuardarArchivos(result.Id);
 
-                Navigation.NavigateTo("/listado");
+                // 3. Redirigir después de éxito
+                MensajeExito = "✅ Registro completado exitosamente!";
+                StateHasChanged();
+
+                // Esperar un momento para mostrar el mensaje y luego redirigir
+                await Task.Delay(1500);
+                Navigation.NavigateTo("/admin/listado");
             }
             catch (Exception ex)
             {
+                MensajeError = $"💥 Error: {ex.Message}";
                 Console.WriteLine($"Error en el proceso: {ex.Message}");
                 IsSubmitting = false;
+                StateHasChanged();
             }
         }
 
@@ -130,7 +150,7 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
 
             StateHasChanged();
         }
-        
+
 
         private async Task CargarDocumentos(InputFileChangeEventArgs e)
         {
@@ -224,7 +244,6 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
                 Console.WriteLine($"Error guardando archivos: {ex.Message}");
             }
         }
-
 
 
         private async Task OnComiteSeleccionado(int? comiteId)

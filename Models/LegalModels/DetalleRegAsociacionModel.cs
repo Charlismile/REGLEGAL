@@ -6,7 +6,7 @@ public class DetalleRegAsociacionModel
     public DateTime CreadaEn { get; set; }
     public string CreadaPor { get; set; } = "";
     public int NumRegAsecuencia { get; set; }
-    public int NomRegAanio { get; set; }
-    public int NumRegAmes { get; set; }
     public string NumRegAcompleta { get; set; } = "";
+    public string Accion { get; set; } = "";
+    public string Comentario { get; set; } = "";
 }

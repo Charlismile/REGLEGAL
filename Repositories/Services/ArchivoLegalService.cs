@@ -34,6 +34,7 @@ public class ArchivoLegalService : IArchivoLegalService
     }
 
     #region Validación PDF
+
     public async Task<byte[]> ValidateAndReadPdfAsync(IBrowserFile file)
     {
         if (file == null) throw new ArgumentNullException(nameof(file));
@@ -55,8 +56,11 @@ public class ArchivoLegalService : IArchivoLegalService
 
         return bytes;
     }
+
     #endregion
+
     #region Comites
+
     // Guardar archivo físico + registro en BD con historial/versiones
     public async Task<CArchivoModel> GuardarArchivoComiteAsync(int comiteId, IBrowserFile archivo, string categoria)
     {
@@ -145,54 +149,84 @@ public class ArchivoLegalService : IArchivoLegalService
         await context.SaveChangesAsync();
         return true;
     }
-    #endregion 
-    
+
+    #endregion
+
     #region Asociaciones
-    public async Task<AArchivoModel> GuardarArchivoAsociacionAsync(int asociacionId, IBrowserFile archivo, string categoria)
+
+    public async Task<AArchivoModel> GuardarArchivoAsociacionAsync(int asociacionId, IBrowserFile file, string categoria)
     {
-        var bytes = await ValidateAndReadPdfAsync(archivo);
-        var rutaCategoria = Path.Combine(_rutaBaseAsociacion, categoria, asociacionId.ToString());
-        if (!Directory.Exists(rutaCategoria))
-            Directory.CreateDirectory(rutaCategoria);
-
-        var nombreArchivoGuardado = Guid.NewGuid() + Path.GetExtension(archivo.Name);
-        var filePath = Path.Combine(rutaCategoria, nombreArchivoGuardado);
-
-        await using (var stream = archivo.OpenReadStream(MaxBytes))
-        await using (var fileStream = new FileStream(filePath, FileMode.Create))
-            await stream.CopyToAsync(fileStream);
-
-        await using var context = await _contextFactory.CreateDbContextAsync();
-
-        var anteriores = await context.TbArchivosAsociacion
-            .Where(d => d.AsociacionId == asociacionId
-                        && d.Categoria.ToUpper() == categoria.ToUpper()
-                        && d.IsActivo)
-            .ToListAsync();
-        anteriores.ForEach(a => a.IsActivo = false);
-
-        var nuevo = new TbArchivosAsociacion
+        try
         {
-            AsociacionId = asociacionId,
-            Categoria = categoria.ToUpper(),
-            NombreOriginal = archivo.Name,
-            NombreArchivoGuardado = nombreArchivoGuardado,
-            Url = $"/uploads/documentos-asociacion/{categoria}/{asociacionId}/{nombreArchivoGuardado}",
-            FechaSubida = DateTime.UtcNow,
-            Version = (anteriores.Count > 0 ? anteriores.Max(a => a.Version) + 1 : 1),
-            IsActivo = true
-        };
+            Console.WriteLine($"📁 Iniciando guardado de: {file.Name} ({file.Size} bytes)");
 
-        context.TbArchivosAsociacion.Add(nuevo);
-        await context.SaveChangesAsync();
+            // 1. Crear directorio
+            var rutaCategoria = Path.Combine(_rutaBaseAsociacion, categoria, asociacionId.ToString());
+            if (!Directory.Exists(rutaCategoria))
+                Directory.CreateDirectory(rutaCategoria);
 
-        return new AArchivoModel
+            // 2. Generar nombre único y ruta
+            var nombreArchivoGuardado = Guid.NewGuid() + Path.GetExtension(file.Name);
+            var filePath = Path.Combine(rutaCategoria, nombreArchivoGuardado);
+
+            // 3. Guardar archivo físico (SIMPLIFICADO)
+            await using (var stream = file.OpenReadStream(50 * 1024 * 1024)) // 50MB
+            await using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await stream.CopyToAsync(fileStream);
+            }
+
+            Console.WriteLine($"💾 Archivo físico guardado: {filePath}");
+
+            // 4. Guardar en base de datos
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            // Desactivar versiones anteriores
+            var anteriores = await context.TbArchivosAsociacion
+                .Where(d => d.AsociacionId == asociacionId
+                            && d.Categoria.ToUpper() == categoria.ToUpper()
+                            && d.IsActivo)
+                .ToListAsync();
+
+            anteriores.ForEach(a => a.IsActivo = false);
+
+            var nuevo = new TbArchivosAsociacion
+            {
+                AsociacionId = asociacionId,
+                Categoria = categoria.ToUpper(),
+                NombreOriginal = file.Name,
+                NombreArchivoGuardado = nombreArchivoGuardado,
+                Url = $"/uploads/documentos-asociacion/{categoria}/{asociacionId}/{nombreArchivoGuardado}",
+                FechaSubida = DateTime.UtcNow,
+                Version = (anteriores.Count > 0 ? anteriores.Max(a => a.Version) + 1 : 1),
+                IsActivo = true
+            };
+
+            context.TbArchivosAsociacion.Add(nuevo);
+            await context.SaveChangesAsync();
+
+            Console.WriteLine($"✅ Archivo registrado en BD con ID: {nuevo.ArchivoId}");
+
+            return new AArchivoModel
+            {
+                Success = true, // AGREGAR ESTA PROPIEDAD
+                AsociacionArchivoId = nuevo.ArchivoId,
+                NombreArchivo = nuevo.NombreOriginal,
+                RutaArchivo = nuevo.Url,
+                SubidoEn = nuevo.FechaSubida
+            };
+        }
+        catch (Exception ex)
         {
-            AsociacionArchivoId = nuevo.ArchivoId,
-            NombreArchivo = nuevo.NombreOriginal,
-            RutaArchivo = nuevo.Url,
-            SubidoEn = nuevo.FechaSubida
-        };
+            Console.WriteLine($"💥 ERROR en GuardarArchivoAsociacionAsync: {ex.Message}");
+            Console.WriteLine($"💥 StackTrace: {ex.StackTrace}");
+
+            return new AArchivoModel
+            {
+                Success = false, // AGREGAR ESTA PROPIEDAD
+                Message = ex.Message
+            };
+        }
     }
 
     public async Task<List<AArchivoModel>> ObtenerArchivosAsociacionAsync(int asociacionId, string categoria)
@@ -223,5 +257,6 @@ public class ArchivoLegalService : IArchivoLegalService
         await context.SaveChangesAsync();
         return true;
     }
+
     #endregion
 }
