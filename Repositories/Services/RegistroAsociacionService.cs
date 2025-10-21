@@ -30,10 +30,10 @@ namespace REGISTROLEGAL.Repositories.Services
                     NumeroResolucion = model.NumeroResolucion
                 };
 
-                // Representante y Apoderado
+                // Representante Legal - NOMBRE CORRECTO: RepLegal
                 if (!string.IsNullOrWhiteSpace(model.NombreRepLegal))
                 {
-                    entity.RepresentanteLegal = new TbRepresentanteLegal
+                    entity.RepLegal = new TbRepresentanteLegal
                     {
                         NombreRepLegal = model.NombreRepLegal.Trim(),
                         CedulaRepLegal = model.CedulaRepLegal?.Trim() ?? string.Empty,
@@ -44,9 +44,10 @@ namespace REGISTROLEGAL.Repositories.Services
                     };
                 }
 
+                // Apoderado Legal - NOMBRE CORRECTO: ApoAbogado
                 if (!string.IsNullOrWhiteSpace(model.NombreApoAbogado))
                 {
-                    entity.ApoderadoLegal = new TbApoderadoLegal
+                    entity.ApoAbogado = new TbApoderadoLegal
                     {
                         NombreApoAbogado = model.NombreApoAbogado.Trim(),
                         CedulaApoAbogado = model.CedulaApoAbogado?.Trim() ?? string.Empty,
@@ -54,7 +55,6 @@ namespace REGISTROLEGAL.Repositories.Services
                         DireccionApoAbogado = model.DireccionApoAbogado,
                         CorreoApoAbogado = model.CorreoApoAbogado,
                         ApellidoApoAbogado = model.ApellidoApoAbogado
-                        // ApoderadoFirmaId si lo proporcionas en model
                     };
                 }
 
@@ -66,13 +66,11 @@ namespace REGISTROLEGAL.Repositories.Services
                 {
                     foreach (var archivo in model.Archivos)
                     {
-                        // si el archivo viene con NombreArchivoGuardado nativo, mantenerlo; si no, generarlo.
                         if (string.IsNullOrWhiteSpace(archivo.NombreArchivoGuardado))
                         {
                             archivo.NombreArchivoGuardado = GenerateStoredFileName(archivo.NombreArchivo);
                         }
 
-                        // si no tiene categoría, asignar 'General'
                         if (string.IsNullOrWhiteSpace(archivo.Categoria))
                             archivo.Categoria = "General";
 
@@ -92,9 +90,10 @@ namespace REGISTROLEGAL.Repositories.Services
         {
             try
             {
+                // NOMBRES CORRECTOS en los Include
                 var entity = await _context.TbAsociacion
-                    .Include(a => a.RepresentanteLegal)
-                    .Include(a => a.ApoderadoLegal)
+                    .Include(a => a.RepLegal)        // ← CORRECTO
+                    .Include(a => a.ApoAbogado)      // ← CORRECTO
                     .Include(a => a.TbArchivosAsociacion)
                     .FirstOrDefaultAsync(a => a.AsociacionId == model.AsociacionId);
 
@@ -107,23 +106,22 @@ namespace REGISTROLEGAL.Repositories.Services
                 entity.Actividad = model.Actividad ?? entity.Actividad;
                 entity.NumeroResolucion = model.NumeroResolucion ?? entity.NumeroResolucion;
 
-                // Actualizar representante
-                if (entity.RepresentanteLegal != null)
+                // Actualizar representante - NOMBRE CORRECTO: RepLegal
+                if (entity.RepLegal != null)
                 {
-                    entity.RepresentanteLegal.NombreRepLegal = model.NombreRepLegal ?? entity.RepresentanteLegal.NombreRepLegal;
-                    entity.RepresentanteLegal.ApellidoRepLegal = model.ApellidoRepLegal ?? entity.RepresentanteLegal.ApellidoRepLegal;
-                    entity.RepresentanteLegal.CedulaRepLegal = model.CedulaRepLegal?.Trim() ?? entity.RepresentanteLegal.CedulaRepLegal;
-                    entity.RepresentanteLegal.CargoRepLegal = model.CargoRepLegal ?? entity.RepresentanteLegal.CargoRepLegal;
-                    entity.RepresentanteLegal.TelefonoRepLegal = model.TelefonoRepLegal ?? entity.RepresentanteLegal.TelefonoRepLegal;
-                    entity.RepresentanteLegal.DireccionRepLegal = model.DireccionRepLegal ?? entity.RepresentanteLegal.DireccionRepLegal;
-                    
+                    entity.RepLegal.NombreRepLegal = model.NombreRepLegal ?? entity.RepLegal.NombreRepLegal;
+                    entity.RepLegal.ApellidoRepLegal = model.ApellidoRepLegal ?? entity.RepLegal.ApellidoRepLegal;
+                    entity.RepLegal.CedulaRepLegal = model.CedulaRepLegal?.Trim() ?? entity.RepLegal.CedulaRepLegal;
+                    entity.RepLegal.CargoRepLegal = model.CargoRepLegal ?? entity.RepLegal.CargoRepLegal;
+                    entity.RepLegal.TelefonoRepLegal = model.TelefonoRepLegal ?? entity.RepLegal.TelefonoRepLegal;
+                    entity.RepLegal.DireccionRepLegal = model.DireccionRepLegal ?? entity.RepLegal.DireccionRepLegal;
                 }
                 else if (!string.IsNullOrEmpty(model.NombreRepLegal))
                 {
-                    entity.RepresentanteLegal = new TbRepresentanteLegal
+                    entity.RepLegal = new TbRepresentanteLegal
                     {
                         NombreRepLegal = model.NombreRepLegal.Trim(),
-                        ApellidoRepLegal = model.ApellidoRepLegal.Trim(),
+                        ApellidoRepLegal = model.ApellidoRepLegal?.Trim() ?? string.Empty,
                         CedulaRepLegal = model.CedulaRepLegal?.Trim() ?? string.Empty,
                         CargoRepLegal = model.CargoRepLegal ?? string.Empty,
                         TelefonoRepLegal = model.TelefonoRepLegal,
@@ -131,28 +129,26 @@ namespace REGISTROLEGAL.Repositories.Services
                     };
                 }
 
-                // Actualizar apoderado
-                if (entity.ApoderadoLegal != null)
+                // Actualizar apoderado - NOMBRE CORRECTO: ApoAbogado
+                if (entity.ApoAbogado != null)
                 {
-                    entity.ApoderadoLegal.NombreApoAbogado = model.NombreApoAbogado ?? entity.ApoderadoLegal.NombreApoAbogado;
-                    entity.ApoderadoLegal.ApellidoApoAbogado = model.ApellidoApoAbogado ?? entity.ApoderadoLegal.ApellidoApoAbogado;
-                    entity.ApoderadoLegal.CedulaApoAbogado = model.CedulaApoAbogado?.Trim() ?? entity.ApoderadoLegal.CedulaApoAbogado;
-                    entity.ApoderadoLegal.TelefonoApoAbogado = model.TelefonoApoAbogado ?? entity.ApoderadoLegal.TelefonoApoAbogado;
-                    entity.ApoderadoLegal.DireccionApoAbogado = model.DireccionApoAbogado ?? entity.ApoderadoLegal.DireccionApoAbogado;
-                    entity.ApoderadoLegal.CorreoApoAbogado = model.CorreoApoAbogado ?? entity.ApoderadoLegal.CorreoApoAbogado;
-                    
+                    entity.ApoAbogado.NombreApoAbogado = model.NombreApoAbogado ?? entity.ApoAbogado.NombreApoAbogado;
+                    entity.ApoAbogado.ApellidoApoAbogado = model.ApellidoApoAbogado ?? entity.ApoAbogado.ApellidoApoAbogado;
+                    entity.ApoAbogado.CedulaApoAbogado = model.CedulaApoAbogado?.Trim() ?? entity.ApoAbogado.CedulaApoAbogado;
+                    entity.ApoAbogado.TelefonoApoAbogado = model.TelefonoApoAbogado ?? entity.ApoAbogado.TelefonoApoAbogado;
+                    entity.ApoAbogado.DireccionApoAbogado = model.DireccionApoAbogado ?? entity.ApoAbogado.DireccionApoAbogado;
+                    entity.ApoAbogado.CorreoApoAbogado = model.CorreoApoAbogado ?? entity.ApoAbogado.CorreoApoAbogado;
                 }
                 else if (!string.IsNullOrEmpty(model.NombreApoAbogado))
                 {
-                    entity.ApoderadoLegal = new TbApoderadoLegal
+                    entity.ApoAbogado = new TbApoderadoLegal
                     {
                         NombreApoAbogado = model.NombreApoAbogado.Trim(),
-                        ApellidoApoAbogado = model.ApellidoApoAbogado.Trim(),
+                        ApellidoApoAbogado = model.ApellidoApoAbogado?.Trim() ?? string.Empty,
                         CedulaApoAbogado = model.CedulaApoAbogado?.Trim() ?? string.Empty,
                         TelefonoApoAbogado = model.TelefonoApoAbogado,
                         DireccionApoAbogado = model.DireccionApoAbogado,
                         CorreoApoAbogado = model.CorreoApoAbogado
-                        
                     };
                 }
 
@@ -171,10 +167,6 @@ namespace REGISTROLEGAL.Repositories.Services
                                 archivo.Categoria = "General";
 
                             await AgregarArchivo(entity.AsociacionId, archivo);
-                        }
-                        else
-                        {
-                            
                         }
                     }
                 }
@@ -207,9 +199,10 @@ namespace REGISTROLEGAL.Repositories.Services
 
         public async Task<AsociacionModel?> ObtenerPorId(int id)
         {
+            // NOMBRES CORRECTOS en los Include
             var a = await _context.TbAsociacion
-                .Include(a => a.RepresentanteLegal)
-                .Include(a => a.ApoderadoLegal)
+                .Include(a => a.RepLegal)        // ← CORRECTO
+                .Include(a => a.ApoAbogado)      // ← CORRECTO
                 .Include(a => a.TbArchivosAsociacion)
                 .FirstOrDefaultAsync(a => a.AsociacionId == id);
 
@@ -219,12 +212,14 @@ namespace REGISTROLEGAL.Repositories.Services
             {
                 AsociacionId = a.AsociacionId,
                 NombreAsociacion = a.NombreAsociacion,
-                NombreRepLegal = a.RepresentanteLegal?.NombreRepLegal,
-                ApellidoRepLegal = a.RepresentanteLegal?.ApellidoRepLegal,
-                CedulaRepLegal = a.RepresentanteLegal?.CedulaRepLegal,
-                CargoRepLegal = a.RepresentanteLegal?.CargoRepLegal,
-                NombreApoAbogado = a.ApoderadoLegal?.NombreApoAbogado,
-                CedulaApoAbogado = a.ApoderadoLegal?.CedulaApoAbogado,
+                // NOMBRES CORRECTOS de navegación
+                NombreRepLegal = a.RepLegal?.NombreRepLegal,
+                ApellidoRepLegal = a.RepLegal?.ApellidoRepLegal,
+                CedulaRepLegal = a.RepLegal?.CedulaRepLegal,
+                CargoRepLegal = a.RepLegal?.CargoRepLegal,
+                NombreApoAbogado = a.ApoAbogado?.NombreApoAbogado,
+                ApellidoApoAbogado = a.ApoAbogado?.ApellidoApoAbogado,
+                CedulaApoAbogado = a.ApoAbogado?.CedulaApoAbogado,
                 FechaResolucion = a.FechaResolucion ?? DateTime.Now,
                 Folio = a.Folio,
                 Actividad = a.Actividad,
@@ -244,33 +239,31 @@ namespace REGISTROLEGAL.Repositories.Services
         public async Task<List<AsociacionModel>> ObtenerTodas()
         {
             return await _context.TbAsociacion
-                .Include(a => a.RepresentanteLegal)
-                .Include(a => a.ApoderadoLegal)
+                .Include(a => a.RepLegal)        // ← CORRECTO
+                .Include(a => a.ApoAbogado)      // ← CORRECTO
                 .Select(a => new AsociacionModel
                 {
                     AsociacionId = a.AsociacionId,
                     NombreAsociacion = a.NombreAsociacion,
-                    NombreRepLegal = a.RepresentanteLegal != null ? a.RepresentanteLegal.NombreRepLegal : null,
-                    ApellidoRepLegal = a.RepresentanteLegal != null ? a.RepresentanteLegal.ApellidoRepLegal : null,
-                    CedulaRepLegal = a.RepresentanteLegal != null ? a.RepresentanteLegal.CedulaRepLegal : null,
-                    CargoRepLegal = a.RepresentanteLegal != null ? a.RepresentanteLegal.CargoRepLegal : null,
-                    NombreApoAbogado = a.ApoderadoLegal != null ? a.ApoderadoLegal.NombreApoAbogado : null,
-                    ApellidoApoAbogado = a.ApoderadoLegal != null ? a.ApoderadoLegal.ApellidoApoAbogado : null,
-                    CedulaApoAbogado = a.ApoderadoLegal != null ? a.ApoderadoLegal.CedulaApoAbogado : null,
+                    NombreRepLegal = a.RepLegal != null ? a.RepLegal.NombreRepLegal : null,
+                    ApellidoRepLegal = a.RepLegal != null ? a.RepLegal.ApellidoRepLegal : null,
+                    CedulaRepLegal = a.RepLegal != null ? a.RepLegal.CedulaRepLegal : null,
+                    CargoRepLegal = a.RepLegal != null ? a.RepLegal.CargoRepLegal : null,
+                    NombreApoAbogado = a.ApoAbogado != null ? a.ApoAbogado.NombreApoAbogado : null,
+                    ApellidoApoAbogado = a.ApoAbogado != null ? a.ApoAbogado.ApellidoApoAbogado : null,
+                    CedulaApoAbogado = a.ApoAbogado != null ? a.ApoAbogado.CedulaApoAbogado : null,
                     FechaResolucion = a.FechaResolucion ?? DateTime.Now,
                     Folio = a.Folio,
                     Actividad = a.Actividad,
                     NumeroResolucion = a.NumeroResolucion
                 }).ToListAsync();
         }
-
-
+        
         // ========================
         // Archivos
         // ========================
         public async Task<ResultModel> AgregarArchivo(int asociacionId, AArchivoModel archivo)
         {
-            // Normalizar/llenar campos faltantes
             var nombreOriginal = archivo.NombreArchivo ?? "archivo";
             var nombreGuardado = archivo.NombreArchivoGuardado ?? GenerateStoredFileName(nombreOriginal);
             var categoria = string.IsNullOrWhiteSpace(archivo.Categoria) ? "General" : archivo.Categoria;
@@ -351,6 +344,5 @@ namespace REGISTROLEGAL.Repositories.Services
             var ext = Path.GetExtension(originalName);
             return $"{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid():N}_{safe}{ext}";
         }
-
     }
 }

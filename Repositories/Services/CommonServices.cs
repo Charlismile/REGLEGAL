@@ -143,7 +143,7 @@ public class CommonServices : ICommon
         {
             using (var localContext = await _context.CreateDbContextAsync())
             {
-                Lista = await localContext.TbCargosMiembrosComite // Asumiendo que tienes una tabla TbCargo
+                Lista = await localContext.TbCargosMiembrosComite 
                     .Select(x => new ListModel()
                     {
                         Id = x.CargoId,

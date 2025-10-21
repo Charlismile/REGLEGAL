@@ -120,6 +120,18 @@
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-h/dsKHTP1cYEkNJxLRuEKkVTsMqMbg4bL2HTM64mPio="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"2338072"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022h/dsKHTP1cYEkNJxLRuEKkVTsMqMbg4bL2HTM64mPio=\u0022"},{"Name":"Last-Modified","Value":"Mon, 20 Oct 2025 15:45:06 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION COMITE/0/5bd45195-c6bc-4545-bd56-86c6caf219a4.om77y22mqq.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION COMITE\0\5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"om77y22mqq"},{"Name":"integrity","Value":"sha256-oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY="},{"Name":"label","Value":"_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION COMITE/0/5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"59337"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=\u0022"},{"Name":"Last-Modified","Value":"Tue, 21 Oct 2025 14:29:11 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION COMITE/0/5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION COMITE\0\5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"59337"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=\u0022"},{"Name":"Last-Modified","Value":"Tue, 21 Oct 2025 14:29:11 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION COMITE/0/dd04eb9d-9fc5-4450-9129-1cbe770a0863.9u0uq9cqth.pdf">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION COMITE\0\dd04eb9d-9fc5-4450-9129-1cbe770a0863.pdf'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
@@ -143,6 +155,18 @@
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"tsoltr4puc"},{"Name":"integrity","Value":"sha256-zXlkZjuxircSRNMXLJo6SrqpggjrSCVXj9XNu8qn6JI="},{"Name":"label","Value":"_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION COMITE/0/edecfa14-09b6-4ef4-8579-63fdd7a7a8e9.pdf"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"51813"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022zXlkZjuxircSRNMXLJo6SrqpggjrSCVXj9XNu8qn6JI=\u0022"},{"Name":"Last-Modified","Value":"Fri, 17 Oct 2025 22:05:14 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION COMITE/1/7f9e5d53-9387-4e8c-a79c-1e99fc860906.8aqhuamaeh.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION COMITE\1\7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"8aqhuamaeh"},{"Name":"integrity","Value":"sha256-UMXjpGgxRMZABGeTjRE\u002B2fbxwvIklKRuxwbNuPDG32E="},{"Name":"label","Value":"_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION COMITE/1/7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"60687"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022UMXjpGgxRMZABGeTjRE\u002B2fbxwvIklKRuxwbNuPDG32E=\u0022"},{"Name":"Last-Modified","Value":"Tue, 21 Oct 2025 20:33:38 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION COMITE/1/7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION COMITE\1\7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-UMXjpGgxRMZABGeTjRE\u002B2fbxwvIklKRuxwbNuPDG32E="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"60687"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022UMXjpGgxRMZABGeTjRE\u002B2fbxwvIklKRuxwbNuPDG32E=\u0022"},{"Name":"Last-Modified","Value":"Tue, 21 Oct 2025 20:33:38 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION/0/0e420ea7-ad63-4c07-bf18-41d8235a4ad5.8aqhuamaeh.pdf">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION\0\0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf'))</AssetFile>

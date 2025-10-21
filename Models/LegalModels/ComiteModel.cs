@@ -27,6 +27,9 @@ public class ComiteModel
     public string Comunidad { get; set; }
 
     // 📌 Fechas y resolución
+    
+    public DateTime? FechaRegistro { get; set; } = DateTime.Now;
+
     [Required(ErrorMessage = "La fecha de creación es obligatoria")]
     public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
@@ -36,10 +39,11 @@ public class ComiteModel
     [Required(ErrorMessage = "El número de resolución es obligatorio")]
     [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
     public string NumeroResolucion { get; set; } = "";
-    
-    [Required(ErrorMessage = "El número de resolución es obligatorio")]
+
+    [Required(ErrorMessage = "El número de nota es obligatorio")]
     [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
     public string NumeroNota { get; set; } = "";
+
 
     [Required(ErrorMessage = "La fecha de resolución es obligatoria")]
     public DateTime FechaResolucion { get; set; } = DateTime.Now;

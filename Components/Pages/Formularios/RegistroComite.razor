@@ -1,7 +1,7 @@
 ﻿@page "/formulario/registro-comite"
 @using REGISTROLEGAL.Models.LegalModels
 @layout EmptyLayout
-@attribute [Authorize(Roles = "user_admin")]
+@attribute [Authorize(Roles = "user_admin, user_estandar")]
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
 
@@ -39,18 +39,23 @@
     @if (CModel.TipoTramiteEnum is TipoTramite.CambioDirectiva or TipoTramite.JuntaInterventora)
     {
         <div class="col-sm-6">
-            <label class="form-label">Seleccione Comité</label>
+            <label class="form-label">Buscar Comité</label>
 
-            <InputSelect TValue="int?" @bind-Value="comiteSeleccionadoId" class="form-select"
-                         onchange="@(() => OnComiteSeleccionado(comiteSeleccionadoId))">
-                <option value="">-- Seleccione un Comité --</option>
-                @foreach (var comite in comitesRegistrados)
-                {
-                    <option value="@comite.ComiteId">@comite.NombreComiteSalud</option>
-                }
-            </InputSelect>
+            <AutoComplete TItem="ComiteModel"
+                          TValue="string"
+                          Data="@comitesRegistrados"
+                          Placeholder="Escriba el nombre del comité..."
+                          TextField="NombreComiteSalud"
+                          ValueField="ComiteId"
+                          @bind-Value="comiteSeleccionadoIdString"
+                          OnValueChange="@OnComiteSeleccionado" />
 
-            <ValidationMessage For="@(() => CModel.NombreComiteSalud)" class="text-danger"/>
+            <ValidationMessage For="@(() => CModel.NombreComiteSalud)" class="text-danger" />
+
+            @if (!string.IsNullOrEmpty(mensajeBusqueda))
+            {
+                <div class="alert alert-info mt-2">@mensajeBusqueda</div>
+            }
         </div>
     }
 
@@ -160,34 +165,35 @@
             @for (int i = 0; i < CModel.Miembros.Count; i++)
             {
                 var miembro = CModel.Miembros[i];
+
                 <div class="row g-2 align-items-center mb-2" @key="miembro">
                     <div class="col-md-3">
                         <InputText class="form-control"
                                    placeholder="Nombre *"
                                    @bind-Value="miembro.NombreMiembro"/>
-                        <ValidationMessage For="@(() => miembro.NombreMiembro)" class="text-danger small"/>
                     </div>
+
                     <div class="col-md-3">
                         <InputText class="form-control"
                                    placeholder="Apellido *"
-                                   @bind-Value="miembro.ApellidoMiembro"/>
-                        <ValidationMessage For="@(() => miembro.ApellidoMiembro)" class="text-danger small"/>
+                                   @bind-Value="miembro.ApellidoMiembro" />
                     </div>
+
                     <div class="col-md-3">
                         <InputText class="form-control"
                                    placeholder="Cédula *"
-                                   @bind-Value="miembro.CedulaMiembro"/>
-                        <ValidationMessage For="@(() => miembro.CedulaMiembro)" class="text-danger small"/>
+                                   @bind-Value="miembro.CedulaMiembro" />
                     </div>
+
                     <div class="col-md-3">
-                        <InputSelect class="form-select" @bind-Value="miembro.CargoId">
-                            <option value="">--Seleccione Cargo *--</option>
+                        <InputSelect class="form-select"
+                                     @bind-Value="miembro.CargoId">
+                            <option value="0">--Cargo--</option>
                             @foreach (var cargo in Cargos)
                             {
                                 <option value="@cargo.Id">@cargo.Name</option>
                             }
                         </InputSelect>
-                        <ValidationMessage For="@(() => miembro.CargoId)" class="text-danger small"/>
                     </div>
                 </div>
             }
@@ -248,6 +254,20 @@
             Cancelar
         </button>
     </div>
+    <!-- Temporal: Botón de debug -->
+    <div class="mt-2">
+        <button type="button" class="btn btn-info btn-sm" @onclick="DebugInfo">
+            Debug Info
+        </button>
+    </div>
+
+    <!-- Mostrar estado actual -->
+    @if (!string.IsNullOrEmpty(MensajeError) || !string.IsNullOrEmpty(MensajeExito))
+    {
+        <div class="alert @(!string.IsNullOrEmpty(MensajeError) ? "alert-danger" : "alert-success") mt-3">
+            @MensajeError @MensajeExito
+        </div>
+    }
 </EditForm>
 
 

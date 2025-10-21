@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "LdlSwdeip6mQVnOR2uD2+giLKxIC16FQZ8ERNMPiyw0=",
+  "Hash": "7r8JKqIsxqvL/KuJWn+LwM1FgnYdZBPDzwGkfdLbUGg=",
   "Source": "REGISTROLEGAL",
   "BasePath": "_content/REGISTROLEGAL",
   "Mode": "Default",
@@ -437,6 +437,27 @@
       "OriginalItemSpec": "wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\5\\272cfea1-c54a-4944-88fd-bb7a2d17837e.pdf"
     },
     {
+      "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\0\\5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf",
+      "SourceId": "REGISTROLEGAL",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\",
+      "BasePath": "_content/REGISTROLEGAL",
+      "RelativePath": "uploads/documentos-comite/RESOLUCION COMITE/0/5bd45195-c6bc-4545-bd56-86c6caf219a4#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "om77y22mqq",
+      "Integrity": "oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\0\\5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf"
+    },
+    {
       "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\0\\dd04eb9d-9fc5-4450-9129-1cbe770a0863.pdf",
       "SourceId": "REGISTROLEGAL",
       "SourceType": "Discovered",
@@ -477,6 +498,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\0\\edecfa14-09b6-4ef4-8579-63fdd7a7a8e9.pdf"
+    },
+    {
+      "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\1\\7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf",
+      "SourceId": "REGISTROLEGAL",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\",
+      "BasePath": "_content/REGISTROLEGAL",
+      "RelativePath": "uploads/documentos-comite/RESOLUCION COMITE/1/7f9e5d53-9387-4e8c-a79c-1e99fc860906#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "8aqhuamaeh",
+      "Integrity": "UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\1\\7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf"
     },
     {
       "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION\\0\\0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf",
@@ -2171,6 +2213,88 @@
       ]
     },
     {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/0/5bd45195-c6bc-4545-bd56-86c6caf219a4.om77y22mqq.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\0\\5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "59337"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 21 Oct 2025 14:29:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "om77y22mqq"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION COMITE/0/5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/0/5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\0\\5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "59337"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 21 Oct 2025 14:29:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY="
+        }
+      ]
+    },
+    {
       "Route": "uploads/documentos-comite/RESOLUCION COMITE/0/dd04eb9d-9fc5-4450-9129-1cbe770a0863.9u0uq9cqth.pdf",
       "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\0\\dd04eb9d-9fc5-4450-9129-1cbe770a0863.pdf",
       "Selectors": [],
@@ -2331,6 +2455,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-zXlkZjuxircSRNMXLJo6SrqpggjrSCVXj9XNu8qn6JI="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/1/7f9e5d53-9387-4e8c-a79c-1e99fc860906.8aqhuamaeh.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\1\\7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "60687"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 21 Oct 2025 20:33:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "8aqhuamaeh"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION COMITE/1/7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/1/7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\1\\7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "60687"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 21 Oct 2025 20:33:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E="
         }
       ]
     },

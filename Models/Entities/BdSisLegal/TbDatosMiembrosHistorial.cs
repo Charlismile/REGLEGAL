@@ -7,11 +7,11 @@ public partial class TbDatosMiembrosHistorial
 {
     public int HistorialMiembroId { get; set; }
 
-    public int DmiembroId { get; set; }
+    public int MiembroId { get; set; }
 
     public int CargoId { get; set; }
 
-    public int? DcomiteId { get; set; }
+    public int? ComiteId { get; set; }
 
     public DateTime FechaModificacion { get; set; }
 
@@ -29,7 +29,7 @@ public partial class TbDatosMiembrosHistorial
 
     public virtual TbCargosMiembrosComite Cargo { get; set; } = null!;
 
-    public virtual TbComite? Dcomite { get; set; }
+    public virtual TbComite? Comite { get; set; }
 
-    public virtual TbMiembrosComite Dmiembro { get; set; } = null!;
+    public virtual TbMiembrosComite Miembro { get; set; } = null!;
 }

@@ -4,8 +4,6 @@
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
 @using REGISTROLEGAL.Repositories.Interfaces
-@inject IRegistroComite ComiteService
-@inject NavigationManager Navigation
 
 <PageTitle>Editar Comité</PageTitle>
 
@@ -22,7 +20,6 @@ else if (cModel == null)
 {
     <div class="alert alert-danger">No se encontró el comité con el ID: @id</div>
 }
-
 else
 {
     <EditForm Model="cModel" OnValidSubmit="Guardar">
@@ -30,6 +27,7 @@ else
         <ValidationSummary />
 
         <div class="card shadow-sm p-4">
+            <h5 class="mb-3 text-primary">Datos Generales</h5>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Nombre del Comité</label>
@@ -42,25 +40,57 @@ else
             </div>
 
             <div class="row mb-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Número de Resolución</label>
                     <InputText class="form-control" @bind-Value="cModel.NumeroResolucion" />
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Fecha de Resolución</label>
                     <InputDate class="form-control" @bind-Value="cModel.FechaResolucion" />
                 </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Fecha de Elección</label>
                     <InputDate class="form-control" @bind-Value="cModel.FechaEleccion" />
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label">Creado Por</label>
-                    <InputText class="form-control" @bind-Value="cModel.CreadaPor" disabled />
-                </div>
+            </div>
+            <hr />
+            <h5 class="mb-3 text-primary">Miembros del Comité</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre Completo</th>
+                            <th>Cédula</th>
+                            <th>Cargo</th>
+                            <th>Teléfono</th>
+                            <th>Correo Electrónico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (cModel.Miembros != null && cModel.Miembros.Any())
+                        {
+                            @foreach (var (miembro, index) in cModel.Miembros.Select((m, i) => (m, i + 1)))
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td><InputText class="form-control" @bind-Value="miembro.NombreMiembro" /></td>
+                                    <td><InputText class="form-control" @bind-Value="miembro.ApellidoMiembro" /></td>
+                                    <td><InputText class="form-control" @bind-Value="miembro.CedulaMiembro" /></td>
+                                    <td><InputText class="form-control" @bind-Value="miembro.NombreCargo" /></td>
+                                    <td><InputText class="form-control" @bind-Value="miembro.TelefonoMiembro" /></td>
+                                    <td><InputText class="form-control" @bind-Value="miembro.CorreoMiembro" /></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">No hay miembros registrados</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
 
             <div class="text-end mt-4">
@@ -74,5 +104,3 @@ else
         </div>
     </EditForm>
 }
-
-

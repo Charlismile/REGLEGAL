@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using REGISTROLEGAL.Models.LegalModels;
+using REGISTROLEGAL.Repositories.Interfaces;
 
 namespace REGISTROLEGAL.Components.Pages.Comites;
 
@@ -9,12 +10,16 @@ public partial class EditComite : ComponentBase
     private ComiteModel? cModel;
     private bool cargando = true;
 
+    [Inject] private IRegistroComite ComiteService { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
     protected override async Task OnParametersSetAsync()
     {
         try
         {
             Console.WriteLine($"[DEBUG] Cargando comité con id: {id}");
             cModel = await ComiteService.ObtenerComiteCompletoAsync(id);
+
             if (cModel == null)
             {
                 Console.WriteLine($"[DEBUG] No se encontró comité con id: {id}");
@@ -35,18 +40,23 @@ public partial class EditComite : ComponentBase
         if (cModel == null)
             return;
 
-        var resultado = await ComiteService.ActualizarComite(cModel);
+        try
+        {
+            var resultado = await ComiteService.ActualizarComite(cModel);
 
-        if (resultado.Success)
-        {
-            // Mostrar un mensaje (puedes usar MudBlazor o Bootstrap Toasts si prefieres)
-            Console.WriteLine("✅ Comité actualizado correctamente.");
-            Navigation.NavigateTo("/admin/listado");
+            if (resultado.Success)
+            {
+                Console.WriteLine("✅ Comité actualizado correctamente.");
+                Navigation.NavigateTo("/admin/listado");
+            }
+            else
+            {
+                Console.WriteLine($"❌ Error al actualizar: {resultado.Message}");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine($"❌ Error al actualizar: {resultado.Message}");
-            
+            Console.WriteLine($"❌ Excepción al guardar: {ex.Message}");
         }
     }
 

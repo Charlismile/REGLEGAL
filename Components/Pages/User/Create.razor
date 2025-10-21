@@ -1,17 +1,14 @@
 ﻿@page "/user/createuser/{UserName?}"
 @layout EmptyLayout
-@attribute [Authorize(Roles = "user_admin")]
+@using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
 @using Microsoft.AspNetCore.Identity
 @using REGISTROLEGAL.Repositories.Interfaces
-
 @using REGISTROLEGAL.Data
-
-
+@using REGISTROLEGAL.Models.LegalModels
 @attribute [Authorize(Roles = "user_admin")]
 @attribute [StreamRendering]
-
 @inject UserManager<ApplicationUser> _UserManager
 @inject IUserData _UserService
 @inject ICommon _CommonService
@@ -29,9 +26,11 @@
                     </button>
                 </div>
             </div>
+
             <div class="card-body">
-                <DataAnnotationsValidator/>
-                <ValidationSummary class="alert alert-danger"/>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="alert alert-danger" />
+
                 @if (ErrorsFormMessages.Count > 0)
                 {
                     <ul class="alert alert-danger">
@@ -41,55 +40,51 @@
                         }
                     </ul>
                 }
+
                 <h4 class="fw-bold">Datos Generales</h4>
+
                 <div class="row mb-3">
                     <div class="col-lg-6 col-md-6 col-sm-12">
-                        <div class="">
-                            <label class="form-label fw-bold">Correo</label>
-                            <InputText @bind-Value="@FormData.Email" placeholder="correo@minsa.gob.pa"
-                                       class="form-control form-control-sm text-lowercase"/>
-                            <ValidationMessage For="@(() => FormData.Email)" class="text-danger"/>
-                        </div>
+                        <label class="form-label fw-bold">Correo</label>
+                        <InputText @bind-Value="@FormData.Email" placeholder="correo@minsa.gob.pa"
+                                   class="form-control form-control-sm text-lowercase" />
+                        <ValidationMessage For="@(() => FormData.Email)" class="text-danger" />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 d-lg-flex justify-content-lg-start align-items-lg-end">
-                        <button type="button" class="btn btn-success" @onclick="ValidateEmail"><i
-                                class="fa-solid fa-magnifying-glass me-1"></i>Validar
+                        <button type="button" class="btn btn-success" @onclick="ValidateEmail">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i>Validar
                         </button>
                     </div>
                 </div>
+
                 <div class="row mb-3">
                     <div class="col-lg-6 col-md-6 col-sm-12">
-                        <div>
-                            <label class="form-label fw-bold">Nombre</label>
-                            <InputText @bind-Value="@FormData.FirstName"
-                                       class="form-control form-control-sm"
-                                       disabled="@(!UserFound)"/>
-                            <ValidationMessage For="@(() => FormData.FirstName)" class="text-danger"/>
-                        </div>
+                        <label class="form-label fw-bold">Nombre</label>
+                        <InputText @bind-Value="@FormData.FirstName"
+                                   class="form-control form-control-sm"
+                                   disabled="@(!UserFound)" />
+                        <ValidationMessage For="@(() => FormData.FirstName)" class="text-danger" />
                     </div>
-                </div>
-                <div class="row mb-3">
                     <div class="col-lg-6 col-md-6 col-sm-12">
-                        <div>
-                            <label class="form-label fw-bold">Apellido</label>
-                            <InputText @bind-Value="@FormData.LastName"
-                                       class="form-control form-control-sm"
-                                       disabled="@(!UserFound)"/>
-                            <ValidationMessage For="@(() => FormData.LastName)" class="text-danger"/>
-                        </div>
+                        <label class="form-label fw-bold">Apellido</label>
+                        <InputText @bind-Value="@FormData.LastName"
+                                   class="form-control form-control-sm"
+                                   disabled="@(!UserFound)" />
+                        <ValidationMessage For="@(() => FormData.LastName)" class="text-danger" />
                     </div>
                 </div>
+
                 <h3 class="fw-bold">Roles</h3>
                 <div class="form-check">
-                    <InputCheckbox id="IsAdminUser" class="form-check-input" @bind-Value="FormData.IsAdminUser"/>
-                    <label class="form-check-label" for="IsAdminUser">
-                        Administrador
-                    </label>
-                    <label class="form-check-label" for="IsEstandarUser">
-                        Estandar
-                    </label>
+                    <InputCheckbox id="IsAdminUser" class="form-check-input" @bind-Value="FormData.IsAdminUser" />
+                    <label class="form-check-label ms-1" for="IsAdminUser">Administrador</label>
+                </div>
+                <div class="form-check">
+                    <InputCheckbox id="IsEstandarUser" class="form-check-input" @bind-Value="FormData.IsEstandarUser" />
+                    <label class="form-check-label ms-1" for="IsEstandarUser">Estándar</label>
                 </div>
             </div>
+
             <div class="card-footer">
                 <button type="submit" class="btn btn-gob-blue">
                     <i class="fa-solid fa-floppy-disk"></i> Guardar
@@ -98,3 +93,7 @@
         </div>
     </EditForm>
 </div>
+
+@code {
+   
+}

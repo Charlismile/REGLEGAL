@@ -1,6 +1,6 @@
 ﻿@page "/admin/listado"
 @layout EmptyLayout
-@attribute [Authorize(Roles = "user_admin")]
+@attribute [Authorize(Roles = "user_admin,UsuarioEstandar")]
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
 @using Microsoft.EntityFrameworkCore
@@ -21,7 +21,7 @@
                 <i class="fa-solid fa-arrow-left me-1"></i> Volver
             </NavLink>
         </div>
-       
+
 
         <div class="card-body bg-light">
             <!-- Selector de tipo -->
@@ -78,7 +78,7 @@
                                 <td class="text-center">
                                     <button class="btn btn-sm btn-outline-primary"
                                             title="Editar Comité"
-                                            @onclick="() => EditarComite(c.DcomiteId)">
+                                            @onclick="() => EditarComite(c.ComiteId)">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
                                 </td>
@@ -137,7 +137,7 @@
                     <i class="bi bi-exclamation-triangle"></i> No hay asociaciones registradas.
                 </div>
             }
-            
+
             @if (cargando)
             {
                 <div class="alert alert-info mt-3">

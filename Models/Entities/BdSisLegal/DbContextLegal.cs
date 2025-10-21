@@ -58,7 +58,7 @@ public partial class DbContextLegal : DbContext
     {
         modelBuilder.Entity<TbApoderadoFirma>(entity =>
         {
-            entity.HasKey(e => e.FirmaId).HasName("PK__TbApoder__CD9C5E2F3F4E5061");
+            entity.HasKey(e => e.FirmaId).HasName("PK__TbApoder__CD9C5E2F21021BA6");
 
             entity.Property(e => e.CorreoFirma).HasMaxLength(200);
             entity.Property(e => e.DireccionFirma).HasMaxLength(500);
@@ -70,7 +70,7 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbApoderadoLegal>(entity =>
         {
-            entity.HasKey(e => e.ApoAbogadoId).HasName("PK__TbApoder__424F7A708356D2AF");
+            entity.HasKey(e => e.ApoAbogadoId).HasName("PK__TbApoder__424F7A70D277BB25");
 
             entity.Property(e => e.ApellidoApoAbogado).HasMaxLength(200);
             entity.Property(e => e.CedulaApoAbogado)
@@ -90,7 +90,7 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbArchivosAsociacion>(entity =>
         {
-            entity.HasKey(e => e.ArchivoId).HasName("PK__TbArchiv__3D24274A3FCC54C2");
+            entity.HasKey(e => e.ArchivoId).HasName("PK__TbArchiv__3D24274AE173E900");
 
             entity.Property(e => e.Categoria).HasMaxLength(100);
             entity.Property(e => e.FechaSubida)
@@ -110,7 +110,7 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbArchivosComite>(entity =>
         {
-            entity.HasKey(e => e.ArchivoId).HasName("PK__TbArchiv__3D24274AFB391758");
+            entity.HasKey(e => e.ArchivoId).HasName("PK__TbArchiv__3D24274A8A26F455");
 
             entity.Property(e => e.Categoria).HasMaxLength(100);
             entity.Property(e => e.FechaSubida)
@@ -129,7 +129,7 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbAsociacion>(entity =>
         {
-            entity.HasKey(e => e.AsociacionId).HasName("PK__TbAsocia__5B58E1050EA3C8EE");
+            entity.HasKey(e => e.AsociacionId).HasName("PK__TbAsocia__5B58E10562FA7B35");
 
             entity.Property(e => e.Actividad).HasMaxLength(1000);
             entity.Property(e => e.FechaResolucion)
@@ -138,18 +138,18 @@ public partial class DbContextLegal : DbContext
             entity.Property(e => e.NombreAsociacion).HasMaxLength(200);
             entity.Property(e => e.NumeroResolucion).HasMaxLength(50);
 
-            entity.HasOne(d => d.ApoderadoLegal).WithMany(p => p.TbAsociacion)
-                .HasForeignKey(d => d.ApoderadoLegalId)
+            entity.HasOne(d => d.ApoAbogado).WithMany(p => p.TbAsociacion)
+                .HasForeignKey(d => d.ApoAbogadoId)
                 .HasConstraintName("FK_Asociacion_ApoderadoLegal");
 
-            entity.HasOne(d => d.RepresentanteLegal).WithMany(p => p.TbAsociacion)
-                .HasForeignKey(d => d.RepresentanteLegalId)
+            entity.HasOne(d => d.RepLegal).WithMany(p => p.TbAsociacion)
+                .HasForeignKey(d => d.RepLegalId)
                 .HasConstraintName("FK_Asociacion_RepresentanteLegal");
         });
 
         modelBuilder.Entity<TbCargosMiembrosComite>(entity =>
         {
-            entity.HasKey(e => e.CargoId).HasName("PK__TbCargos__B4E665CD631DC463");
+            entity.HasKey(e => e.CargoId).HasName("PK__TbCargos__B4E665CD127DC0A8");
 
             entity.Property(e => e.IsActivo).HasDefaultValue(true);
             entity.Property(e => e.NombreCargo).HasMaxLength(100);
@@ -161,9 +161,8 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbComite>(entity =>
         {
-            entity.HasKey(e => e.DcomiteId).HasName("PK__TbComite__F23C595157D2F484");
+            entity.HasKey(e => e.ComiteId).HasName("PK__TbComite__F23C5951B0FB3063");
 
-            entity.Property(e => e.DcomiteId).HasColumnName("DComiteId");
             entity.Property(e => e.Comunidad).HasMaxLength(150);
             entity.Property(e => e.CreadaPor).HasMaxLength(150);
             entity.Property(e => e.FechaEleccion).HasColumnType("datetime");
@@ -195,7 +194,7 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbCorregimiento>(entity =>
         {
-            entity.HasKey(e => e.CorregimientoId).HasName("PK__TbCorreg__5F50F199132C22E7");
+            entity.HasKey(e => e.CorregimientoId).HasName("PK__TbCorreg__5F50F199E1422FDB");
 
             entity.Property(e => e.NombreCorregimiento).HasMaxLength(150);
 
@@ -207,7 +206,7 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbDatosMiembrosHistorial>(entity =>
         {
-            entity.HasKey(e => e.HistorialMiembroId).HasName("PK__TbDatosM__8D04E3D8300D3657");
+            entity.HasKey(e => e.HistorialMiembroId).HasName("PK__TbDatosM__8D04E3D830B5DD71");
 
             entity.Property(e => e.ApellidoMiembro)
                 .HasMaxLength(150)
@@ -216,8 +215,6 @@ public partial class DbContextLegal : DbContext
                 .HasMaxLength(20)
                 .HasDefaultValue("");
             entity.Property(e => e.CorreoMiembro).HasMaxLength(150);
-            entity.Property(e => e.DcomiteId).HasColumnName("DComiteId");
-            entity.Property(e => e.DmiembroId).HasColumnName("DMiembroId");
             entity.Property(e => e.FechaCambio)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -232,20 +229,19 @@ public partial class DbContextLegal : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_HistorialDatosMiembros_Cargo");
 
-            entity.HasOne(d => d.Dcomite).WithMany(p => p.TbDatosMiembrosHistorial)
-                .HasForeignKey(d => d.DcomiteId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_HistorialDatosMiembros_Comite");
+            entity.HasOne(d => d.Comite).WithMany(p => p.TbDatosMiembrosHistorial)
+                .HasForeignKey(d => d.ComiteId)
+                .HasConstraintName("FK_DatosMiembrosHistorial_Comite");
 
-            entity.HasOne(d => d.Dmiembro).WithMany(p => p.TbDatosMiembrosHistorial)
-                .HasForeignKey(d => d.DmiembroId)
+            entity.HasOne(d => d.Miembro).WithMany(p => p.TbDatosMiembrosHistorial)
+                .HasForeignKey(d => d.MiembroId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_HistorialDatosMiembros_DMiembro");
+                .HasConstraintName("FK_DatosMiembrosHistorial_Miembro");
         });
 
         modelBuilder.Entity<TbDetalleRegAsociacion>(entity =>
         {
-            entity.HasKey(e => e.DetRegAsociacionId).HasName("PK__TbDetall__E37EFEA0D8BDFA89");
+            entity.HasKey(e => e.DetRegAsociacionId).HasName("PK__TbDetall__E37EFEA09BB0E1D9");
 
             entity.HasIndex(e => e.CreadaPor, "IX_TbDetalleRegAsociacion_CreadaPor");
 
@@ -296,7 +292,7 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbDetalleRegComiteHistorial>(entity =>
         {
-            entity.HasKey(e => e.RegComiteSolId).HasName("PK__TbDetall__316C497624816FC4");
+            entity.HasKey(e => e.RegComiteSolId).HasName("PK__TbDetall__316C49768AB60196");
 
             entity.HasIndex(e => e.ComiteId, "IX_TbComiteHistorial_ComiteId");
 
@@ -313,7 +309,7 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbDistrito>(entity =>
         {
-            entity.HasKey(e => e.DistritoId).HasName("PK__TbDistri__BE6ADADD4B1E18CA");
+            entity.HasKey(e => e.DistritoId).HasName("PK__TbDistri__BE6ADADD8C040015");
 
             entity.Property(e => e.NombreDistrito).HasMaxLength(150);
 
@@ -325,26 +321,24 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbMiembrosComite>(entity =>
         {
-            entity.HasKey(e => e.DmiembroId).HasName("PK__TbDatosM__E71F412FA1A3719F");
+            entity.HasKey(e => e.MiembroId).HasName("PK__TbMiembr__E71F412FE0D42C06");
 
-            entity.HasIndex(e => e.DcomiteId, "IX_TbDatosMiembros_DcomiteId");
+            entity.HasIndex(e => e.ComiteId, "IX_TbDatosMiembros_DcomiteId");
 
-            entity.Property(e => e.DmiembroId).HasColumnName("DMiembroId");
             entity.Property(e => e.ApellidoMiembro).HasMaxLength(200);
             entity.Property(e => e.CedulaMiembro)
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.NombreMiembro).HasMaxLength(200);
 
-            entity.HasOne(d => d.Dcomite).WithMany(p => p.TbMiembrosComite)
-                .HasForeignKey(d => d.DcomiteId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_DatosMiembros_Comite");
+            entity.HasOne(d => d.Comite).WithMany(p => p.TbMiembrosComite)
+                .HasForeignKey(d => d.ComiteId)
+                .HasConstraintName("FK_MiembrosComite_Comite");
         });
 
         modelBuilder.Entity<TbProvincia>(entity =>
         {
-            entity.HasKey(e => e.ProvinciaId).HasName("PK__TbProvin__F7CBC7770505F9FC");
+            entity.HasKey(e => e.ProvinciaId).HasName("PK__TbProvin__F7CBC77754EDEA95");
 
             entity.Property(e => e.NombreProvincia).HasMaxLength(150);
 
@@ -355,21 +349,21 @@ public partial class DbContextLegal : DbContext
 
         modelBuilder.Entity<TbRegSecuencia>(entity =>
         {
-            entity.HasKey(e => e.SecuenciaId).HasName("PK__TbRegSec__00D46D2821B75E01");
+            entity.HasKey(e => e.SecuenciaId).HasName("PK__TbRegSec__00D46D28975D7D0A");
 
             entity.Property(e => e.Activo).HasDefaultValue(true);
         });
 
         modelBuilder.Entity<TbRegionSalud>(entity =>
         {
-            entity.HasKey(e => e.RegionSaludId).HasName("PK__TbRegion__2B018A5481352B91");
+            entity.HasKey(e => e.RegionSaludId).HasName("PK__TbRegion__2B018A5411F2B54A");
 
             entity.Property(e => e.NombreRegion).HasMaxLength(150);
         });
 
         modelBuilder.Entity<TbRepresentanteLegal>(entity =>
         {
-            entity.HasKey(e => e.RepLegalId).HasName("PK__TbRepres__4E77DD11E3390C9D");
+            entity.HasKey(e => e.RepLegalId).HasName("PK__TbRepres__4E77DD11E71F73D9");
 
             entity.Property(e => e.ApellidoRepLegal).HasMaxLength(200);
             entity.Property(e => e.CargoRepLegal).HasMaxLength(100);

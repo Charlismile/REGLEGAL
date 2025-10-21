@@ -5,7 +5,7 @@ namespace REGISTROLEGAL.Models.Entities.BdSisLegal;
 
 public partial class TbComite
 {
-    public int DcomiteId { get; set; }
+    public int ComiteId { get; set; }
 
     public string? NumeroNota { get; set; }
 

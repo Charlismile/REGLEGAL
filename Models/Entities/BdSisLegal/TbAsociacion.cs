@@ -9,9 +9,9 @@ public partial class TbAsociacion
 
     public string NombreAsociacion { get; set; } = null!;
 
-    public int? RepresentanteLegalId { get; set; }
+    public int? RepLegalId { get; set; }
 
-    public int? ApoderadoLegalId { get; set; }
+    public int? ApoAbogadoId { get; set; }
 
     public int Folio { get; set; }
 
@@ -21,9 +21,9 @@ public partial class TbAsociacion
 
     public string? NumeroResolucion { get; set; }
 
-    public virtual TbApoderadoLegal? ApoderadoLegal { get; set; }
+    public virtual TbApoderadoLegal? ApoAbogado { get; set; }
 
-    public virtual TbRepresentanteLegal? RepresentanteLegal { get; set; }
+    public virtual TbRepresentanteLegal? RepLegal { get; set; }
 
     public virtual ICollection<TbArchivosAsociacion> TbArchivosAsociacion { get; set; } = new List<TbArchivosAsociacion>();
 

@@ -84,8 +84,7 @@ public partial class RegistroAsociacion : ComponentBase
         try
         {
             Console.WriteLine($"📋 Iniciando proceso con {AModel.DocumentosSubir.Count} archivos");
-
-            // 1. Crear asociación
+            
             var resultado = await _RegistroAsociacionService.CrearAsociacion(AModel);
             if (!resultado.Success)
             {
@@ -97,8 +96,7 @@ public partial class RegistroAsociacion : ComponentBase
 
             AModel.AsociacionId = resultado.AsociacionId;
             Console.WriteLine($"✅ Asociación creada ID: {AModel.AsociacionId}");
-
-            // 2. Subir archivos si existen
+            
             var erroresArchivos = new List<string>();
 
             if (AModel.DocumentosSubir?.Any() == true)
@@ -124,8 +122,7 @@ public partial class RegistroAsociacion : ComponentBase
                     }
                 }
             }
-
-            // 3. Mostrar resultados y redirigir
+            
             if (erroresArchivos.Any())
             {
                 MensajeError = string.Join("\n", erroresArchivos);
@@ -136,8 +133,7 @@ public partial class RegistroAsociacion : ComponentBase
             {
                 MensajeExito = "✅ Registro completado exitosamente!";
                 StateHasChanged();
-
-                // Esperar un momento para mostrar el mensaje y luego redirigir
+                
                 await Task.Delay(1500);
                 Navigation.NavigateTo("/admin/listado");
             }
