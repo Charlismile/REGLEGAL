@@ -10,6 +10,7 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
 {
     public partial class RegistroComite : ComponentBase
     {
+        [Parameter] public int ComiteId { get; set; }
         [Inject] private IRegistroComite RegistroComiteService { get; set; } = default!;
         [Inject] private ICommon _Commonservice { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
@@ -19,18 +20,32 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
         private ComiteModel CModel { get; set; } = new();
         private EditContext editContext;
         private ValidationMessageStore messageStore;
-        private int? comiteSeleccionadoId;
+        private string ComiteSeleccionadoNombre { get; set; }
+        private int? ComiteSeleccionadoId { get; set; }
         private string? _archivoResolucionUrl;
         private bool miembrosDesplegados = false;
         private const int NUMERO_MIEMBROS_FIJO = 7;
         private string UserName { get; set; } = "";
         private string searchText;
+        private string SearchText
+        {
+            get => searchText;
+            set
+            {
+                if (searchText != value)
+                {
+                    searchText = value;
+                    _ = BuscarComitesAsync(); 
+                }
+            }
+        }
+
 
         private bool IsSubmitting = false;
         private string MensajeExito = "";
         private string MensajeError = "";
-        private string comiteSeleccionadoIdString;
-        private string mensajeBusqueda = "";
+        private string mensajeBusqueda = string.Empty;
+        private string? ComiteSeleccionadoIdString;
 
         private IBrowserFile? _archivoResolucion;
         private List<IBrowserFile> ArchivosSeleccionados = new();
@@ -41,18 +56,165 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
         private List<ListModel> comiteCorregimientoList = new();
         private List<ComiteModel> comitesRegistrados = new();
         private List<ListModel> Cargos = new();
+        private List<ComiteModel> sugerencias = new();
 
 
         // Métodos del formulario
+        
         protected override async Task OnInitializedAsync()
         {
             editContext = new EditContext(CModel);
             messageStore = new ValidationMessageStore(editContext);
+            CModel = new ComiteModel();
+
             await CargarListasIniciales();
             await CargarComitesRegistrados();
             await ObtenerUsuarioActual();
+            await InicializarModelo();
         }
 
+        private void OnTipoTramiteChanged(ChangeEventArgs e)
+        {
+            searchText = "";
+            sugerencias.Clear();
+
+            if (Enum.TryParse<TipoTramite>(e.Value?.ToString(), out var tipo))
+                CModel.TipoTramiteEnum = tipo;
+
+            ComiteSeleccionadoId = null;
+            ComiteSeleccionadoNombre = null;
+        }
+
+        private async Task BuscarComitesAsync()
+        {
+            if (string.IsNullOrWhiteSpace(searchText) || CModel.TipoTramiteEnum == 0)
+            {
+                sugerencias.Clear();
+                StateHasChanged();
+                return;
+            }
+
+            var comites = await RegistroComiteService.ObtenerComitesPorTipo(CModel.TipoTramiteEnum);
+            sugerencias = comites
+                .Where(c => c.NombreComiteSalud.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                .Take(10)
+                .ToList();
+
+            StateHasChanged();
+        }
+        
+        private async Task SeleccionarComite(ComiteModel seleccionado)
+        {
+            sugerencias.Clear();
+            searchText = seleccionado.NombreComiteSalud;
+
+            var comiteCompleto = await RegistroComiteService.ObtenerComiteCompletoAsync(seleccionado.ComiteId);
+            if (comiteCompleto != null)
+            {
+                CModel = comiteCompleto;
+            }
+        }
+
+        private async Task GuardarComite()
+        {
+            if (CModel.ComiteId == 0)
+                await RegistroComiteService.CrearComite(CModel);
+            else
+                await RegistroComiteService.ActualizarComite(CModel);
+
+            await Task.Delay(300);
+            searchText = "";
+            sugerencias.Clear();
+        }
+
+        private async Task CargarComitesPorTipo()
+        {
+            try
+            {
+                if (CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva || 
+                    CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
+                {
+                    // Cargar comités filtrados por el tipo de trámite seleccionado
+                    comitesRegistrados = await RegistroComiteService.ObtenerComitesPorTipo(CModel.TipoTramiteEnum);
+            
+                    // Mostrar mensaje informativo
+                    if (comitesRegistrados == null || !comitesRegistrados.Any())
+                    {
+                        mensajeBusqueda = $"No se encontraron comités registrados para {CModel.TipoTramiteEnum.ToString()}";
+                    }
+                    else
+                    {
+                        mensajeBusqueda = $"Se encontraron {comitesRegistrados.Count} comités para {CModel.TipoTramiteEnum.ToString()}";
+                    }
+                }
+                else
+                {
+                    // Si es Personería, limpiar la lista de comités
+                    comitesRegistrados = new List<ComiteModel>();
+                    mensajeBusqueda = "Para trámite de Personería, debe registrar un nuevo comité";
+                }
+        
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                mensajeBusqueda = $"Error al cargar comités: {ex.Message}";
+                comitesRegistrados = new List<ComiteModel>();
+            }
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            await CargarDatosExistente();
+        }
+        
+        private async Task InicializarModelo()
+        {
+            CModel = new ComiteModel();
+            
+            if (ComiteId > 0)
+            {
+                await CargarComiteExistente();
+            }
+        }
+        
+        private async Task CargarDatosExistente()
+        {
+            // Si ComiteId es 0, es un nuevo registro
+            if (ComiteId > 0)
+            {
+                await CargarComiteExistente();
+            }
+            else
+            {
+                // Inicializar modelo para nuevo registro
+                CModel = new ComiteModel();
+            }
+        }
+
+        private async Task CargarComiteExistente()
+        {
+            try
+            {
+                var comiteExistente = await RegistroComiteService.ObtenerComiteCompletoAsync(ComiteId);
+                if (comiteExistente != null)
+                {
+                    CModel = comiteExistente;
+                
+                    // Si es edición, cargar los comités según el tipo
+                    if (CModel.TipoTramiteEnum == TipoTramite.CambioDirectiva || 
+                        CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
+                    {
+                        await CargarComitesPorTipo();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejar error
+                Console.WriteLine($"Error cargando comité: {ex.Message}");
+            }
+        }
         private async Task ObtenerUsuarioActual()
         {
             try
@@ -173,12 +335,6 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
             Cargos = await _Commonservice.GetCargos();
         }
 
-        private async Task OnTipoTramiteChanged()
-        {
-            if (CModel.TipoTramiteEnum is TipoTramite.CambioDirectiva or TipoTramite.JuntaInterventora)
-                comitesRegistrados = await RegistroComiteService.ObtenerComites();
-        }
-
         private void DesplegarMiembros()
         {
             if (CModel.Miembros.Count >= NUMERO_MIEMBROS_FIJO)
@@ -294,46 +450,109 @@ namespace REGISTROLEGAL.Components.Pages.Formularios
             }
         }
 
-        private async Task OnComiteSeleccionado(string comiteId)
+        private async Task OnComiteSeleccionado(ChangeEventArgs e)
         {
-            mensajeBusqueda = "Buscando comité...";
-
-            if (string.IsNullOrEmpty(comiteId))
+            if (int.TryParse(e.Value?.ToString(), out var id))
             {
-                mensajeBusqueda = "";
+                var comite = await RegistroComiteService.ObtenerComiteCompletoAsync(id);
+                if (comite != null)
+                {
+                    // 🔹 Sobrescribimos el modelo actual con los datos cargados
+                    CModel.NombreComiteSalud = comite.NombreComiteSalud;
+                    CModel.Comunidad = comite.Comunidad;
+                    CModel.RegionSaludId = comite.RegionSaludId;
+                    CModel.ProvinciaId = comite.ProvinciaId;
+                    CModel.DistritoId = comite.DistritoId;
+                    CModel.CorregimientoId = comite.CorregimientoId;
+                    CModel.Miembros = comite.Miembros;
+
+                    if (CModel.TipoTramiteEnum == TipoTramite.JuntaInterventora)
+                    {
+                        // 🔹 Copia los miembros actuales a otra lista si es Junta Interventora
+                        CModel.MiembrosInterventores = comite.Miembros;
+                    }
+                }
+            }
+        }
+
+        
+        private async Task CargarComiteSeleccionadoPorIdString()
+        {
+            if (!string.IsNullOrEmpty(ComiteSeleccionadoIdString) &&
+                int.TryParse(ComiteSeleccionadoIdString, out var id))
+            {
+                ComiteSeleccionadoId = id;
+                await CargarComiteSeleccionado();
+            }
+        }
+        private async Task CargarComiteSeleccionadoPorNombre()
+        {
+            if (!string.IsNullOrEmpty(ComiteSeleccionadoNombre))
+            {
+                var comite = comitesRegistrados.FirstOrDefault(c => c.NombreComiteSalud == ComiteSeleccionadoNombre);
+                if (comite != null)
+                {
+                    ComiteSeleccionadoId = comite.ComiteId;
+
+                    // Llenar modelo completo
+                    CModel.NombreComiteSalud = comite.NombreComiteSalud;
+                    CModel.TipoTramiteEnum = comite.TipoTramiteEnum;
+                    CModel.Comunidad = comite.Comunidad;
+                    CModel.Miembros = comite.Miembros;
+                    CModel.MiembrosInterventores = comite.MiembrosInterventores;
+
+                    StateHasChanged();
+                }
+            }
+        }
+
+
+        private async Task CargarComiteSeleccionado()
+        {
+            if (string.IsNullOrEmpty(ComiteSeleccionadoIdString) || 
+                !int.TryParse(ComiteSeleccionadoIdString, out int comiteId))
+            {
+                mensajeBusqueda = "Seleccione un comité válido";
                 return;
             }
 
             try
             {
-                if (int.TryParse(comiteId, out int comiteIdInt))
+                // Cargar el comité completo
+                var comite = await RegistroComiteService.ObtenerComiteCompletoAsync(comiteId);
+        
+                if (comite != null)
                 {
-                    var comite = await RegistroComiteService.ObtenerComiteCompletoAsync(comiteIdInt);
+                    // Verificar que el tipo de trámite coincida
+                    if (comite.TipoTramiteEnum != CModel.TipoTramiteEnum)
+                    {
+                        mensajeBusqueda = "El comité seleccionado no corresponde al tipo de trámite";
+                        ComiteSeleccionadoIdString = null;
+                        return;
+                    }
 
-                    if (comite != null)
-                    {
-                        await CargarDatosComite(comite);
-                        DesplegarMiembros();
-                        mensajeBusqueda = $"Comité '{comite.NombreComiteSalud}' cargado correctamente";
-                    }
-                    else
-                    {
-                        mensajeBusqueda = "Comité no encontrado";
-                        LimpiarDatosComite();
-                    }
+                    // Actualizar modelo con datos del comité
+                    CModel.NombreComiteSalud = comite.NombreComiteSalud;
+                    CModel.Comunidad = comite.Comunidad;
+                    CModel.RegionSaludId = comite.RegionSaludId;
+                    CModel.ProvinciaId = comite.ProvinciaId;
+                    CModel.DistritoId = comite.DistritoId;
+                    CModel.CorregimientoId = comite.CorregimientoId;
+                    // ... otras propiedades necesarias
+            
+                    mensajeBusqueda = $"Comité encontrado: {comite.NombreComiteSalud}";
                 }
                 else
                 {
-                    mensajeBusqueda = "ID de comité inválido";
+                    mensajeBusqueda = "Comité no encontrado";
                 }
+        
+                StateHasChanged();
             }
             catch (Exception ex)
             {
-                mensajeBusqueda = $"Error al cargar el comité: {ex.Message}";
-                Console.WriteLine($"Error: {ex.Message}");
+                mensajeBusqueda = $"Error al cargar comité: {ex.Message}";
             }
-
-            StateHasChanged();
         }
 
         private void LimpiarDatosComite()

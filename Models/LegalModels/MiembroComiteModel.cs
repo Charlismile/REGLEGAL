@@ -23,12 +23,4 @@ public class MiembroComiteModel
     [Required(ErrorMessage = "El número de cédula es obligatorio")]
     [StringLength(20, ErrorMessage = "Máximo 20 caracteres")]
     public string CedulaMiembro { get; set; } = "";
-
-    [Phone(ErrorMessage = "Número de teléfono no válido")]
-    [StringLength(20, ErrorMessage = "Máximo 20 caracteres")]
-    public string? TelefonoMiembro { get; set; }
-
-    [EmailAddress(ErrorMessage = "Correo electrónico no válido")]
-    [StringLength(150, ErrorMessage = "Máximo 150 caracteres")]
-    public string? CorreoMiembro { get; set; }
 }

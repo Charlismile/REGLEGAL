@@ -1,8 +1,8 @@
 ﻿@page "/formulario/registro-comite"
+@page "/formulario/registro-comite/{ComiteId:int}"
 @using REGISTROLEGAL.Models.LegalModels
 @layout EmptyLayout
-@attribute [Authorize(Roles = "user_admin, user_estandar")]
-@using Microsoft.AspNetCore.Authorization
+@* @attribute [Authorize(Roles = "user_admin, user_estandar")] *@
 @using REGISTROLEGAL.Components.Layout
 
 <EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit"
@@ -12,54 +12,45 @@
 
     <h3 class="titulo-form">Registro de Comité de Salud</h3>
 
-    <!-- TIPO DE TRÁMITE -->
-    <fieldset class="bloque-form">
-        <legend>Tipo de Trámite</legend>
-        <div class="d-flex flex-wrap gap-4">
-            <InputRadioGroup @bind-Value="CModel.TipoTramiteEnum"
-                             @onchange="async _ => await OnTipoTramiteChanged()">
-                <div class="form-check">
-                    <InputRadio class="form-check-input" Value="TipoTramite.Personeria" id="Personeria"/>
-                    <label class="form-check-label" for="Personeria">Personería</label>
-                </div>
-                <div class="form-check">
-                    <InputRadio class="form-check-input" Value="TipoTramite.CambioDirectiva" id="Directiva"/>
-                    <label class="form-check-label" for="Directiva">Cambio de Junta Directiva</label>
-                </div>
-                <div class="form-check">
-                    <InputRadio class="form-check-input" Value="TipoTramite.JuntaInterventora" id="Interventora"/>
-                    <label class="form-check-label" for="Interventora">Junta Interventora</label>
-                </div>
-            </InputRadioGroup>
-
-            <ValidationMessage For="@(() => CModel.TipoTramiteEnum)" class="text-danger small"/>
-        </div>
-    </fieldset>
-
-    @if (CModel.TipoTramiteEnum is TipoTramite.CambioDirectiva or TipoTramite.JuntaInterventora)
-    {
-        <div class="col-sm-6">
-            <label class="form-label">Buscar Comité</label>
-
-            <AutoComplete TItem="ComiteModel"
-                          TValue="string"
-                          Data="@comitesRegistrados"
-                          Placeholder="Escriba el nombre del comité..."
-                          TextField="NombreComiteSalud"
-                          ValueField="ComiteId"
-                          @bind-Value="comiteSeleccionadoIdString"
-                          OnValueChange="@OnComiteSeleccionado" />
-
-            <ValidationMessage For="@(() => CModel.NombreComiteSalud)" class="text-danger" />
-
-            @if (!string.IsNullOrEmpty(mensajeBusqueda))
+    <!-- Tipo de trámite -->
+    <div class="mb-3">
+        <label class="form-label">Tipo de trámite</label>
+        <InputSelect @bind-Value="CModel.TipoTramiteEnum" class="form-select" @onchange="OnTipoTramiteChanged">
+            <option value="">-- Seleccione --</option>
+            @foreach (var tipo in Enum.GetValues<TipoTramite>())
             {
-                <div class="alert alert-info mt-2">@mensajeBusqueda</div>
+                <option value="@tipo">@tipo.ToString()</option>
+            }
+        </InputSelect>
+    </div>
+
+    <!-- Autocomplete de Comités -->
+    @if (CModel.TipoTramiteEnum != 0)
+    {
+        <div class="mb-3 position-relative">
+            <label class="form-label">Buscar Comité</label>
+            <input type="text"
+                   class="form-control"
+                   placeholder="Escriba para buscar..."
+                   @bind="SearchText"
+                   @bind:event="oninput" />
+
+            @if (sugerencias?.Any() == true)
+            {
+                <ul class="list-group position-absolute w-100 z-10" style="max-height: 200px; overflow-y: auto;">
+                    @foreach (var s in sugerencias)
+                    {
+                        <li class="list-group-item list-group-item-action"
+                            @onclick="() => SeleccionarComite(s)">
+                            @s.NombreComiteSalud
+                        </li>
+                    }
+                </ul>
             }
         </div>
     }
 
-    <!-- DATOS DEL COMITÉ -->
+    <hr/>
     <fieldset class="bloque-form">
         <legend>Numero de Nota</legend>
         <div class="col-md-3">
@@ -92,7 +83,6 @@
         </div>
     </fieldset>
 
-    <!-- UBICACIÓN GEOGRÁFICA -->
     <fieldset class="bloque-form">
         <div class="row g-3 mb-2">
             <div class="col-sm-3">
@@ -156,8 +146,7 @@
             </div>
         </div>
     </fieldset>
-
-    <!-- MIEMBROS DEL COMITÉ -->
+    <hr/>
     <h3>Miembros del Comité</h3>
     <div>
         @if (miembrosDesplegados)
@@ -176,13 +165,13 @@
                     <div class="col-md-3">
                         <InputText class="form-control"
                                    placeholder="Apellido *"
-                                   @bind-Value="miembro.ApellidoMiembro" />
+                                   @bind-Value="miembro.ApellidoMiembro"/>
                     </div>
 
                     <div class="col-md-3">
                         <InputText class="form-control"
                                    placeholder="Cédula *"
-                                   @bind-Value="miembro.CedulaMiembro" />
+                                   @bind-Value="miembro.CedulaMiembro"/>
                     </div>
 
                     <div class="col-md-3">
@@ -206,8 +195,7 @@
             </button>
         }
     </div>
-
-    <!-- ARCHIVO RESOLUCIÓN -->
+    <hr/>
     <fieldset class="bloque-form">
         <div class="col">
             <label>Número de Resolución:</label>
@@ -244,8 +232,7 @@
 
         <ValidationMessage For="@(() => _archivoResolucion)" class="text-danger small"/>
     </fieldset>
-
-
+    
     <div class="mt-4 d-flex gap-2">
         <button type="submit" class="btn btn-primary px-4" disabled="@IsSubmitting">
             @(IsSubmitting ? "Registrando..." : "Registrar Comité")
@@ -254,14 +241,13 @@
             Cancelar
         </button>
     </div>
-    <!-- Temporal: Botón de debug -->
+    
     <div class="mt-2">
         <button type="button" class="btn btn-info btn-sm" @onclick="DebugInfo">
             Debug Info
         </button>
     </div>
-
-    <!-- Mostrar estado actual -->
+    
     @if (!string.IsNullOrEmpty(MensajeError) || !string.IsNullOrEmpty(MensajeExito))
     {
         <div class="alert @(!string.IsNullOrEmpty(MensajeError) ? "alert-danger" : "alert-success") mt-3">

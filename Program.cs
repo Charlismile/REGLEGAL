@@ -43,10 +43,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// SOLUCIÓN: Registrar SOLO el DbContextFactory para DbContextLegal (no ambos)
-// El factory manejará la creación de instancias del DbContext
 builder.Services.AddDbContextFactory<DbContextLegal>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddDbContextFactory<DbContextLegal>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // ✅ Register HttpClient
 builder.Services.AddHttpClient();

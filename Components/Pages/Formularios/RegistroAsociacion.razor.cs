@@ -7,6 +7,7 @@ namespace REGISTROLEGAL.Components.Pages.Formularios;
 
 public partial class RegistroAsociacion : ComponentBase
 {
+    [Parameter] public int? Id { get; set; }
     [Inject] private IRegistroAsociacion _RegistroAsociacionService { get; set; } = default!;
     [Inject] private ICommon _Commonservice { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;

@@ -1,6 +1,6 @@
 ﻿@page "/comites/editcomite/{id:int}"
 @layout EmptyLayout
-@attribute [Authorize(Roles = "user_admin")]
+@* @attribute [Authorize(Roles = "user_admin")] *@
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
 @using REGISTROLEGAL.Repositories.Interfaces
@@ -78,8 +78,6 @@ else
                                     <td><InputText class="form-control" @bind-Value="miembro.ApellidoMiembro" /></td>
                                     <td><InputText class="form-control" @bind-Value="miembro.CedulaMiembro" /></td>
                                     <td><InputText class="form-control" @bind-Value="miembro.NombreCargo" /></td>
-                                    <td><InputText class="form-control" @bind-Value="miembro.TelefonoMiembro" /></td>
-                                    <td><InputText class="form-control" @bind-Value="miembro.CorreoMiembro" /></td>
                                 </tr>
                             }
                         }
