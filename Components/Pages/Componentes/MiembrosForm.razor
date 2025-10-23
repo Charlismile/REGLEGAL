@@ -1,0 +1,42 @@
+﻿@using REGISTROLEGAL.Models.LegalModels
+
+@if (MiembrosDesplegados)
+{
+    @for (int i = 0; i < Miembros.Count; i++)
+    {
+        var miembro = Miembros[i];
+        <div class="row g-2 align-items-center mb-2" @key="miembro">
+            <div class="col-md-3">
+                <InputText class="form-control" placeholder="Nombre *" @bind-Value="miembro.NombreMiembro" />
+            </div>
+            <div class="col-md-3">
+                <InputText class="form-control" placeholder="Apellido *" @bind-Value="miembro.ApellidoMiembro" />
+            </div>
+            <div class="col-md-3">
+                <InputText class="form-control" placeholder="Cédula *" @bind-Value="miembro.CedulaMiembro" />
+            </div>
+            <div class="col-md-3">
+                <InputSelect class="form-select" @bind-Value="miembro.CargoId">
+                    <option value="0">--Cargo--</option>
+                    @foreach (var cargo in Cargos)
+                    {
+                        <option value="@cargo.Id">@cargo.Name</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <button type="button" class="btn btn-primary mt-2" @onclick="Desplegar">
+        <i class="bi bi-plus-circle"></i> Agregar Miembros
+    </button>
+}
+
+@code {
+    [Parameter] public List<MiembroComiteModel> Miembros { get; set; } = new();
+    [Parameter] public List<ListModel> Cargos { get; set; } = new();
+    [Parameter] public bool MiembrosDesplegados { get; set; }
+    [Parameter] public EventCallback Desplegar { get; set; }
+}

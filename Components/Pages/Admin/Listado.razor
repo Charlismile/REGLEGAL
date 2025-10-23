@@ -1,6 +1,6 @@
 ﻿@page "/admin/listado"
 @layout EmptyLayout
-@* @attribute [Authorize(Roles = "user_admin,UsuarioEstandar")] *@
+@attribute [Authorize(Roles = "user_admin,UsuarioEstandar")]
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
 @using Microsoft.EntityFrameworkCore
@@ -45,7 +45,7 @@
                 {
                     <div class="col-md-6 text-md-end mt-3 mt-md-0">
                         <button class="btn btn-success shadow-sm fw-semibold px-4"
-                                @onclick="() => IrARegistro(id:0)">
+                                @onclick="IrARegistro">
                             <i class="bi bi-plus-circle me-2"></i>
                             Registrar @(tipoSeleccionado == "Comites" ? "Comité" : "Asociación")
                         </button>
@@ -210,13 +210,14 @@
         }
     }
 
-    private void IrARegistro(int id)
+    private void IrARegistro()
     {
         if (tipoSeleccionado == "Comites")
-            NavigationManager.NavigateTo($"/formulario/registro-comite");
+            NavigationManager.NavigateTo($"/tramites/personeria");
         else if (tipoSeleccionado == "Asociaciones")
             NavigationManager.NavigateTo($"/formulario/registro-asociacion");
     }
+
 
     private void EditarComite(int id)
     {

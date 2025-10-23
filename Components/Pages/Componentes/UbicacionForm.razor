@@ -1,0 +1,83 @@
+﻿@using REGISTROLEGAL.Models.LegalModels
+
+<div class="row g-3 mb-2">
+    <div class="col-sm-3">
+        <label class="form-label">Región</label>
+        <InputSelect TValue="int?" class="form-select"
+                     Value="@RegionId"
+                     ValueChanged="RegionChanged"
+                     ValueExpression="@(() => RegionId)"
+                     readonly="@IsReadonly"
+                     disabled="@IsReadonly">
+            <option value="">--Seleccione--</option>
+            @foreach (var x in Regiones)
+            {
+                <option value="@x.Id">@x.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="col-sm-3">
+        <label class="form-label">Provincia</label>
+        <InputSelect TValue="int?" class="form-select"
+                     Value="@ProvinciaId"
+                     ValueChanged="ProvinciaChanged"
+                     ValueExpression="@(() => ProvinciaId)"
+                     readonly="@IsReadonly"
+                     disabled="@IsReadonly">
+            <option value="">--Seleccione--</option>
+            @foreach (var x in Provincias)
+            {
+                <option value="@x.Id">@x.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="col-sm-3">
+        <label class="form-label">Distrito</label>
+        <InputSelect TValue="int?" class="form-select"
+                     Value="@DistritoId"
+                     ValueChanged="DistritoChanged"
+                     ValueExpression="@(() => DistritoId)"
+                     readonly="@IsReadonly"
+                     disabled="@IsReadonly">
+            <option value="">--Seleccione--</option>
+            @foreach (var x in Distritos)
+            {
+                <option value="@x.Id">@x.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="col-sm-3">
+        <label class="form-label">Corregimiento</label>
+        <InputSelect TValue="int?" class="form-select"
+                     Value="@CorregimientoId"
+                     ValueChanged="CorregimientoChanged"
+                     ValueExpression="@(() => CorregimientoId)"
+                     readonly="@IsReadonly"
+                     disabled="@IsReadonly">
+            <option value="">--Seleccione--</option>
+            @foreach (var x in Corregimientos)
+            {
+                <option value="@x.Id">@x.Name</option>
+            }
+        </InputSelect>
+    </div>
+</div>
+
+@code {
+    [Parameter] public List<ListModel> Regiones { get; set; } = new();
+    [Parameter] public List<ListModel> Provincias { get; set; } = new();
+    [Parameter] public List<ListModel> Distritos { get; set; } = new();
+    [Parameter] public List<ListModel> Corregimientos { get; set; } = new();
+
+    [Parameter] public int? RegionId { get; set; }
+    [Parameter] public int? ProvinciaId { get; set; }
+    [Parameter] public int? DistritoId { get; set; }
+    [Parameter] public int? CorregimientoId { get; set; }
+
+    [Parameter] public EventCallback<int?> RegionChanged { get; set; }
+    [Parameter] public EventCallback<int?> ProvinciaChanged { get; set; }
+    [Parameter] public EventCallback<int?> DistritoChanged { get; set; }
+    [Parameter] public EventCallback<int?> CorregimientoChanged { get; set; }
+
+    [Parameter] public bool IsReadonly { get; set; } = false;
+}

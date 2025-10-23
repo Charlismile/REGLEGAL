@@ -1,0 +1,192 @@
+﻿@page "/tramites/cambio-directiva"
+@page "/tramites/cambio-directiva/{ComiteId:int}"
+@attribute [Authorize(Roles = "user_admin, user_estandar")]
+@using Microsoft.AspNetCore.Authorization
+@using REGISTROLEGAL.Components.Layout
+@using REGISTROLEGAL.Models.LegalModels
+@using REGISTROLEGAL.Repositories.Interfaces
+@layout EmptyLayout
+
+<EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit" class="formulario-comite shadow-sm rounded p-4 bg-white">
+    @* <DataAnnotationsValidator /> *@
+    @if (erroresFormulario.Any())
+    {
+        <ul class="alert alert-danger">
+            @foreach (var err in erroresFormulario)
+            {
+                <li>@err</li>
+            }
+        </ul>
+    }
+
+    <h3 class="titulo-form">Registro de Comité de Salud - Cambio de Junta Directiva</h3>
+
+    <!-- Autocomplete de Comités (solo Personería) -->
+    <div class="mb-3 position-relative">
+        <label class="form-label">Buscar Comité con Personería *</label>
+        <input type="text"
+               class="form-control"
+               placeholder="Escriba para buscar..."
+               @bind="SearchText"
+               @bind:event="oninput" />
+        @if (sugerencias?.Any() == true)
+        {
+            <ul class="list-group position-absolute w-100 z-10" style="max-height: 200px; overflow-y: auto;">
+                @foreach (var s in sugerencias)
+                {
+                    <li class="list-group-item list-group-item-action"
+                        @onclick="() => SeleccionarComite(s)">
+                        @s.NombreComiteSalud (@s.Comunidad)
+                    </li>
+                }
+            </ul>
+        }
+        @if (!string.IsNullOrEmpty(MensajeBusqueda))
+        {
+            <small class="text-muted">@MensajeBusqueda</small>
+        }
+    </div>
+
+    <!-- Nombre del Comité (solo lectura) -->
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Nombre del Comité de Salud</label>
+        <InputText @bind-Value="CModel.NombreComiteSalud" class="form-control"
+                   readonly="true" disabled="true" />
+    </div>
+
+    <!-- Comunidad (solo lectura) -->
+    <div class="mb-3">
+        <label class="form-label">Comunidad</label>
+        <InputText @bind-Value="CModel.Comunidad" class="form-control"
+                   readonly="true" disabled="true" />
+    </div>
+
+    <!-- Fecha de Elección -->
+    <div class="mb-3">
+        <label>Fecha de Elección:</label>
+        <InputDate @bind-Value="CModel.FechaEleccion" class="form-control" />
+        <ValidationMessage For="() => CModel.FechaEleccion" />
+    </div>
+
+    <!-- Ubicación (solo lectura) -->
+    <fieldset class="bloque-form">
+        <legend>Ubicación (heredada)</legend>
+        <div class="row g-3 mb-2">
+            <div class="col-sm-3">
+                <label class="form-label">Región</label>
+                <input type="text" class="form-control" value="@RegionNombre" readonly disabled />
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Provincia</label>
+                <input type="text" class="form-control" value="@ProvinciaNombre" readonly disabled />
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Distrito</label>
+                <input type="text" class="form-control" value="@DistritoNombre" readonly disabled />
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Corregimiento</label>
+                <input type="text" class="form-control" value="@CorregimientoNombre" readonly disabled />
+            </div>
+        </div>
+    </fieldset>
+
+    <hr />
+    <h3>Nueva Junta Directiva</h3>
+    <div>
+        @if (miembrosDesplegados)
+        {
+            @for (int i = 0; i < CModel.Miembros.Count; i++)
+            {
+                var miembro = CModel.Miembros[i];
+                <div class="row g-2 align-items-center mb-2" @key="miembro">
+                    <div class="col-md-3">
+                        <InputText class="form-control" placeholder="Nombre *" @bind-Value="miembro.NombreMiembro" />
+                    </div>
+                    <div class="col-md-3">
+                        <InputText class="form-control" placeholder="Apellido *" @bind-Value="miembro.ApellidoMiembro" />
+                    </div>
+                    <div class="col-md-3">
+                        <InputText class="form-control" placeholder="Cédula *" @bind-Value="miembro.CedulaMiembro" />
+                    </div>
+                    <div class="col-md-3">
+                        <InputSelect class="form-select" @bind-Value="miembro.CargoId">
+                            <option value="0">--Cargo--</option>
+                            @foreach (var cargo in Cargos)
+                            {
+                                <option value="@cargo.Id">@cargo.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <br />
+            <button type="button" class="btn btn-primary mt-2" @onclick="DesplegarMiembros" disabled="@(ComiteSeleccionadoId == null)">
+                <i class="bi bi-plus-circle"></i> Agregar Nueva Junta Directiva
+            </button>
+        }
+    </div>
+
+    <hr />
+    <!-- Resolución -->
+    <fieldset class="bloque-form">
+        <div class="mb-3">
+            <label>Número de Nota:</label>
+            <InputText @bind-Value="CModel.NumeroNota" class="form-control" disabled="true" readonly="true" />
+            <small class="text-muted">No aplica en Cambio de Junta Directiva</small>
+        </div>
+        <div class="mb-3">
+            <label>Número de Resolución:</label>
+            <InputText @bind-Value="CModel.NumeroResolucion" class="form-control" />
+            <ValidationMessage For="() => CModel.NumeroResolucion" />
+        </div>
+        <div class="mb-3">
+            <label>Fecha de Resolución:</label>
+            <InputDate @bind-Value="CModel.FechaResolucion" class="form-control" />
+            <ValidationMessage For="() => CModel.FechaResolucion" />
+        </div>
+        <legend>Archivo de Resolución</legend>
+        <InputFile OnChange="CargarDocumentos" multiple accept=".pdf" />
+        <ul>
+            @foreach (var doc in ArchivosSeleccionados)
+            {
+                <li>
+                    @doc.Name
+                    <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoverArchivoPendiente(doc)">
+                        Quitar
+                    </button>
+                </li>
+            }
+        </ul>
+        @if (!string.IsNullOrEmpty(_archivoResolucionUrl))
+        {
+            <div class="mt-2">
+                <label>Vista previa del archivo guardado:</label>
+                <a href="@_archivoResolucionUrl" target="_blank">Abrir resolución</a>
+            </div>
+        }
+    </fieldset>
+
+    <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4" disabled="@IsSubmitting || ComiteSeleccionadoId == null">
+            @(IsSubmitting ? "Registrando..." : "Registrar Cambio de Junta")
+        </button>
+        <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancelar" disabled="@IsSubmitting">
+            Cancelar
+        </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(MensajeError) || !string.IsNullOrEmpty(MensajeExito))
+    {
+        <div class="alert @(!string.IsNullOrEmpty(MensajeError) ? "alert-danger" : "alert-success") mt-3">
+            @MensajeError @MensajeExito
+        </div>
+    }
+</EditForm>
+
+@code {
+    
+}

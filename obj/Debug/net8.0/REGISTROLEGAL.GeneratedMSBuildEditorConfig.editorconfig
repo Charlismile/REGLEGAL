@@ -26,18 +26,6 @@ build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb21pdGVzXEVk
 build_metadata.AdditionalFiles.CssScope = 
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Formularios/RegistroAsociacion.razor]
-build_metadata.AdditionalFiles.TargetPath = 
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGb3JtdWxhcmlvc1xSZWdpc3Ryb0Fzb2NpYWNpb24ucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Formularios/RegistroComite.razor]
-build_metadata.AdditionalFiles.TargetPath = 
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xGb3JtdWxhcmlvc1xSZWdpc3Ryb0NvbWl0ZS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Account/Pages/AccessDenied.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBY2NvdW50XFBhZ2VzXEFjY2Vzc0RlbmllZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -210,8 +198,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBc29jaWFjaW9uZXNcRWRpdEFzb2NpYWNpb24ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Asociaciones/Reg-Asociacion.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBc29jaWFjaW9uZXNcUmVnLUFzb2NpYWNpb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Auth.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBdXRoLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Componentes/MiembrosForm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb21wb25lbnRlc1xNaWVtYnJvc0Zvcm0ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Componentes/UbicacionForm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb21wb25lbnRlc1xVYmljYWNpb25Gb3JtLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Error.razor]
@@ -224,6 +224,18 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Prueba.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQcnVlYmEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Tramites/CambioDirectiva.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFtaXRlc1xDYW1iaW9EaXJlY3RpdmEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Tramites/JuntaInterventora.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFtaXRlc1xKdW50YUludGVydmVudG9yYS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Tramites/Personeria.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcmFtaXRlc1xQZXJzb25lcmlhLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/User/Create.razor]

@@ -33,12 +33,12 @@
       <_ContentIncludedByDefault Remove="Components\Formularios\RegistroComite.razor" />
       <_ContentIncludedByDefault Remove="Components\Comites\Comites.razor" />
       <_ContentIncludedByDefault Remove="Components\Comites\EditComite.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Formularios\RegistroAsociacion.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Formularios\RegistroComite.razor" />
     </ItemGroup>
 
     <ItemGroup>
       <AdditionalFiles Include="Components\Pages\Comites\EditComite.razor" />
-      <AdditionalFiles Include="Components\Pages\Formularios\RegistroAsociacion.razor" />
-      <AdditionalFiles Include="Components\Pages\Formularios\RegistroComite.razor" />
     </ItemGroup>
 
 </Project>

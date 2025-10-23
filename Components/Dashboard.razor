@@ -1,12 +1,10 @@
 ﻿@page "/Dashboard"
 @layout EmptyLayout
-@* @attribute [Authorize(Roles = "user_admin, user_estandar")] *@
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
-
+@attribute [Authorize(Roles = "user_admin, user_estandar")]
 
 <PageTitle>Dashboard</PageTitle>
-
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -26,22 +24,45 @@
                     </p>
 
                     <!-- Botón Listado - Visible para ambos roles -->
-                    <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
+                    <button class="btn btn-outline-primary px-4 py-2 fw-semibold shadow-sm mb-3"
                             @onclick="IrAListado">
                         <i class="bi bi-list-ul me-2"></i> Ver Listado
                     </button>
 
+                    <!-- Sección de Trámites -->
+                    <div class="mt-4">
+                        <h6 class="text-muted mb-3">Registrar Nuevo Trámite</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary px-4 py-2 fw-semibold shadow-sm"
+                                    @onclick="IrAPersoneria">
+                                <i class="bi bi-file-earmark-plus me-2"></i> Personería
+                            </button>
+                            <button class="btn btn-primary px-4 py-2 fw-semibold shadow-sm"
+                                    @onclick="IrACambioDirectiva">
+                                <i class="bi bi-arrow-repeat me-2"></i> Cambio de Junta Directiva
+                            </button>
+                            <button class="btn btn-primary px-4 py-2 fw-semibold shadow-sm"
+                                    @onclick="IrAJuntaInterventora">
+                                <i class="bi bi-shield-exclamation me-2"></i> Junta Interventora
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Botones solo para user_admin -->
                     <AuthorizeView Roles="user_admin">
                         <Authorized>
-                            <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
-                                    @onclick="IrAUsuarios">
-                                <i class="bi bi-person-circle me-2"></i> Ver Usuarios
-                            </button>
-                            <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
-                                    @onclick="IrACreacion">
-                                <i class="bi bi-person-fill-add me-2"></i> Crear Usuario
-                            </button>
+                            <hr class="my-4" />
+                            <h6 class="text-muted mb-3">Gestión de Usuarios</h6>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
+                                        @onclick="IrAUsuarios">
+                                    <i class="bi bi-person-circle me-2"></i> Ver Usuarios
+                                </button>
+                                <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm"
+                                        @onclick="IrACreacion">
+                                    <i class="bi bi-person-fill-add me-2"></i> Crear Usuario
+                                </button>
+                            </div>
                         </Authorized>
                     </AuthorizeView>
                 </div>
@@ -54,29 +75,10 @@
 </div>
 
 @code {
-    
-    protected override async Task OnParametersSetAsync()
-    {
-        // PARA OBTENER NOMBRE USUARIO LOGEADO
-        var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var uid = auth.User.FindFirst(c => c.Type.EndsWith("nameidentifier"))?.Value;
-        if (string.IsNullOrEmpty(uid))
-            return;
-        LoggedUser = await _UserService.GetUser(auth.User.Identity!.Name!);
-    }
-    
-    private void IrAListado()
-    {
-        Navigation.NavigateTo("/admin/listado");
-    }
-    
-    private void IrAUsuarios()
-    {
-        Navigation.NavigateTo("/user/index");
-    }
-    
-    private void IrACreacion()
-    {
-        Navigation.NavigateTo("/user/createuser/{UserName?}");
-    }
+    private void IrAListado() => Navigation.NavigateTo("/admin/listado");
+    private void IrAPersoneria() => Navigation.NavigateTo("/tramites/personeria");
+    private void IrACambioDirectiva() => Navigation.NavigateTo("/tramites/cambio-directiva");
+    private void IrAJuntaInterventora() => Navigation.NavigateTo("/tramites/junta-interventora");
+    private void IrAUsuarios() => Navigation.NavigateTo("/user/index");
+    private void IrACreacion() => Navigation.NavigateTo("/user/createuser");
 }

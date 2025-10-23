@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "EA7NWh9Rdkb/Qzi4fKYB545jCQO9HGWfEK7vNAmw+Tw=",
+  "Hash": "ZBzGT2Wos/5ehL6X6Xm06tWVgTBkC1eddKctELTPuF8=",
   "Source": "REGISTROLEGAL",
   "BasePath": "_content/REGISTROLEGAL",
   "Mode": "Default",
@@ -540,6 +540,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\1\\7f9e5d53-9387-4e8c-a79c-1e99fc860906.pdf"
+    },
+    {
+      "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\2\\42bb34bb-af67-4d13-9e54-98e10f17c706.pdf",
+      "SourceId": "REGISTROLEGAL",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\",
+      "BasePath": "_content/REGISTROLEGAL",
+      "RelativePath": "uploads/documentos-comite/RESOLUCION COMITE/2/42bb34bb-af67-4d13-9e54-98e10f17c706#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "9u0uq9cqth",
+      "Integrity": "wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\2\\42bb34bb-af67-4d13-9e54-98e10f17c706.pdf"
     },
     {
       "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION\\0\\0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf",
@@ -2640,6 +2661,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/2/42bb34bb-af67-4d13-9e54-98e10f17c706.9u0uq9cqth.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\2\\42bb34bb-af67-4d13-9e54-98e10f17c706.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "304280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 23 Oct 2025 18:57:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "9u0uq9cqth"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION COMITE/2/42bb34bb-af67-4d13-9e54-98e10f17c706.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/2/42bb34bb-af67-4d13-9e54-98e10f17c706.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\2\\42bb34bb-af67-4d13-9e54-98e10f17c706.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "304280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 23 Oct 2025 18:57:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="
         }
       ]
     },

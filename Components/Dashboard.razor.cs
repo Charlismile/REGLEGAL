@@ -20,18 +20,16 @@ namespace REGISTROLEGAL.Components
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 
-            // Si no está autenticado, redirige al login
             if (user.Identity == null || !user.Identity.IsAuthenticated)
             {
                 Navigation.NavigateTo("/");
                 return;
             }
 
-            // Obtén los datos del usuario actual
             LoggedUser = await _UserService.GetUser(user.Identity.Name ?? "");
             if (LoggedUser != null)
             {
-                UnidadUser = "Dirección Nacional de Procesos de Misión Crítica"; // Ejemplo, puedes reemplazarlo según tu modelo
+                UnidadUser = "Departamento de Asesoria Legal"; 
             }
         }
     }

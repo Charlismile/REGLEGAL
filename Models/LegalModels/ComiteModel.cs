@@ -16,11 +16,11 @@ public class ComiteModel
 
     [Required(ErrorMessage = "El tipo de trámite es obligatorio")]
     public TipoTramite TipoTramiteEnum { get; set; }
-    public string CreadaPor { get; set; } = null!;
+    public string CreadaPor { get; set; } = "";
 
     [Required(ErrorMessage = "El nombre del comité es obligatorio")]
     [StringLength(200)]
-    public string NombreComiteSalud { get; set; } = null!;
+    public string NombreComiteSalud { get; set; } = "";
 
     [Required(ErrorMessage = "El nombre de la comunidad es obligatorio")]
     [StringLength(150)]
