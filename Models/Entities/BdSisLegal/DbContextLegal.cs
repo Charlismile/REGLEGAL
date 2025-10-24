@@ -37,6 +37,8 @@ public partial class DbContextLegal : DbContext
 
     public virtual DbSet<TbDetalleRegAsociacionHistorial> TbDetalleRegAsociacionHistorial { get; set; }
 
+    public virtual DbSet<TbDetalleRegComite> TbDetalleRegComite { get; set; }
+
     public virtual DbSet<TbDetalleRegComiteHistorial> TbDetalleRegComiteHistorial { get; set; }
 
     public virtual DbSet<TbDistrito> TbDistrito { get; set; }
@@ -290,6 +292,21 @@ public partial class DbContextLegal : DbContext
                 .HasConstraintName("FK_HistorialDetalle_Asociacion");
         });
 
+        modelBuilder.Entity<TbDetalleRegComite>(entity =>
+        {
+            entity.HasKey(e => e.DetRegComiteId).HasName("PK__TbDetall__C018D66851B49349");
+
+            entity.Property(e => e.CreadaEn).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.CreadaPor).HasMaxLength(450);
+            entity.Property(e => e.ModificadaPor).HasMaxLength(450);
+            entity.Property(e => e.NumeroRegistro).HasMaxLength(50);
+
+            entity.HasOne(d => d.Comite).WithMany(p => p.TbDetalleRegComite)
+                .HasForeignKey(d => d.ComiteId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DetalleRegComite_Comite");
+        });
+
         modelBuilder.Entity<TbDetalleRegComiteHistorial>(entity =>
         {
             entity.HasKey(e => e.RegComiteSolId).HasName("PK__TbDetall__316C49768AB60196");
@@ -305,6 +322,10 @@ public partial class DbContextLegal : DbContext
             entity.HasOne(d => d.Comite).WithMany(p => p.TbDetalleRegComiteHistorial)
                 .HasForeignKey(d => d.ComiteId)
                 .HasConstraintName("FK_ComiteHistorial_DetalleRegComite");
+
+            entity.HasOne(d => d.DetRegComite).WithMany(p => p.TbDetalleRegComiteHistorial)
+                .HasForeignKey(d => d.DetRegComiteId)
+                .HasConstraintName("FK_TbDetalleRegComiteHistorial_TbDetalleRegComite");
         });
 
         modelBuilder.Entity<TbDistrito>(entity =>

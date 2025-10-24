@@ -8,10 +8,12 @@ namespace REGISTROLEGAL.Repositories.Services
     public class RegistroAsociacionService : IRegistroAsociacion
     {
         private readonly DbContextLegal _context;
+        private readonly IHistorialRegistro _historialRegistro;
 
-        public RegistroAsociacionService(DbContextLegal context)
+        public RegistroAsociacionService(DbContextLegal context, IHistorialRegistro historialRegistro)
         {
             _context = context;
+            _historialRegistro = historialRegistro;
         }
 
         // ========================
@@ -19,49 +21,115 @@ namespace REGISTROLEGAL.Repositories.Services
         // ========================
         public async Task<ResultModel> CrearAsociacion(AsociacionModel model)
         {
+            // Validación básica
+            if (string.IsNullOrWhiteSpace(model.NombreAsociacion))
+                return new ResultModel { Success = false, Message = "El nombre de la asociación es requerido." };
+
+            if (string.IsNullOrWhiteSpace(model.UsuarioId))
+                return new ResultModel { Success = false, Message = "Usuario no autenticado." };
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                var entity = new TbAsociacion
+                // =============== 1. Crear la asociación ===============
+                var asociacion = new TbAsociacion
                 {
-                    NombreAsociacion = model.NombreAsociacion?.Trim() ?? string.Empty,
+                    NombreAsociacion = model.NombreAsociacion.Trim(),
                     FechaResolucion = model.FechaResolucion ?? DateTime.Now,
-                    Folio = model.Folio, 
-                    Actividad = model.Actividad,
-                    NumeroResolucion = model.NumeroResolucion
+                    Folio = model.Folio,
+                    Actividad = model.Actividad?.Trim(),
+                    NumeroResolucion = model.NumeroResolucion?.Trim()
                 };
 
-                // Representante Legal - NOMBRE CORRECTO: RepLegal
+                // Representante Legal
                 if (!string.IsNullOrWhiteSpace(model.NombreRepLegal))
                 {
-                    entity.RepLegal = new TbRepresentanteLegal
+                    asociacion.RepLegal = new TbRepresentanteLegal
                     {
                         NombreRepLegal = model.NombreRepLegal.Trim(),
+                        ApellidoRepLegal = model.ApellidoRepLegal?.Trim() ?? string.Empty,
                         CedulaRepLegal = model.CedulaRepLegal?.Trim() ?? string.Empty,
-                        CargoRepLegal = model.CargoRepLegal ?? string.Empty,
-                        TelefonoRepLegal = model.TelefonoRepLegal,
-                        DireccionRepLegal = model.DireccionRepLegal,
-                        ApellidoRepLegal = model.ApellidoRepLegal
+                        CargoRepLegal = model.CargoRepLegal?.Trim() ?? string.Empty,
+                        TelefonoRepLegal = model.TelefonoRepLegal?.Trim(),
+                        DireccionRepLegal = model.DireccionRepLegal?.Trim()
                     };
                 }
 
-                // Apoderado Legal - NOMBRE CORRECTO: ApoAbogado
+                // Apoderado Legal
                 if (!string.IsNullOrWhiteSpace(model.NombreApoAbogado))
                 {
-                    entity.ApoAbogado = new TbApoderadoLegal
+                    asociacion.ApoAbogado = new TbApoderadoLegal
                     {
                         NombreApoAbogado = model.NombreApoAbogado.Trim(),
+                        ApellidoApoAbogado = model.ApellidoApoAbogado?.Trim() ?? string.Empty,
                         CedulaApoAbogado = model.CedulaApoAbogado?.Trim() ?? string.Empty,
-                        TelefonoApoAbogado = model.TelefonoApoAbogado,
-                        DireccionApoAbogado = model.DireccionApoAbogado,
-                        CorreoApoAbogado = model.CorreoApoAbogado,
-                        ApellidoApoAbogado = model.ApellidoApoAbogado
+                        TelefonoApoAbogado = model.TelefonoApoAbogado?.Trim(),
+                        DireccionApoAbogado = model.DireccionApoAbogado?.Trim(),
+                        CorreoApoAbogado = model.CorreoApoAbogado?.Trim()
                     };
                 }
 
-                _context.TbAsociacion.Add(entity);
-                await _context.SaveChangesAsync();
+                _context.TbAsociacion.Add(asociacion);
+                await _context.SaveChangesAsync(); // Obtiene AsociacionId
 
-                // Guardar archivos si existen
+                // =============== 2. Obtener o crear secuencia de registro ===============
+                var ahora = DateTime.UtcNow;
+                var secuencia = await _context.TbRegSecuencia
+                    .Where(s => s.EntidadId == 1 && s.Activo) // Supón que EntidadId=1 → Asociaciones
+                    .FirstOrDefaultAsync();
+
+                if (secuencia == null)
+                {
+                    secuencia = new TbRegSecuencia
+                    {
+                        EntidadId = 1,
+                        Anio = ahora.Year,
+                        Numeracion = 1,
+                        Activo = true
+                    };
+                    _context.TbRegSecuencia.Add(secuencia);
+                }
+                else
+                {
+                    if (secuencia.Anio < ahora.Year)
+                    {
+                        secuencia.Anio = ahora.Year;
+                        secuencia.Numeracion = 1;
+                    }
+                    else
+                    {
+                        secuencia.Numeracion++;
+                    }
+                }
+
+                await _context.SaveChangesAsync(); // Guarda secuencia actualizada
+
+                // =============== 3. Crear el registro formal ===============
+                var detalleRegistro = new TbDetalleRegAsociacion
+                {
+                    AsociacionId = asociacion.AsociacionId,
+                    CreadaPor = model.UsuarioId,
+                    CreadaEn = ahora,
+                    NumRegAsecuencia = secuencia.Numeracion,
+                    NomRegAanio = secuencia.Anio,
+                    NumRegAmes = ahora.Month,
+                    NumeroResolucion = model.NumeroResolucion?.Trim(),
+                    FechaResolucion = model.FechaResolucion
+                };
+
+                _context.TbDetalleRegAsociacion.Add(detalleRegistro);
+                await _context.SaveChangesAsync(); // Obtiene DetRegAsociacionId
+
+                // =============== 4. Registrar en historial ===============
+                await _historialRegistro.RegistrarHistorialAsociacionAsync(
+                    detRegAsociacionId: detalleRegistro.DetRegAsociacionId,
+                    asociacionId: asociacion.AsociacionId,
+                    accion: "Creada",
+                    comentario: "Solicitud de registro inicial enviada",
+                    usuarioId: model.UsuarioId
+                );
+
+                // =============== 5. Guardar archivos ===============
                 if (model.Archivos != null && model.Archivos.Any())
                 {
                     foreach (var archivo in model.Archivos)
@@ -74,108 +142,217 @@ namespace REGISTROLEGAL.Repositories.Services
                         if (string.IsNullOrWhiteSpace(archivo.Categoria))
                             archivo.Categoria = "General";
 
-                        await AgregarArchivo(entity.AsociacionId, archivo);
+                        var archivoEntity = new TbArchivosAsociacion
+                        {
+                            AsociacionId = asociacion.AsociacionId,
+                            Categoria = archivo.Categoria,
+                            NombreOriginal = archivo.NombreArchivo ?? "archivo",
+                            NombreArchivoGuardado = archivo.NombreArchivoGuardado,
+                            Url = archivo.RutaArchivo ?? string.Empty,
+                            FechaSubida = DateTime.UtcNow,
+                            Version = 1,
+                            IsActivo = true
+                        };
+
+                        _context.TbArchivosAsociacion.Add(archivoEntity);
                     }
+
+                    await _context.SaveChangesAsync();
                 }
 
-                return new ResultModel { Success = true, Message = "Asociación creada correctamente.", AsociacionId = entity.AsociacionId};
+                await transaction.CommitAsync();
+
+                return new ResultModel
+                {
+                    Success = true,
+                    Message = $"Asociación creada correctamente. Número de registro: {detalleRegistro.NumRegAcompleta}",
+                    AsociacionId = asociacion.AsociacionId,
+                    RegistroId = detalleRegistro.DetRegAsociacionId,
+                    NumeroRegistro = detalleRegistro.NumRegAcompleta
+                };
             }
             catch (Exception ex)
             {
-                return new ResultModel { Success = false, Message = ex.Message };
+                await transaction.RollbackAsync();
+                return new ResultModel
+                {
+                    Success = false,
+                    Message = $"Error al crear la asociación: {ex.Message}"
+                };
             }
         }
 
         public async Task<ResultModel> ActualizarAsociacion(AsociacionModel model)
         {
+            if (model.AsociacionId <= 0)
+                return new ResultModel { Success = false, Message = "ID de asociación inválido." };
+
+            if (string.IsNullOrWhiteSpace(model.UsuarioId))
+                return new ResultModel { Success = false, Message = "Usuario no autenticado." };
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // NOMBRES CORRECTOS en los Include
-                var entity = await _context.TbAsociacion
-                    .Include(a => a.RepLegal)        // ← CORRECTO
-                    .Include(a => a.ApoAbogado)      // ← CORRECTO
+                // =============== 1. Cargar asociación con relaciones ===============
+                var asociacion = await _context.TbAsociacion
+                    .Include(a => a.RepLegal)
+                    .Include(a => a.ApoAbogado)
                     .Include(a => a.TbArchivosAsociacion)
                     .FirstOrDefaultAsync(a => a.AsociacionId == model.AsociacionId);
 
-                if (entity == null)
+                if (asociacion == null)
                     return new ResultModel { Success = false, Message = "Asociación no encontrada." };
 
-                entity.NombreAsociacion = model.NombreAsociacion?.Trim() ?? entity.NombreAsociacion;
-                entity.FechaResolucion = model.FechaResolucion ?? entity.FechaResolucion;
-                entity.Folio = model.Folio != 0 ? model.Folio : entity.Folio;
-                entity.Actividad = model.Actividad ?? entity.Actividad;
-                entity.NumeroResolucion = model.NumeroResolucion ?? entity.NumeroResolucion;
+                // =============== 2. Cargar el registro formal (detalle) ===============
+                var detalleRegistro = await _context.TbDetalleRegAsociacion
+                    .FirstOrDefaultAsync(d => d.AsociacionId == model.AsociacionId);
 
-                // Actualizar representante - NOMBRE CORRECTO: RepLegal
-                if (entity.RepLegal != null)
+                if (detalleRegistro == null)
+                    return new ResultModel { Success = false, Message = "Registro formal no encontrado." };
+
+                // =============== 3. Actualizar datos de la asociación ===============
+                asociacion.NombreAsociacion = model.NombreAsociacion?.Trim() ?? asociacion.NombreAsociacion;
+                asociacion.FechaResolucion = model.FechaResolucion ?? asociacion.FechaResolucion;
+                asociacion.Folio = model.Folio != 0 ? model.Folio : asociacion.Folio;
+                asociacion.Actividad = model.Actividad?.Trim() ?? asociacion.Actividad;
+                asociacion.NumeroResolucion = model.NumeroResolucion?.Trim() ?? asociacion.NumeroResolucion;
+
+                // =============== 4. Actualizar representante legal ===============
+                if (asociacion.RepLegal != null)
                 {
-                    entity.RepLegal.NombreRepLegal = model.NombreRepLegal ?? entity.RepLegal.NombreRepLegal;
-                    entity.RepLegal.ApellidoRepLegal = model.ApellidoRepLegal ?? entity.RepLegal.ApellidoRepLegal;
-                    entity.RepLegal.CedulaRepLegal = model.CedulaRepLegal?.Trim() ?? entity.RepLegal.CedulaRepLegal;
-                    entity.RepLegal.CargoRepLegal = model.CargoRepLegal ?? entity.RepLegal.CargoRepLegal;
-                    entity.RepLegal.TelefonoRepLegal = model.TelefonoRepLegal ?? entity.RepLegal.TelefonoRepLegal;
-                    entity.RepLegal.DireccionRepLegal = model.DireccionRepLegal ?? entity.RepLegal.DireccionRepLegal;
+                    asociacion.RepLegal.NombreRepLegal =
+                        model.NombreRepLegal?.Trim() ?? asociacion.RepLegal.NombreRepLegal;
+                    asociacion.RepLegal.ApellidoRepLegal =
+                        model.ApellidoRepLegal?.Trim() ?? asociacion.RepLegal.ApellidoRepLegal;
+                    asociacion.RepLegal.CedulaRepLegal =
+                        model.CedulaRepLegal?.Trim() ?? asociacion.RepLegal.CedulaRepLegal;
+                    asociacion.RepLegal.CargoRepLegal =
+                        model.CargoRepLegal?.Trim() ?? asociacion.RepLegal.CargoRepLegal;
+                    asociacion.RepLegal.TelefonoRepLegal =
+                        model.TelefonoRepLegal?.Trim() ?? asociacion.RepLegal.TelefonoRepLegal;
+                    asociacion.RepLegal.DireccionRepLegal =
+                        model.DireccionRepLegal?.Trim() ?? asociacion.RepLegal.DireccionRepLegal;
                 }
-                else if (!string.IsNullOrEmpty(model.NombreRepLegal))
+                else if (!string.IsNullOrWhiteSpace(model.NombreRepLegal))
                 {
-                    entity.RepLegal = new TbRepresentanteLegal
+                    asociacion.RepLegal = new TbRepresentanteLegal
                     {
                         NombreRepLegal = model.NombreRepLegal.Trim(),
                         ApellidoRepLegal = model.ApellidoRepLegal?.Trim() ?? string.Empty,
                         CedulaRepLegal = model.CedulaRepLegal?.Trim() ?? string.Empty,
-                        CargoRepLegal = model.CargoRepLegal ?? string.Empty,
-                        TelefonoRepLegal = model.TelefonoRepLegal,
-                        DireccionRepLegal = model.DireccionRepLegal
+                        CargoRepLegal = model.CargoRepLegal?.Trim() ?? string.Empty,
+                        TelefonoRepLegal = model.TelefonoRepLegal?.Trim(),
+                        DireccionRepLegal = model.DireccionRepLegal?.Trim()
                     };
                 }
 
-                // Actualizar apoderado - NOMBRE CORRECTO: ApoAbogado
-                if (entity.ApoAbogado != null)
+                // =============== 5. Actualizar apoderado legal ===============
+                if (asociacion.ApoAbogado != null)
                 {
-                    entity.ApoAbogado.NombreApoAbogado = model.NombreApoAbogado ?? entity.ApoAbogado.NombreApoAbogado;
-                    entity.ApoAbogado.ApellidoApoAbogado = model.ApellidoApoAbogado ?? entity.ApoAbogado.ApellidoApoAbogado;
-                    entity.ApoAbogado.CedulaApoAbogado = model.CedulaApoAbogado?.Trim() ?? entity.ApoAbogado.CedulaApoAbogado;
-                    entity.ApoAbogado.TelefonoApoAbogado = model.TelefonoApoAbogado ?? entity.ApoAbogado.TelefonoApoAbogado;
-                    entity.ApoAbogado.DireccionApoAbogado = model.DireccionApoAbogado ?? entity.ApoAbogado.DireccionApoAbogado;
-                    entity.ApoAbogado.CorreoApoAbogado = model.CorreoApoAbogado ?? entity.ApoAbogado.CorreoApoAbogado;
+                    asociacion.ApoAbogado.NombreApoAbogado =
+                        model.NombreApoAbogado?.Trim() ?? asociacion.ApoAbogado.NombreApoAbogado;
+                    asociacion.ApoAbogado.ApellidoApoAbogado =
+                        model.ApellidoApoAbogado?.Trim() ?? asociacion.ApoAbogado.ApellidoApoAbogado;
+                    asociacion.ApoAbogado.CedulaApoAbogado =
+                        model.CedulaApoAbogado?.Trim() ?? asociacion.ApoAbogado.CedulaApoAbogado;
+                    asociacion.ApoAbogado.TelefonoApoAbogado =
+                        model.TelefonoApoAbogado?.Trim() ?? asociacion.ApoAbogado.TelefonoApoAbogado;
+                    asociacion.ApoAbogado.DireccionApoAbogado = model.DireccionApoAbogado?.Trim() ??
+                                                                asociacion.ApoAbogado.DireccionApoAbogado;
+                    asociacion.ApoAbogado.CorreoApoAbogado =
+                        model.CorreoApoAbogado?.Trim() ?? asociacion.ApoAbogado.CorreoApoAbogado;
                 }
-                else if (!string.IsNullOrEmpty(model.NombreApoAbogado))
+                else if (!string.IsNullOrWhiteSpace(model.NombreApoAbogado))
                 {
-                    entity.ApoAbogado = new TbApoderadoLegal
+                    asociacion.ApoAbogado = new TbApoderadoLegal
                     {
                         NombreApoAbogado = model.NombreApoAbogado.Trim(),
                         ApellidoApoAbogado = model.ApellidoApoAbogado?.Trim() ?? string.Empty,
                         CedulaApoAbogado = model.CedulaApoAbogado?.Trim() ?? string.Empty,
-                        TelefonoApoAbogado = model.TelefonoApoAbogado,
-                        DireccionApoAbogado = model.DireccionApoAbogado,
-                        CorreoApoAbogado = model.CorreoApoAbogado
+                        TelefonoApoAbogado = model.TelefonoApoAbogado?.Trim(),
+                        DireccionApoAbogado = model.DireccionApoAbogado?.Trim(),
+                        CorreoApoAbogado = model.CorreoApoAbogado?.Trim()
                     };
                 }
 
+                // =============== 6. Actualizar el registro formal (si hay cambios relevantes) ===============
+                bool registroModificado = false;
+                if (model.NumeroResolucion != null)
+                {
+                    detalleRegistro.NumeroResolucion = model.NumeroResolucion.Trim();
+                    detalleRegistro.FechaResolucion = model.FechaResolucion;
+                    detalleRegistro.CreadaPor = model.UsuarioId;
+                    detalleRegistro.CreadaEn = DateTime.UtcNow;
+                    registroModificado = true;
+                }
+
+                // Guardar cambios principales
+                _context.TbAsociacion.Update(asociacion);
+                if (registroModificado)
+                    _context.TbDetalleRegAsociacion.Update(detalleRegistro);
+
                 await _context.SaveChangesAsync();
 
-                // Actualizar archivos: agregar nuevos
+                // =============== 7. Registrar en historial ===============
+                await _historialRegistro.RegistrarHistorialAsociacionAsync(
+                    detRegAsociacionId: detalleRegistro.DetRegAsociacionId,
+                    asociacionId: asociacion.AsociacionId,
+                    accion: "Actualizada",
+                    comentario: "Solicitud actualizada por el usuario",
+                    usuarioId: model.UsuarioId
+                );
+
+                // =============== 8. Manejo de nuevos archivos (solo agregar, no reemplazar) ===============
                 if (model.Archivos != null && model.Archivos.Any())
                 {
                     foreach (var archivo in model.Archivos)
                     {
+                        // Solo procesar archivos nuevos (sin ID)
                         if (archivo.AsociacionArchivoId == 0)
                         {
-                            if (string.IsNullOrWhiteSpace(archivo.NombreArchivoGuardado))
-                                archivo.NombreArchivoGuardado = GenerateStoredFileName(archivo.NombreArchivo);
-                            if (string.IsNullOrWhiteSpace(archivo.Categoria))
-                                archivo.Categoria = "General";
+                            var nombreGuardado = string.IsNullOrWhiteSpace(archivo.NombreArchivoGuardado)
+                                ? GenerateStoredFileName(archivo.NombreArchivo)
+                                : archivo.NombreArchivoGuardado;
 
-                            await AgregarArchivo(entity.AsociacionId, archivo);
+                            var archivoEntity = new TbArchivosAsociacion
+                            {
+                                AsociacionId = asociacion.AsociacionId,
+                                Categoria =
+                                    string.IsNullOrWhiteSpace(archivo.Categoria) ? "General" : archivo.Categoria,
+                                NombreOriginal = archivo.NombreArchivo ?? "archivo",
+                                NombreArchivoGuardado = nombreGuardado,
+                                Url = archivo.RutaArchivo ?? string.Empty,
+                                FechaSubida = DateTime.UtcNow,
+                                Version = 1,
+                                IsActivo = true
+                            };
+
+                            _context.TbArchivosAsociacion.Add(archivoEntity);
                         }
                     }
+
+                    await _context.SaveChangesAsync();
                 }
 
-                return new ResultModel { Success = true, Message = "Asociación actualizada correctamente." };
+                await transaction.CommitAsync();
+
+                return new ResultModel
+                {
+                    Success = true,
+                    Message = "Asociación actualizada correctamente.",
+                    AsociacionId = asociacion.AsociacionId,
+                    RegistroId = detalleRegistro.DetRegAsociacionId,
+                    NumeroRegistro = detalleRegistro.NumRegAcompleta
+                };
             }
             catch (Exception ex)
             {
-                return new ResultModel { Success = false, Message = ex.Message };
+                await transaction.RollbackAsync();
+                return new ResultModel
+                {
+                    Success = false,
+                    Message = $"Error al actualizar la asociación: {ex.Message}"
+                };
             }
         }
 
@@ -201,8 +378,8 @@ namespace REGISTROLEGAL.Repositories.Services
         {
             // NOMBRES CORRECTOS en los Include
             var a = await _context.TbAsociacion
-                .Include(a => a.RepLegal)        // ← CORRECTO
-                .Include(a => a.ApoAbogado)      // ← CORRECTO
+                .Include(a => a.RepLegal) // ← CORRECTO
+                .Include(a => a.ApoAbogado) // ← CORRECTO
                 .Include(a => a.TbArchivosAsociacion)
                 .FirstOrDefaultAsync(a => a.AsociacionId == id);
 
@@ -239,8 +416,8 @@ namespace REGISTROLEGAL.Repositories.Services
         public async Task<List<AsociacionModel>> ObtenerTodas()
         {
             return await _context.TbAsociacion
-                .Include(a => a.RepLegal)        // ← CORRECTO
-                .Include(a => a.ApoAbogado)      // ← CORRECTO
+                .Include(a => a.RepLegal) // ← CORRECTO
+                .Include(a => a.ApoAbogado) // ← CORRECTO
                 .Select(a => new AsociacionModel
                 {
                     AsociacionId = a.AsociacionId,
@@ -258,7 +435,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     NumeroResolucion = a.NumeroResolucion
                 }).ToListAsync();
         }
-        
+
         // ========================
         // Archivos
         // ========================
@@ -277,7 +454,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 Url = archivo.RutaArchivo ?? string.Empty,
                 FechaSubida = archivo.SubidoEn,
                 Version = archivo.Version != 0 ? archivo.Version : 1,
-                IsActivo = archivo.IsActivo 
+                IsActivo = archivo.IsActivo
             };
 
             _context.TbArchivosAsociacion.Add(entity);

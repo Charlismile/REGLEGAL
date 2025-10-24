@@ -13,6 +13,8 @@ public enum TipoTramite
 public class ComiteModel
 {
     public int ComiteId { get; set; }
+    
+    public string? UsuarioId { get; set; }
 
     [Required(ErrorMessage = "El tipo de trámite es obligatorio")]
     public TipoTramite TipoTramiteEnum { get; set; }

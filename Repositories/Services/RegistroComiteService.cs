@@ -11,11 +11,14 @@ namespace REGISTROLEGAL.Repositories.Services
     {
         private readonly IDbContextFactory<DbContextLegal> _contextFactory;
         private readonly ILogger<RegistroComiteService> _logger;
+        private readonly IHistorialRegistro _historialRegistro;
 
-        public RegistroComiteService(IDbContextFactory<DbContextLegal> contextFactory, ILogger<RegistroComiteService> logger)
+        public RegistroComiteService(IDbContextFactory<DbContextLegal> contextFactory,
+            ILogger<RegistroComiteService> logger, IHistorialRegistro historialRegistro)
         {
             _contextFactory = contextFactory;
             _logger = logger;
+            _historialRegistro = historialRegistro;
         }
 
         // ===============================
@@ -23,21 +26,25 @@ namespace REGISTROLEGAL.Repositories.Services
         // ===============================
         public async Task<ResultModel> CrearComite(ComiteModel model)
         {
-            using var context = await _contextFactory.CreateDbContextAsync();
-            var result = new ResultModel();
+            if (string.IsNullOrWhiteSpace(model.UsuarioId))
+                return new ResultModel { Success = false, Message = "Usuario no autenticado." };
+
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            await using var transaction = await context.Database.BeginTransactionAsync();
 
             try
             {
-                var entity = new TbComite
+                // =============== 1. Crear el comité ===============
+                var comite = new TbComite
                 {
                     TipoTramite = (int)model.TipoTramiteEnum,
-                    CreadaPor = model.CreadaPor,
-                    NombreComiteSalud = model.NombreComiteSalud,
-                    Comunidad = model.Comunidad,
-                    FechaRegistro = model.FechaCreacion,
+                    CreadaPor = model.UsuarioId, // usa el usuario autenticado
+                    NombreComiteSalud = model.NombreComiteSalud?.Trim() ?? string.Empty,
+                    Comunidad = model.Comunidad?.Trim(),
+                    FechaRegistro = DateTime.UtcNow,
                     FechaEleccion = model.FechaEleccion,
-                    NumeroResolucion = model.NumeroResolucion,
-                    NumeroNota = model.NumeroNota,
+                    NumeroResolucion = model.NumeroResolucion?.Trim(),
+                    NumeroNota = model.NumeroNota?.Trim(),
                     FechaResolucion = model.FechaResolucion,
                     RegionSaludId = model.RegionSaludId,
                     ProvinciaId = model.ProvinciaId,
@@ -45,39 +52,66 @@ namespace REGISTROLEGAL.Repositories.Services
                     CorregimientoId = model.CorregimientoId
                 };
 
-                context.TbComite.Add(entity);
-                await context.SaveChangesAsync();
+                context.TbComite.Add(comite);
+                await context.SaveChangesAsync(); // Obtiene ComiteId
 
-                // Guardar miembros asociados
-                if (model.Miembros.Any())
+                // =============== 2. Crear miembros ===============
+                if (model.Miembros?.Any() == true)
                 {
                     foreach (var miembro in model.Miembros)
                     {
-                        var entityMiembro = new TbMiembrosComite
+                        context.TbMiembrosComite.Add(new TbMiembrosComite
                         {
-                            ComiteId = entity.ComiteId,
-                            NombreMiembro = miembro.NombreMiembro,
-                            ApellidoMiembro = miembro.ApellidoMiembro,
-                            CargoId = miembro.CargoId,
-                            CedulaMiembro = miembro.CedulaMiembro
-                        };
-                        context.TbMiembrosComite.Add(entityMiembro);
+                            ComiteId = comite.ComiteId,
+                            NombreMiembro = miembro.NombreMiembro?.Trim() ?? string.Empty,
+                            ApellidoMiembro = miembro.ApellidoMiembro?.Trim() ?? string.Empty,
+                            CedulaMiembro = miembro.CedulaMiembro?.Trim() ?? string.Empty,
+                            CargoId = miembro.CargoId
+                        });
                     }
 
                     await context.SaveChangesAsync();
                 }
 
-                result.Success = true;
-                result.Id = entity.ComiteId;
-                result.Message = "Comité creado correctamente.";
+                // =============== 3. Crear registro formal (TbDetalleRegComite) ===============
+                var detalleRegistro = new TbDetalleRegComite
+                {
+                    ComiteId = comite.ComiteId,
+                    CreadaPor = model.UsuarioId,
+                    CreadaEn = DateTime.UtcNow,
+                    // Si usas numeración, agrégala aquí (similar a asociaciones)
+                    NumeroRegistro = model.NumeroResolucion?.Trim(),
+                    CoEstadoSolicitudId = 1 // "Enviada" - ajusta según tu catálogo de estados
+                };
+
+                context.TbDetalleRegComite.Add(detalleRegistro);
+                await context.SaveChangesAsync(); // Obtiene DetRegComiteId
+
+                // =============== 4. Registrar en historial ===============
+                await _historialRegistro.RegistrarHistorialComiteAsync(
+                    detRegComiteId: detalleRegistro.DetRegComiteId,
+                    comiteId: comite.ComiteId,
+                    estadoId: 1,
+                    comentario: "Solicitud de comité creada",
+                    usuarioId: model.UsuarioId
+                );
+
+                await transaction.CommitAsync();
+
+                return new ResultModel
+                {
+                    Success = true,
+                    Id = comite.ComiteId,
+                    Message = "Comité creado correctamente.",
+                    RegistroId = detalleRegistro.DetRegComiteId
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al crear comité");
-                result.Message = $"Error al crear comité: {ex.Message}";
+                await transaction.RollbackAsync();
+                return new ResultModel { Success = false, Message = $"Error al crear comité: {ex.Message}" };
             }
-
-            return result;
         }
 
         // ===============================
@@ -85,62 +119,97 @@ namespace REGISTROLEGAL.Repositories.Services
         // ===============================
         public async Task<ResultModel> ActualizarComite(ComiteModel model)
         {
-            using var context = await _contextFactory.CreateDbContextAsync();
-            var result = new ResultModel();
+            if (model.ComiteId <= 0)
+                return new ResultModel { Success = false, Message = "ID de comité inválido." };
+
+            if (string.IsNullOrWhiteSpace(model.UsuarioId))
+                return new ResultModel { Success = false, Message = "Usuario no autenticado." };
+
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            await using var transaction = await context.Database.BeginTransactionAsync();
 
             try
             {
-                var entity = await context.TbComite
+                // =============== 1. Cargar comité con miembros ===============
+                var comite = await context.TbComite
                     .Include(c => c.TbMiembrosComite)
                     .FirstOrDefaultAsync(c => c.ComiteId == model.ComiteId);
 
-                if (entity == null)
+                if (comite == null)
+                    return new ResultModel { Success = false, Message = "Comité no encontrado." };
+
+                // =============== 2. Cargar registro formal ===============
+                var detalleRegistro = await context.TbDetalleRegComite
+                    .FirstOrDefaultAsync(d => d.ComiteId == model.ComiteId);
+
+                if (detalleRegistro == null)
+                    return new ResultModel { Success = false, Message = "Registro formal no encontrado." };
+
+                // =============== 3. Actualizar comité ===============
+                comite.NombreComiteSalud = model.NombreComiteSalud?.Trim() ?? comite.NombreComiteSalud;
+                comite.Comunidad = model.Comunidad?.Trim() ?? comite.Comunidad;
+                comite.NumeroResolucion = model.NumeroResolucion?.Trim() ?? comite.NumeroResolucion;
+                comite.NumeroNota = model.NumeroNota?.Trim() ?? comite.NumeroNota;
+                comite.FechaResolucion = model.FechaResolucion;
+                comite.FechaEleccion = model.FechaEleccion;
+                comite.RegionSaludId = model.RegionSaludId;
+                comite.ProvinciaId = model.ProvinciaId;
+                comite.DistritoId = model.DistritoId;
+                comite.CorregimientoId = model.CorregimientoId;
+
+                // =============== 4. Actualizar miembros (reemplazar) ===============
+                context.TbMiembrosComite.RemoveRange(comite.TbMiembrosComite);
+                if (model.Miembros?.Any() == true)
                 {
-                    result.Message = "Comité no encontrado.";
-                    return result;
-                }
-
-                entity.NombreComiteSalud = model.NombreComiteSalud;
-                entity.Comunidad = model.Comunidad;
-                entity.NumeroResolucion = model.NumeroResolucion;
-                entity.NumeroNota = model.NumeroNota;
-                entity.FechaResolucion = model.FechaResolucion;
-                entity.FechaEleccion = model.FechaEleccion;
-                entity.RegionSaludId = model.RegionSaludId;
-                entity.ProvinciaId = model.ProvinciaId;
-                entity.DistritoId = model.DistritoId;
-                entity.CorregimientoId = model.CorregimientoId;
-
-                // Eliminar miembros anteriores
-                context.TbMiembrosComite.RemoveRange(entity.TbMiembrosComite);
-
-                // Agregar miembros actualizados
-                foreach (var miembro in model.Miembros)
-                {
-                    var entityMiembro = new TbMiembrosComite
+                    foreach (var miembro in model.Miembros)
                     {
-                        ComiteId = entity.ComiteId,
-                        NombreMiembro = miembro.NombreMiembro,
-                        ApellidoMiembro = miembro.ApellidoMiembro,
-                        CargoId = miembro.CargoId,
-                        CedulaMiembro = miembro.CedulaMiembro
-                    };
-                    context.TbMiembrosComite.Add(entityMiembro);
+                        context.TbMiembrosComite.Add(new TbMiembrosComite
+                        {
+                            ComiteId = comite.ComiteId,
+                            NombreMiembro = miembro.NombreMiembro?.Trim() ?? string.Empty,
+                            ApellidoMiembro = miembro.ApellidoMiembro?.Trim() ?? string.Empty,
+                            CedulaMiembro = miembro.CedulaMiembro?.Trim() ?? string.Empty,
+                            CargoId = miembro.CargoId
+                        });
+                    }
                 }
+
+                // =============== 5. Actualizar registro formal ===============
+                detalleRegistro.ModificadaPor = model.UsuarioId;
+                detalleRegistro.ModificadaEn = DateTime.UtcNow;
+                // Si el estado cambia, actualízalo aquí:
+                // detalleRegistro.CoEstadoSolicitudId = model.NuevoEstadoId;
+
+                context.TbComite.Update(comite);
+                context.TbDetalleRegComite.Update(detalleRegistro);
 
                 await context.SaveChangesAsync();
 
-                result.Success = true;
-                result.Id = entity.ComiteId;
-                result.Message = "Comité actualizado correctamente.";
+                // =============== 6. Registrar en historial ===============
+                await _historialRegistro.RegistrarHistorialComiteAsync(
+                    detRegComiteId: detalleRegistro.DetRegComiteId,
+                    comiteId: comite.ComiteId,
+                    estadoId: detalleRegistro.CoEstadoSolicitudId,
+                    comentario: "Comité actualizado por el usuario",
+                    usuarioId: model.UsuarioId
+                );
+
+                await transaction.CommitAsync();
+
+                return new ResultModel
+                {
+                    Success = true,
+                    Id = comite.ComiteId,
+                    Message = "Comité actualizado correctamente.",
+                    RegistroId = detalleRegistro.DetRegComiteId
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al actualizar comité");
-                result.Message = $"Error al actualizar comité: {ex.Message}";
+                await transaction.RollbackAsync();
+                return new ResultModel { Success = false, Message = $"Error al actualizar comité: {ex.Message}" };
             }
-
-            return result;
         }
 
         // ===============================
@@ -188,7 +257,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 {
                     ComiteId = c.ComiteId,
                     NombreComiteSalud = c.NombreComiteSalud,
-                    TipoTramiteEnum = (TipoTramite)c.TipoTramite  // ✅ INCLUIR ESTO
+                    TipoTramiteEnum = (TipoTramite)c.TipoTramite // ✅ INCLUIR ESTO
                 })
                 .OrderBy(c => c.NombreComiteSalud)
                 .ToListAsync();
@@ -212,7 +281,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 .OrderBy(c => c.NombreComiteSalud)
                 .ToListAsync();
         }
-        
+
         // ===============================
         // 🔹 OBTENER COMITÉ COMPLETO
         // ===============================
@@ -233,11 +302,11 @@ namespace REGISTROLEGAL.Repositories.Services
                 TipoTramiteEnum = (TipoTramite)entity.TipoTramite,
                 NombreComiteSalud = entity.NombreComiteSalud,
                 Comunidad = entity.Comunidad,
-                FechaCreacion = entity.FechaRegistro?? DateTime.Today,   
-                FechaEleccion = entity.FechaEleccion?? DateTime.Today,  
+                FechaCreacion = entity.FechaRegistro ?? DateTime.Today,
+                FechaEleccion = entity.FechaEleccion ?? DateTime.Today,
                 NumeroResolucion = entity.NumeroResolucion,
                 NumeroNota = entity.NumeroNota,
-                FechaResolucion = entity.FechaResolucion?? DateTime.Today,
+                FechaResolucion = entity.FechaResolucion ?? DateTime.Today,
                 RegionSaludId = entity.RegionSaludId,
                 ProvinciaId = entity.ProvinciaId,
                 DistritoId = entity.DistritoId,
@@ -253,6 +322,36 @@ namespace REGISTROLEGAL.Repositories.Services
             };
         }
 
+        public async Task<List<HistorialComiteModel>> ObtenerHistorialComite(int comiteId)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.TbDetalleRegComiteHistorial
+                .Where(h => h.ComiteId == comiteId)
+                .OrderByDescending(h => h.FechaCambioCo)
+                .Select(h => new HistorialComiteModel
+                {
+                    HistorialId = h.RegComiteSolId,
+                    ComiteId = h.ComiteId,
+                    Accion = MapEstadoAccion(h.CoEstadoSolicitudId), // ← conversión legible
+                    Comentario = h.ComentarioCo,
+                    Usuario = h.UsuarioRevisorCo,
+                    Fecha = h.FechaCambioCo ?? DateTime.Today,
+                })
+                .ToListAsync();
+        }
+
+// Método auxiliar para convertir estado numérico a texto
+        private string MapEstadoAccion(int estadoId)
+        {
+            return estadoId switch
+            {
+                1 => "Creado",
+                2 => "Actualizado",
+                3 => "Eliminado", // si aplica
+                _ => $"Acción {estadoId}"
+            };
+        }
         // ===============================
         // 🔹 GUARDAR ARCHIVO DE RESOLUCIÓN
         // ===============================
@@ -268,6 +367,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     result.Message = "Comité no encontrado.";
                     return result;
                 }
+
                 var nombreArchivo = $"{Guid.NewGuid()}_{archivo.Name}";
                 var ruta = Path.Combine("wwwroot", "uploads", nombreArchivo);
 
@@ -277,6 +377,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 {
                     await archivo.OpenReadStream().CopyToAsync(stream);
                 }
+
                 var nuevoArchivo = new TbArchivosComite
                 {
                     ComiteId = comiteId,
@@ -295,6 +396,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 _logger.LogError(ex, "Error al guardar archivo");
                 result.Message = $"Error al guardar archivo: {ex.Message}";
             }
+
             return result;
         }
     }

@@ -9,6 +9,9 @@ public class AsociacionModel : IValidatableObject
     // DATOS DE LA ASOCIACIÓN (TbAsociacion)
     // ===============================
     public int AsociacionId { get; set; } = 0;
+    
+    public int? RegistroId { get; set; }
+    public string? UsuarioId  { get; set; }
 
     [Required(ErrorMessage = "El nombre de la asociación es obligatorio")]
     [StringLength(150, ErrorMessage = "El nombre no debe exceder los 150 caracteres")]

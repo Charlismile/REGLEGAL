@@ -17,5 +17,9 @@ public partial class TbDetalleRegComiteHistorial
 
     public DateTime? FechaCambioCo { get; set; }
 
+    public int? DetRegComiteId { get; set; }
+
     public virtual TbComite Comite { get; set; } = null!;
+
+    public virtual TbDetalleRegComite? DetRegComite { get; set; }
 }

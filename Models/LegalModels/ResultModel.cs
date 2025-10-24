@@ -10,5 +10,7 @@
         public int AsociacionId { get; set; }
         
         public object? Data { get; set; }
+        public int RegistroId { get; set; }
+        public string? NumeroRegistro { get; set; }
     }
 }

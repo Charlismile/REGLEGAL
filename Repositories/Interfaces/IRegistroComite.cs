@@ -11,8 +11,9 @@ public interface IRegistroComite
 
     // === Consultas ===
     Task<List<ComiteModel>> ObtenerComites();
-    Task<List<ComiteModel>> ObtenerComitesPorTipo(TipoTramite tipoTramite); // ✅ NUEVO
+    Task<List<ComiteModel>> ObtenerComitesPorTipo(TipoTramite tipoTramite);
     Task<ComiteModel?> ObtenerComiteCompletoAsync(int comiteId);
+    Task<List<HistorialComiteModel>> ObtenerHistorialComite(int comiteId);
 
     // === Utilidades opcionales ===
     Task<ResultModel> GuardarResolucionAsync(int comiteId, IBrowserFile archivo);

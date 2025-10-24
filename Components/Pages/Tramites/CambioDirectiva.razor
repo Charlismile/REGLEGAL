@@ -3,8 +3,6 @@
 @attribute [Authorize(Roles = "user_admin, user_estandar")]
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
-@using REGISTROLEGAL.Models.LegalModels
-@using REGISTROLEGAL.Repositories.Interfaces
 @layout EmptyLayout
 
 <EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit" class="formulario-comite shadow-sm rounded p-4 bg-white">
@@ -188,5 +186,5 @@
 </EditForm>
 
 @code {
-    
+
 }

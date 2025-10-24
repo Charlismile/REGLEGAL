@@ -63,6 +63,7 @@ builder.Services.AddScoped<IRegistroComite, RegistroComiteService>();
 builder.Services.AddScoped<IRegistroAsociacion, RegistroAsociacionService>();
 builder.Services.AddScoped<IArchivoLegalService, ArchivoLegalService>();
 builder.Services.AddScoped<IUserData, UserDataService>();
+builder.Services.AddScoped<IHistorialRegistro, HistorialRegistroService>();
 builder.Services.AddBlazorBootstrap();
 // Identity Core
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
