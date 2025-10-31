@@ -29,7 +29,7 @@ namespace REGISTROLEGAL.Components
             LoggedUser = await _UserService.GetUser(user.Identity.Name ?? "");
             if (LoggedUser != null)
             {
-                UnidadUser = "Departamento de Asesoria Legal"; 
+                UnidadUser = "Asesoria Legal"; 
             }
         }
     }

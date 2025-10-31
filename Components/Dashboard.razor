@@ -20,7 +20,7 @@
                     </div>
                     <h5 class="fw-semibold mb-2">Bienvenido, @LoggedUser.FirstName @LoggedUser.LastName</h5>
                     <p class="text-muted mb-4">
-                        <i class="bi bi-building"></i> Unidad: <strong>@UnidadUser</strong>
+                        <i class="bi bi-building"></i>Departamento: <strong>@UnidadUser</strong>
                     </p>
 
                     <!-- Botón Listado - Visible para ambos roles -->
@@ -31,7 +31,7 @@
 
                     <!-- Sección de Trámites -->
                     <div class="mt-4">
-                        <h6 class="text-muted mb-3">Registrar Nuevo Trámite</h6>
+                        <h6 class="text-muted mb-3">Trámite para comités de salud</h6>
                         <div class="d-grid gap-2">
                             <button class="btn btn-primary px-4 py-2 fw-semibold shadow-sm"
                                     @onclick="IrAPersoneria">
@@ -44,6 +44,18 @@
                             <button class="btn btn-primary px-4 py-2 fw-semibold shadow-sm"
                                     @onclick="IrAJuntaInterventora">
                                 <i class="bi bi-shield-exclamation me-2"></i> Junta Interventora
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4" />
+                    <!-- Sección de Asociaciones -->
+                    <div class="mt-4">
+                        <h6 class="text-muted mb-3">Registrar Asociación</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary px-4 py-2 fw-semibold shadow-sm"
+                                    @onclick="IrACreacionAsociacion">
+                                <i class="bi bi-file-earmark-plus me-2"></i> Personería
                             </button>
                         </div>
                     </div>
@@ -81,4 +93,5 @@
     private void IrAJuntaInterventora() => Navigation.NavigateTo("/tramites/junta-interventora");
     private void IrAUsuarios() => Navigation.NavigateTo("/user/index");
     private void IrACreacion() => Navigation.NavigateTo("/user/createuser");
+    private void IrACreacionAsociacion() => Navigation.NavigateTo("/formulario/registro-asociacion");
 }

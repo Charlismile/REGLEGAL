@@ -53,7 +53,7 @@
         <footer class="footer mt-auto py-3 bg-body-tertiary border-top">
             <div class="container-fluid">
                 <div>
-                    <a href="www.minsa.gob.pa" target="_blank">
+                    <a href="https://www.minsa.gob.pa/" target="_blank">
                         <img src="favicon.png" class="img-fluid" alt="Logo MINSA" style="height: 20px;">
                         Ministerio de Salud de Panamá, @(DateTime.Now.Year)
                     </a>
@@ -70,7 +70,6 @@
 
     protected override void OnInitialized()
     {
-        // Código seguro durante prerendering
         IsDev = DatabaseProviderService.GetEnvironment();
         Connection = DatabaseProviderService.GetConnectionString();
     }
@@ -79,11 +78,8 @@
     {
         if (firstRender)
         {
-            // Solo se ejecuta en el navegador, seguro para JS interop
             var stored = await _LocalStorageServices.GetItem("IsCollapsed");
             IsCollapsed = !string.IsNullOrEmpty(stored) && stored == "1";
-
-            // Actualiza la UI con el valor cargado de localStorage
             StateHasChanged();
         }
     }
