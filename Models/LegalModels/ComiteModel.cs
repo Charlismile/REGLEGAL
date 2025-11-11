@@ -23,6 +23,8 @@ public class ComiteModel
     [Required(ErrorMessage = "El nombre del comité es obligatorio")]
     [StringLength(200)]
     public string NombreComiteSalud { get; set; } = "";
+    
+    public int EstadoId { get; set; }
 
     [Required(ErrorMessage = "El nombre de la comunidad es obligatorio")]
     [StringLength(150)]

@@ -7,12 +7,13 @@ namespace REGISTROLEGAL.Repositories.Services
 {
     public class RegistroAsociacionService : IRegistroAsociacion
     {
-        private readonly DbContextLegal _context;
+        private readonly IDbContextFactory<DbContextLegal> _contextFactory;
         private readonly IHistorialRegistro _historialRegistro;
 
-        public RegistroAsociacionService(DbContextLegal context, IHistorialRegistro historialRegistro)
+        public RegistroAsociacionService(IDbContextFactory<DbContextLegal> contextFactory,
+            IHistorialRegistro historialRegistro)
         {
-            _context = context;
+            _contextFactory = contextFactory;
             _historialRegistro = historialRegistro;
         }
 
@@ -25,10 +26,11 @@ namespace REGISTROLEGAL.Repositories.Services
             if (string.IsNullOrWhiteSpace(model.NombreAsociacion))
                 return new ResultModel { Success = false, Message = "El nombre de la asociación es requerido." };
 
-            if (string.IsNullOrWhiteSpace(model.UsuarioId))
+            if (string.IsNullOrWhiteSpace(model.CreadaPor))
                 return new ResultModel { Success = false, Message = "Usuario no autenticado." };
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            await using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
                 // =============== 1. Crear la asociación ===============
@@ -69,13 +71,13 @@ namespace REGISTROLEGAL.Repositories.Services
                     };
                 }
 
-                _context.TbAsociacion.Add(asociacion);
-                await _context.SaveChangesAsync(); // Obtiene AsociacionId
+                context.TbAsociacion.Add(asociacion);
+                await context.SaveChangesAsync();
 
                 // =============== 2. Obtener o crear secuencia de registro ===============
                 var ahora = DateTime.UtcNow;
-                var secuencia = await _context.TbRegSecuencia
-                    .Where(s => s.EntidadId == 1 && s.Activo) // Supón que EntidadId=1 → Asociaciones
+                var secuencia = await context.TbRegSecuencia
+                    .Where(s => s.EntidadId == 1 && s.Activo)
                     .FirstOrDefaultAsync();
 
                 if (secuencia == null)
@@ -87,7 +89,7 @@ namespace REGISTROLEGAL.Repositories.Services
                         Numeracion = 1,
                         Activo = true
                     };
-                    _context.TbRegSecuencia.Add(secuencia);
+                    context.TbRegSecuencia.Add(secuencia);
                 }
                 else
                 {
@@ -102,13 +104,13 @@ namespace REGISTROLEGAL.Repositories.Services
                     }
                 }
 
-                await _context.SaveChangesAsync(); // Guarda secuencia actualizada
+                await context.SaveChangesAsync();
 
                 // =============== 3. Crear el registro formal ===============
                 var detalleRegistro = new TbDetalleRegAsociacion
                 {
                     AsociacionId = asociacion.AsociacionId,
-                    CreadaPor = model.UsuarioId,
+                    CreadaPor = model.CreadaPor,
                     CreadaEn = ahora,
                     NumRegAsecuencia = secuencia.Numeracion,
                     NomRegAanio = secuencia.Anio,
@@ -117,8 +119,8 @@ namespace REGISTROLEGAL.Repositories.Services
                     FechaResolucion = model.FechaResolucion
                 };
 
-                _context.TbDetalleRegAsociacion.Add(detalleRegistro);
-                await _context.SaveChangesAsync(); // Obtiene DetRegAsociacionId
+                context.TbDetalleRegAsociacion.Add(detalleRegistro);
+                await context.SaveChangesAsync();
 
                 // =============== 4. Registrar en historial ===============
                 await _historialRegistro.RegistrarHistorialAsociacionAsync(
@@ -126,7 +128,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     asociacionId: asociacion.AsociacionId,
                     accion: "Creada",
                     comentario: "Solicitud de registro inicial enviada",
-                    usuarioId: model.UsuarioId
+                    usuarioId: model.CreadaPor
                 );
 
                 // =============== 5. Guardar archivos ===============
@@ -154,10 +156,10 @@ namespace REGISTROLEGAL.Repositories.Services
                             IsActivo = true
                         };
 
-                        _context.TbArchivosAsociacion.Add(archivoEntity);
+                        context.TbArchivosAsociacion.Add(archivoEntity);
                     }
 
-                    await _context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
                 }
 
                 await transaction.CommitAsync();
@@ -182,19 +184,24 @@ namespace REGISTROLEGAL.Repositories.Services
             }
         }
 
+        // ===============================
+        // 🔹 ACTUALIZAR ASOCIACION
+        // ===============================
         public async Task<ResultModel> ActualizarAsociacion(AsociacionModel model)
         {
             if (model.AsociacionId <= 0)
                 return new ResultModel { Success = false, Message = "ID de asociación inválido." };
 
-            if (string.IsNullOrWhiteSpace(model.UsuarioId))
+            // Usar CreadaPor en lugar de UsuarioId
+            if (string.IsNullOrWhiteSpace(model.CreadaPor))
                 return new ResultModel { Success = false, Message = "Usuario no autenticado." };
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            await using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
                 // =============== 1. Cargar asociación con relaciones ===============
-                var asociacion = await _context.TbAsociacion
+                var asociacion = await context.TbAsociacion
                     .Include(a => a.RepLegal)
                     .Include(a => a.ApoAbogado)
                     .Include(a => a.TbArchivosAsociacion)
@@ -204,7 +211,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     return new ResultModel { Success = false, Message = "Asociación no encontrada." };
 
                 // =============== 2. Cargar el registro formal (detalle) ===============
-                var detalleRegistro = await _context.TbDetalleRegAsociacion
+                var detalleRegistro = await context.TbDetalleRegAsociacion
                     .FirstOrDefaultAsync(d => d.AsociacionId == model.AsociacionId);
 
                 if (detalleRegistro == null)
@@ -275,23 +282,23 @@ namespace REGISTROLEGAL.Repositories.Services
                     };
                 }
 
-                // =============== 6. Actualizar el registro formal (si hay cambios relevantes) ===============
+                // =============== 6. Actualizar el registro formal ===============
                 bool registroModificado = false;
                 if (model.NumeroResolucion != null)
                 {
                     detalleRegistro.NumeroResolucion = model.NumeroResolucion.Trim();
                     detalleRegistro.FechaResolucion = model.FechaResolucion;
-                    detalleRegistro.CreadaPor = model.UsuarioId;
+                    detalleRegistro.CreadaPor = model.CreadaPor;
                     detalleRegistro.CreadaEn = DateTime.UtcNow;
                     registroModificado = true;
                 }
 
                 // Guardar cambios principales
-                _context.TbAsociacion.Update(asociacion);
+                context.TbAsociacion.Update(asociacion);
                 if (registroModificado)
-                    _context.TbDetalleRegAsociacion.Update(detalleRegistro);
+                    context.TbDetalleRegAsociacion.Update(detalleRegistro);
 
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
                 // =============== 7. Registrar en historial ===============
                 await _historialRegistro.RegistrarHistorialAsociacionAsync(
@@ -299,7 +306,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     asociacionId: asociacion.AsociacionId,
                     accion: "Actualizada",
                     comentario: "Solicitud actualizada por el usuario",
-                    usuarioId: model.UsuarioId
+                    usuarioId: model.CreadaPor
                 );
 
                 // =============== 8. Manejo de nuevos archivos (solo agregar, no reemplazar) ===============
@@ -317,8 +324,7 @@ namespace REGISTROLEGAL.Repositories.Services
                             var archivoEntity = new TbArchivosAsociacion
                             {
                                 AsociacionId = asociacion.AsociacionId,
-                                Categoria =
-                                    string.IsNullOrWhiteSpace(archivo.Categoria) ? "General" : archivo.Categoria,
+                                Categoria = string.IsNullOrWhiteSpace(archivo.Categoria) ? "General" : archivo.Categoria,
                                 NombreOriginal = archivo.NombreArchivo ?? "archivo",
                                 NombreArchivoGuardado = nombreGuardado,
                                 Url = archivo.RutaArchivo ?? string.Empty,
@@ -327,11 +333,11 @@ namespace REGISTROLEGAL.Repositories.Services
                                 IsActivo = true
                             };
 
-                            _context.TbArchivosAsociacion.Add(archivoEntity);
+                            context.TbArchivosAsociacion.Add(archivoEntity);
                         }
                     }
 
-                    await _context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
                 }
 
                 await transaction.CommitAsync();
@@ -358,28 +364,38 @@ namespace REGISTROLEGAL.Repositories.Services
 
         public async Task<ResultModel> EliminarAsociacion(int id)
         {
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            var result = new ResultModel();
+
             try
             {
-                var entity = await _context.TbAsociacion.FindAsync(id);
+                var entity = await context.TbAsociacion.FindAsync(id);
                 if (entity == null)
-                    return new ResultModel { Success = false, Message = "Asociación no encontrada." };
+                {
+                    result.Message = "Asociación no encontrada.";
+                    return result;
+                }
 
-                _context.TbAsociacion.Remove(entity);
-                await _context.SaveChangesAsync();
-                return new ResultModel { Success = true, Message = "Asociación eliminada correctamente." };
+                context.TbAsociacion.Remove(entity);
+                await context.SaveChangesAsync();
+
+                result.Success = true;
+                result.Message = "Asociación eliminada correctamente.";
             }
             catch (Exception ex)
             {
-                return new ResultModel { Success = false, Message = ex.Message };
+                result.Message = $"Error al eliminar asociación: {ex.Message}";
             }
+
+            return result;
         }
 
         public async Task<AsociacionModel?> ObtenerPorId(int id)
         {
-            // NOMBRES CORRECTOS en los Include
-            var a = await _context.TbAsociacion
-                .Include(a => a.RepLegal) // ← CORRECTO
-                .Include(a => a.ApoAbogado) // ← CORRECTO
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            var a = await context.TbAsociacion
+                .Include(a => a.RepLegal)
+                .Include(a => a.ApoAbogado)
                 .Include(a => a.TbArchivosAsociacion)
                 .FirstOrDefaultAsync(a => a.AsociacionId == id);
 
@@ -389,7 +405,6 @@ namespace REGISTROLEGAL.Repositories.Services
             {
                 AsociacionId = a.AsociacionId,
                 NombreAsociacion = a.NombreAsociacion,
-                // NOMBRES CORRECTOS de navegación
                 NombreRepLegal = a.RepLegal?.NombreRepLegal,
                 ApellidoRepLegal = a.RepLegal?.ApellidoRepLegal,
                 CedulaRepLegal = a.RepLegal?.CedulaRepLegal,
@@ -415,9 +430,10 @@ namespace REGISTROLEGAL.Repositories.Services
 
         public async Task<List<AsociacionModel>> ObtenerTodas()
         {
-            return await _context.TbAsociacion
-                .Include(a => a.RepLegal) // ← CORRECTO
-                .Include(a => a.ApoAbogado) // ← CORRECTO
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.TbAsociacion
+                .Include(a => a.RepLegal)
+                .Include(a => a.ApoAbogado)
                 .Select(a => new AsociacionModel
                 {
                     AsociacionId = a.AsociacionId,
@@ -441,6 +457,7 @@ namespace REGISTROLEGAL.Repositories.Services
         // ========================
         public async Task<ResultModel> AgregarArchivo(int asociacionId, AArchivoModel archivo)
         {
+            await using var context = await _contextFactory.CreateDbContextAsync();
             var nombreOriginal = archivo.NombreArchivo ?? "archivo";
             var nombreGuardado = archivo.NombreArchivoGuardado ?? GenerateStoredFileName(nombreOriginal);
             var categoria = string.IsNullOrWhiteSpace(archivo.Categoria) ? "General" : archivo.Categoria;
@@ -457,24 +474,26 @@ namespace REGISTROLEGAL.Repositories.Services
                 IsActivo = archivo.IsActivo
             };
 
-            _context.TbArchivosAsociacion.Add(entity);
-            await _context.SaveChangesAsync();
+            context.TbArchivosAsociacion.Add(entity);
+            await context.SaveChangesAsync();
             return new ResultModel { Success = true, Message = "Archivo agregado correctamente." };
         }
 
         public async Task<ResultModel> EliminarArchivo(int archivoId)
         {
-            var entity = await _context.TbArchivosAsociacion.FindAsync(archivoId);
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            var entity = await context.TbArchivosAsociacion.FindAsync(archivoId);
             if (entity == null) return new ResultModel { Success = false, Message = "Archivo no encontrado." };
 
-            _context.TbArchivosAsociacion.Remove(entity);
-            await _context.SaveChangesAsync();
+            context.TbArchivosAsociacion.Remove(entity);
+            await context.SaveChangesAsync();
             return new ResultModel { Success = true, Message = "Archivo eliminado correctamente." };
         }
 
         public async Task<List<AArchivoModel>> ObtenerArchivos(int asociacionId)
         {
-            return await _context.TbArchivosAsociacion
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.TbArchivosAsociacion
                 .Where(a => a.AsociacionId == asociacionId)
                 .Select(a => new AArchivoModel
                 {
@@ -494,7 +513,8 @@ namespace REGISTROLEGAL.Repositories.Services
         // ========================
         public async Task<List<DetalleRegAsociacionModel>> ObtenerDetalleHistorial(int asociacionId)
         {
-            return await _context.TbDetalleRegAsociacionHistorial
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            return await context.TbDetalleRegAsociacionHistorial
                 .Where(h => h.AsociacionId == asociacionId)
                 .Select(h => new DetalleRegAsociacionModel
                 {

@@ -313,6 +313,10 @@ public partial class DbContextLegal : DbContext
 
             entity.HasIndex(e => e.ComiteId, "IX_TbComiteHistorial_ComiteId");
 
+            entity.HasIndex(e => e.ComiteId, "IX_TbDetalleRegComiteHistorial_ComiteId");
+
+            entity.HasIndex(e => e.DetRegComiteId, "IX_TbDetalleRegComiteHistorial_DetRegComiteId");
+
             entity.Property(e => e.ComentarioCo).HasMaxLength(1000);
             entity.Property(e => e.FechaCambioCo)
                 .HasDefaultValueSql("(getdate())")

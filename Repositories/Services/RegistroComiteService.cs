@@ -22,23 +22,29 @@ namespace REGISTROLEGAL.Repositories.Services
         }
 
         // ===============================
-        // 🔹 CREAR COMITÉ
+        // 🔹 CREAR COMITÉ (VERSIÓN SIMPLIFICADA)
         // ===============================
         public async Task<ResultModel> CrearComite(ComiteModel model)
         {
-            if (string.IsNullOrWhiteSpace(model.UsuarioId))
+            if (string.IsNullOrWhiteSpace(model.CreadaPor))
+            {
                 return new ResultModel { Success = false, Message = "Usuario no autenticado." };
+            }
 
             await using var context = await _contextFactory.CreateDbContextAsync();
+
+            // Aumentar timeout para esta operación específica
+            context.Database.SetCommandTimeout(120); // 2 minutos
+
             await using var transaction = await context.Database.BeginTransactionAsync();
 
             try
             {
-                // =============== 1. Crear el comité ===============
+                // 1. Crear comité
                 var comite = new TbComite
                 {
                     TipoTramite = (int)model.TipoTramiteEnum,
-                    CreadaPor = model.UsuarioId, // usa el usuario autenticado
+                    CreadaPor = model.CreadaPor,
                     NombreComiteSalud = model.NombreComiteSalud?.Trim() ?? string.Empty,
                     Comunidad = model.Comunidad?.Trim(),
                     FechaRegistro = DateTime.UtcNow,
@@ -53,48 +59,64 @@ namespace REGISTROLEGAL.Repositories.Services
                 };
 
                 context.TbComite.Add(comite);
-                await context.SaveChangesAsync(); // Obtiene ComiteId
+                await context.SaveChangesAsync();
 
-                // =============== 2. Crear miembros ===============
+                // 2. Crear miembros
                 if (model.Miembros?.Any() == true)
                 {
-                    foreach (var miembro in model.Miembros)
+                    var miembrosEntities = model.Miembros.Select(miembro => new TbMiembrosComite
                     {
-                        context.TbMiembrosComite.Add(new TbMiembrosComite
-                        {
-                            ComiteId = comite.ComiteId,
-                            NombreMiembro = miembro.NombreMiembro?.Trim() ?? string.Empty,
-                            ApellidoMiembro = miembro.ApellidoMiembro?.Trim() ?? string.Empty,
-                            CedulaMiembro = miembro.CedulaMiembro?.Trim() ?? string.Empty,
-                            CargoId = miembro.CargoId
-                        });
-                    }
+                        ComiteId = comite.ComiteId,
+                        NombreMiembro = miembro.NombreMiembro?.Trim() ?? string.Empty,
+                        ApellidoMiembro = miembro.ApellidoMiembro?.Trim() ?? string.Empty,
+                        CedulaMiembro = miembro.CedulaMiembro?.Trim() ?? string.Empty,
+                        CargoId = miembro.CargoId
+                    }).ToList();
 
+                    context.TbMiembrosComite.AddRange(miembrosEntities);
                     await context.SaveChangesAsync();
                 }
 
-                // =============== 3. Crear registro formal (TbDetalleRegComite) ===============
+                // 3. Crear registro formal
                 var detalleRegistro = new TbDetalleRegComite
                 {
                     ComiteId = comite.ComiteId,
-                    CreadaPor = model.UsuarioId,
+                    CreadaPor = model.CreadaPor,
                     CreadaEn = DateTime.UtcNow,
-                    // Si usas numeración, agrégala aquí (similar a asociaciones)
                     NumeroRegistro = model.NumeroResolucion?.Trim(),
-                    CoEstadoSolicitudId = 1 // "Enviada" - ajusta según tu catálogo de estados
+                    CoEstadoSolicitudId = 1,
+                    FechaResolucion = model.FechaResolucion
                 };
 
                 context.TbDetalleRegComite.Add(detalleRegistro);
-                await context.SaveChangesAsync(); // Obtiene DetRegComiteId
+                await context.SaveChangesAsync();
 
-                // =============== 4. Registrar en historial ===============
-                await _historialRegistro.RegistrarHistorialComiteAsync(
-                    detRegComiteId: detalleRegistro.DetRegComiteId,
-                    comiteId: comite.ComiteId,
-                    estadoId: 1,
-                    comentario: "Solicitud de comité creada",
-                    usuarioId: model.UsuarioId
-                );
+                // 4. Historial - ejecutar en segundo plano sin esperar
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await using var histContext = await _contextFactory.CreateDbContextAsync();
+                        histContext.Database.SetCommandTimeout(30);
+
+                        histContext.TbDetalleRegComiteHistorial.Add(new TbDetalleRegComiteHistorial
+                        {
+                            DetRegComiteId = detalleRegistro.DetRegComiteId,
+                            ComiteId = comite.ComiteId,
+                            CoEstadoSolicitudId = 1,
+                            ComentarioCo = "Solicitud de comité creada",
+                            UsuarioRevisorCo = model.CreadaPor,
+                            FechaCambioCo = DateTime.UtcNow
+                        });
+
+                        await histContext.SaveChangesAsync();
+                    }
+                    catch (Exception histEx)
+                    {
+                        _logger.LogWarning(histEx, "No se pudo registrar historial para comité {ComiteId}",
+                            comite.ComiteId);
+                    }
+                });
 
                 await transaction.CommitAsync();
 
@@ -108,8 +130,8 @@ namespace REGISTROLEGAL.Repositories.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al crear comité");
                 await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error al crear comité para usuario {Usuario}", model.CreadaPor);
                 return new ResultModel { Success = false, Message = $"Error al crear comité: {ex.Message}" };
             }
         }
@@ -122,7 +144,8 @@ namespace REGISTROLEGAL.Repositories.Services
             if (model.ComiteId <= 0)
                 return new ResultModel { Success = false, Message = "ID de comité inválido." };
 
-            if (string.IsNullOrWhiteSpace(model.UsuarioId))
+            // Cambiar esta validación:
+            if (string.IsNullOrWhiteSpace(model.CreadaPor))
                 return new ResultModel { Success = false, Message = "Usuario no autenticado." };
 
             await using var context = await _contextFactory.CreateDbContextAsync();
@@ -177,8 +200,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 // =============== 5. Actualizar registro formal ===============
                 detalleRegistro.ModificadaPor = model.UsuarioId;
                 detalleRegistro.ModificadaEn = DateTime.UtcNow;
-                // Si el estado cambia, actualízalo aquí:
-                // detalleRegistro.CoEstadoSolicitudId = model.NuevoEstadoId;
+                detalleRegistro.CoEstadoSolicitudId = model.EstadoId;
 
                 context.TbComite.Update(comite);
                 context.TbDetalleRegComite.Update(detalleRegistro);
@@ -189,9 +211,9 @@ namespace REGISTROLEGAL.Repositories.Services
                 await _historialRegistro.RegistrarHistorialComiteAsync(
                     detRegComiteId: detalleRegistro.DetRegComiteId,
                     comiteId: comite.ComiteId,
-                    estadoId: detalleRegistro.CoEstadoSolicitudId,
-                    comentario: "Comité actualizado por el usuario",
-                    usuarioId: model.UsuarioId
+                    estadoId: 1,
+                    comentario: "Solicitud de comité creada",
+                    usuarioId: model.CreadaPor
                 );
 
                 await transaction.CommitAsync();
@@ -326,32 +348,44 @@ namespace REGISTROLEGAL.Repositories.Services
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
 
-            return await context.TbDetalleRegComiteHistorial
+            var historial = await context.TbDetalleRegComiteHistorial
                 .Where(h => h.ComiteId == comiteId)
                 .OrderByDescending(h => h.FechaCambioCo)
                 .Select(h => new HistorialComiteModel
                 {
                     HistorialId = h.RegComiteSolId,
                     ComiteId = h.ComiteId,
-                    Accion = MapEstadoAccion(h.CoEstadoSolicitudId), // ← conversión legible
+                    Accion = h.CoEstadoSolicitudId.ToString(), // Convertir a string temporalmente
                     Comentario = h.ComentarioCo,
                     Usuario = h.UsuarioRevisorCo,
                     Fecha = h.FechaCambioCo ?? DateTime.Today,
                 })
                 .ToListAsync();
+
+            // Si tienes la tabla de estados, puedes mapear los nombres aquí
+            foreach (var item in historial)
+            {
+                item.Accion = MapEstadoAccion(int.Parse(item.Accion));
+            }
+
+            return historial;
         }
 
-// Método auxiliar para convertir estado numérico a texto
+        // Método auxiliar para convertir estado numérico a texto
         private string MapEstadoAccion(int estadoId)
         {
             return estadoId switch
             {
                 1 => "Creado",
-                2 => "Actualizado",
-                3 => "Eliminado", // si aplica
-                _ => $"Acción {estadoId}"
+                2 => "En revisión", 
+                3 => "Aprobado",
+                4 => "Rechazado",
+                5 => "Actualizado",
+                _ => $"Estado {estadoId}"
             };
         }
+
+
         // ===============================
         // 🔹 GUARDAR ARCHIVO DE RESOLUCIÓN
         // ===============================

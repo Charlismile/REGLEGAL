@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "ZBzGT2Wos/5ehL6X6Xm06tWVgTBkC1eddKctELTPuF8=",
+  "Hash": "rpZ7hV/kVzgiVaNPHRWN1zIVJVFouWI4Jzfq87Yseq8=",
   "Source": "REGISTROLEGAL",
   "BasePath": "_content/REGISTROLEGAL",
   "Mode": "Default",
@@ -395,6 +395,48 @@
       "OriginalItemSpec": "wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\1\\c8819383-da65-4538-9f57-3619ec05709b.pdf"
     },
     {
+      "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\2\\e74d81a4-e08a-4afc-a6c3-82eafbefb75e.pdf",
+      "SourceId": "REGISTROLEGAL",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\",
+      "BasePath": "_content/REGISTROLEGAL",
+      "RelativePath": "uploads/documentos-asociacion/DocumentosAsociacion/2/e74d81a4-e08a-4afc-a6c3-82eafbefb75e#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "8aqhuamaeh",
+      "Integrity": "UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\2\\e74d81a4-e08a-4afc-a6c3-82eafbefb75e.pdf"
+    },
+    {
+      "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\3\\0c0f413f-d8eb-4d01-bdef-e2c01feae9cb.pdf",
+      "SourceId": "REGISTROLEGAL",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\",
+      "BasePath": "_content/REGISTROLEGAL",
+      "RelativePath": "uploads/documentos-asociacion/DocumentosAsociacion/3/0c0f413f-d8eb-4d01-bdef-e2c01feae9cb#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "om77y22mqq",
+      "Integrity": "oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\3\\0c0f413f-d8eb-4d01-bdef-e2c01feae9cb.pdf"
+    },
+    {
       "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\3\\2ca5b99a-3a66-4d46-ab69-5b6fed691353.pdf",
       "SourceId": "REGISTROLEGAL",
       "SourceType": "Discovered",
@@ -561,6 +603,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\2\\42bb34bb-af67-4d13-9e54-98e10f17c706.pdf"
+    },
+    {
+      "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\4\\3fe577b5-54ea-4711-8664-534526543a1e.pdf",
+      "SourceId": "REGISTROLEGAL",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\",
+      "BasePath": "_content/REGISTROLEGAL",
+      "RelativePath": "uploads/documentos-comite/RESOLUCION COMITE/4/3fe577b5-54ea-4711-8664-534526543a1e#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "9u0uq9cqth",
+      "Integrity": "wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\4\\3fe577b5-54ea-4711-8664-534526543a1e.pdf"
     },
     {
       "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION\\0\\0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf",
@@ -1367,7 +1430,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1412,7 +1475,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1449,7 +1512,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1494,7 +1557,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1531,7 +1594,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1576,7 +1639,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1613,7 +1676,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1650,7 +1713,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1695,7 +1758,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1732,7 +1795,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1781,7 +1844,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Link",
@@ -1826,7 +1889,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1867,7 +1930,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Link",
@@ -1904,7 +1967,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1949,7 +2012,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Oct 2025 13:51:57 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1994,7 +2057,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Oct 2025 13:51:57 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2031,7 +2094,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 21 Oct 2025 20:39:00 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2076,7 +2139,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 21 Oct 2025 20:39:00 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2087,6 +2150,170 @@
         {
           "Name": "integrity",
           "Value": "sha256-UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-asociacion/DocumentosAsociacion/2/e74d81a4-e08a-4afc-a6c3-82eafbefb75e.8aqhuamaeh.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\2\\e74d81a4-e08a-4afc-a6c3-82eafbefb75e.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "60687"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 11 Nov 2025 18:59:31 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "8aqhuamaeh"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-asociacion/DocumentosAsociacion/2/e74d81a4-e08a-4afc-a6c3-82eafbefb75e.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-asociacion/DocumentosAsociacion/2/e74d81a4-e08a-4afc-a6c3-82eafbefb75e.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\2\\e74d81a4-e08a-4afc-a6c3-82eafbefb75e.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "60687"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 11 Nov 2025 18:59:31 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-UMXjpGgxRMZABGeTjRE+2fbxwvIklKRuxwbNuPDG32E="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-asociacion/DocumentosAsociacion/3/0c0f413f-d8eb-4d01-bdef-e2c01feae9cb.om77y22mqq.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\3\\0c0f413f-d8eb-4d01-bdef-e2c01feae9cb.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "59337"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 11 Nov 2025 19:21:32 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "om77y22mqq"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-asociacion/DocumentosAsociacion/3/0c0f413f-d8eb-4d01-bdef-e2c01feae9cb.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-asociacion/DocumentosAsociacion/3/0c0f413f-d8eb-4d01-bdef-e2c01feae9cb.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\3\\0c0f413f-d8eb-4d01-bdef-e2c01feae9cb.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "59337"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 11 Nov 2025 19:21:32 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY="
         }
       ]
     },
@@ -2113,7 +2340,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Oct 2025 14:52:57 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2158,7 +2385,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Oct 2025 14:52:57 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2195,7 +2422,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Oct 2025 15:06:41 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2232,7 +2459,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Oct 2025 15:06:41 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2277,7 +2504,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Oct 2025 15:45:06 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2322,7 +2549,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Oct 2025 15:45:06 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2359,7 +2586,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 21 Oct 2025 14:29:11 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2404,7 +2631,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 21 Oct 2025 14:29:11 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2441,7 +2668,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 17 Oct 2025 21:11:28 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2486,7 +2713,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 17 Oct 2025 21:11:28 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2523,7 +2750,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 17 Oct 2025 22:05:14 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2560,7 +2787,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 17 Oct 2025 22:05:14 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2605,7 +2832,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 21 Oct 2025 20:33:38 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2650,7 +2877,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 21 Oct 2025 20:33:38 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2687,7 +2914,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 23 Oct 2025 18:57:48 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2732,7 +2959,89 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 23 Oct 2025 18:57:48 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/4/3fe577b5-54ea-4711-8664-534526543a1e.9u0uq9cqth.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\4\\3fe577b5-54ea-4711-8664-534526543a1e.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "304280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 11 Nov 2025 18:05:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "9u0uq9cqth"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION COMITE/4/3fe577b5-54ea-4711-8664-534526543a1e.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION COMITE/4/3fe577b5-54ea-4711-8664-534526543a1e.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\4\\3fe577b5-54ea-4711-8664-534526543a1e.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "304280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 11 Nov 2025 18:05:58 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2769,7 +3078,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2814,7 +3123,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2851,7 +3160,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2896,7 +3205,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 10 Oct 2025 13:35:10 GMT"
+          "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
         },
         {
           "Name": "Cache-Control",

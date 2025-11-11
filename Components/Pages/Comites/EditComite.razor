@@ -1,9 +1,10 @@
 ﻿@page "/comites/editcomite/{id:int}"
 @layout EmptyLayout
-@attribute [Authorize(Roles = "user_admin")]
+@attribute [Authorize(Roles = "user_admin, user_estandar")]
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
 @using REGISTROLEGAL.Repositories.Interfaces
+@using REGISTROLEGAL.Models.LegalModels
 
 <PageTitle>Editar Comité</PageTitle>
 
@@ -24,35 +25,50 @@ else
 {
     <EditForm Model="cModel" OnValidSubmit="Guardar">
         <DataAnnotationsValidator />
-        <ValidationSummary />
+        <ValidationSummary Class="alert alert-danger" />
+
+        @if (!string.IsNullOrEmpty(mensajeExito))
+        {
+            <div class="alert alert-success">@mensajeExito</div>
+        }
+        @if (!string.IsNullOrEmpty(mensajeError))
+        {
+            <div class="alert alert-danger">@mensajeError</div>
+        }
 
         <div class="card shadow-sm p-4">
             <h5 class="mb-3 text-primary">Datos Generales</h5>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label class="form-label">Nombre del Comité</label>
+                    <label class="form-label">Nombre del Comité *</label>
                     <InputText class="form-control" @bind-Value="cModel.NombreComiteSalud" />
+                    <ValidationMessage For="@(() => cModel.NombreComiteSalud)" class="text-danger small" />
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Comunidad</label>
+                    <label class="form-label">Comunidad *</label>
                     <InputText class="form-control" @bind-Value="cModel.Comunidad" />
+                    <ValidationMessage For="@(() => cModel.Comunidad)" class="text-danger small" />
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-md-4">
-                    <label class="form-label">Número de Resolución</label>
+                    <label class="form-label">Número de Resolución *</label>
                     <InputText class="form-control" @bind-Value="cModel.NumeroResolucion" />
+                    <ValidationMessage For="@(() => cModel.NumeroResolucion)" class="text-danger small" />
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Fecha de Resolución</label>
+                    <label class="form-label">Fecha de Resolución *</label>
                     <InputDate class="form-control" @bind-Value="cModel.FechaResolucion" />
+                    <ValidationMessage For="@(() => cModel.FechaResolucion)" class="text-danger small" />
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Fecha de Elección</label>
+                    <label class="form-label">Fecha de Elección *</label>
                     <InputDate class="form-control" @bind-Value="cModel.FechaEleccion" />
+                    <ValidationMessage For="@(() => cModel.FechaEleccion)" class="text-danger small" />
                 </div>
             </div>
+
             <hr />
             <h5 class="mb-3 text-primary">Miembros del Comité</h5>
             <div class="table-responsive">
@@ -60,11 +76,10 @@ else
                     <thead class="table-light">
                         <tr>
                             <th>#</th>
-                            <th>Nombre Completo</th>
-                            <th>Cédula</th>
-                            <th>Cargo</th>
-                            <th>Teléfono</th>
-                            <th>Correo Electrónico</th>
+                            <th>Nombre *</th>
+                            <th>Apellido *</th>
+                            <th>Cédula *</th>
+                            <th>Cargo *</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -74,17 +89,35 @@ else
                             {
                                 <tr>
                                     <td>@index</td>
-                                    <td><InputText class="form-control" @bind-Value="miembro.NombreMiembro" /></td>
-                                    <td><InputText class="form-control" @bind-Value="miembro.ApellidoMiembro" /></td>
-                                    <td><InputText class="form-control" @bind-Value="miembro.CedulaMiembro" /></td>
-                                    <td><InputText class="form-control" @bind-Value="miembro.NombreCargo" /></td>
+                                    <td>
+                                        <InputText class="form-control form-control-sm" @bind-Value="miembro.NombreMiembro" />
+                                        <ValidationMessage For="@(() => miembro.NombreMiembro)" class="text-danger small" />
+                                    </td>
+                                    <td>
+                                        <InputText class="form-control form-control-sm" @bind-Value="miembro.ApellidoMiembro" />
+                                        <ValidationMessage For="@(() => miembro.ApellidoMiembro)" class="text-danger small" />
+                                    </td>
+                                    <td>
+                                        <InputText class="form-control form-control-sm" @bind-Value="miembro.CedulaMiembro" />
+                                        <ValidationMessage For="@(() => miembro.CedulaMiembro)" class="text-danger small" />
+                                    </td>
+                                    <td>
+                                        <InputSelect class="form-select form-select-sm" @bind-Value="miembro.CargoId">
+                                            <option value="0">-- Seleccione --</option>
+                                            @foreach (var cargo in cargos)
+                                            {
+                                                <option value="@cargo.Id">@cargo.Name</option>
+                                            }
+                                        </InputSelect>
+                                        <ValidationMessage For="@(() => miembro.CargoId)" class="text-danger small" />
+                                    </td>
                                 </tr>
                             }
                         }
                         else
                         {
                             <tr>
-                                <td colspan="6" class="text-center text-muted">No hay miembros registrados</td>
+                                <td colspan="5" class="text-center text-muted">No hay miembros registrados</td>
                             </tr>
                         }
                     </tbody>
@@ -95,8 +128,18 @@ else
                 <button type="button" class="btn btn-secondary me-2" @onclick="Volver">
                     <i class="bi bi-arrow-left"></i> Volver
                 </button>
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-save"></i> Guardar Cambios
+                <button type="submit" class="btn btn-primary" disabled="@guardando">
+                    @if (guardando)
+                    {
+                        <span>
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            Guardando...
+                        </span>
+                    }
+                    else
+                    {
+                        <span><i class="bi bi-save"></i> Guardar Cambios</span>
+                    }
                 </button>
             </div>
         </div>

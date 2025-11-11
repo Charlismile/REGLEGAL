@@ -1,7 +1,7 @@
 ﻿@page "/formulario/registro-asociacion"
 @page "/formulario/registro-asociacion/{Id:int}"
 @layout EmptyLayout
-@* @attribute [Authorize(Roles = "user_admin, user_estandar")] *@
+@attribute [Authorize(Roles = "user_admin, user_estandar")]
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
 @using REGISTROLEGAL.Models.LegalModels
@@ -198,14 +198,16 @@
 
 
 @code {
-     [Parameter] public int? Id { get; set; }
+    [Parameter] public int? Id { get; set; }
     [Inject] private IRegistroAsociacion _RegistroAsociacionService { get; set; } = default!;
     [Inject] private ICommon _Commonservice { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Inject] private IArchivoLegalService ArchivoLegalService { get; set; } = default!;
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
     private const long MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB en bytes
     private readonly string[] _extensionesPermitidas = { ".pdf" };
+    private string? _userId; // ← AGREGAR
 
     private string FormatFileSize(long bytes)
     {
@@ -230,9 +232,45 @@
     private string MensajeExito = "";
     private string MensajeError = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync() // ← CAMBIAR a async
     {
         AModel.CargoRepLegal = "Presidente";
+        await ObtenerUsuarioActual(); // ← AGREGAR
+    }
+
+    // ← AGREGAR MÉTODO PARA OBTENER USUARIO
+    private async Task ObtenerUsuarioActual()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                _userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                
+                if (string.IsNullOrEmpty(_userId))
+                {
+                    _userId = user.Identity.Name;
+                }
+                
+                AModel.CreadaPor = user.Identity.Name ?? "Sistema";
+                AModel.UsuarioId = _userId;
+                
+                Console.WriteLine($"Usuario autenticado: {_userId}, Nombre: {AModel.CreadaPor}");
+            }
+            else
+            {
+                Console.WriteLine("Usuario NO autenticado");
+                MensajeError = "Usuario no autenticado. Por favor, inicie sesión.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error obteniendo usuario: {ex.Message}");
+            MensajeError = "Error al verificar autenticación.";
+        }
     }
 
     private async Task CargarDocumentos(InputFileChangeEventArgs e)
@@ -272,6 +310,20 @@
         IsSubmitting = true;
         MensajeError = "";
         MensajeExito = "";
+
+        // ← AGREGAR VERIFICACIÓN DE USUARIO
+        if (string.IsNullOrEmpty(AModel.UsuarioId))
+        {
+            await ObtenerUsuarioActual();
+            
+            if (string.IsNullOrEmpty(AModel.UsuarioId))
+            {
+                MensajeError = "Usuario no autenticado. Por favor, inicie sesión.";
+                IsSubmitting = false;
+                StateHasChanged();
+                return;
+            }
+        }
 
         try
         {
