@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "rpZ7hV/kVzgiVaNPHRWN1zIVJVFouWI4Jzfq87Yseq8=",
+  "Hash": "ru+OuSTWLdxaG4+xb81UioLSZHPPwLkNRTigfPjUgqE=",
   "Source": "REGISTROLEGAL",
   "BasePath": "_content/REGISTROLEGAL",
   "Mode": "Default",
@@ -456,6 +456,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\3\\2ca5b99a-3a66-4d46-ab69-5b6fed691353.pdf"
+    },
+    {
+      "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\4\\6a08dae5-4ffa-4880-b6c3-54a16a414a2c.pdf",
+      "SourceId": "REGISTROLEGAL",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\",
+      "BasePath": "_content/REGISTROLEGAL",
+      "RelativePath": "uploads/documentos-asociacion/DocumentosAsociacion/4/6a08dae5-4ffa-4880-b6c3-54a16a414a2c#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "9u0uq9cqth",
+      "Integrity": "wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\4\\6a08dae5-4ffa-4880-b6c3-54a16a414a2c.pdf"
     },
     {
       "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\4\\801b742c-0d9a-4f46-b846-0c103d6dcb54.pdf",
@@ -2386,6 +2407,88 @@
         {
           "Name": "Last-Modified",
           "Value": "Tue, 11 Nov 2025 16:47:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-asociacion/DocumentosAsociacion/4/6a08dae5-4ffa-4880-b6c3-54a16a414a2c.9u0uq9cqth.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\4\\6a08dae5-4ffa-4880-b6c3-54a16a414a2c.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "304280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 12 Nov 2025 15:21:57 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "9u0uq9cqth"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-asociacion/DocumentosAsociacion/4/6a08dae5-4ffa-4880-b6c3-54a16a414a2c.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-asociacion/DocumentosAsociacion/4/6a08dae5-4ffa-4880-b6c3-54a16a414a2c.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\4\\6a08dae5-4ffa-4880-b6c3-54a16a414a2c.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "304280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 12 Nov 2025 15:21:57 GMT"
         },
         {
           "Name": "Cache-Control",

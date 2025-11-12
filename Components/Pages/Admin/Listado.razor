@@ -4,7 +4,6 @@
 @using Microsoft.AspNetCore.Authorization
 @using REGISTROLEGAL.Components.Layout
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using REGISTROLEGAL.Models.Entities.BdSisLegal
 @using REGISTROLEGAL.Repositories.Interfaces
 @inject DbContextLegal _context
@@ -49,34 +48,102 @@
                             <i class="bi bi-plus-circle me-2"></i>
                             Registrar @(tipoSeleccionado == "Comites" ? "Comité" : "Asociación")
                         </button>
-
                     </div>
                 }
             </div>
 
+            <!-- Barra de búsqueda dinámica -->
+            @if (!string.IsNullOrEmpty(tipoSeleccionado))
+            {
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="position-relative">
+                            <label class="form-label fw-semibold text-secondary">
+                                <i class="bi bi-search me-1"></i> 
+                                Buscar @(tipoSeleccionado == "Comites" ? "Comité" : "Asociación")
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Escriba para buscar..."
+                                   @bind="textoBusqueda"
+                                   @bind:event="oninput"
+                                   @onkeyup="HandleSearchKeyUp" />
+                            
+                            <!-- Sugerencias para Comités -->
+                            @if (tipoSeleccionado == "Comites" && sugerenciasComites?.Any() == true && !string.IsNullOrEmpty(textoBusqueda))
+                            {
+                                <div class="position-absolute w-100 bg-white border mt-1 rounded shadow-lg z-3" style="max-height: 250px; overflow-y: auto;">
+                                    @foreach (var sugerencia in sugerenciasComites)
+                                    {
+                                        <div class="p-2 border-bottom hover-bg"
+                                             @onclick="() => SeleccionarSugerenciaComite(sugerencia)"
+                                             style="cursor: pointer;">
+                                            <div class="fw-semibold">@sugerencia.NombreComiteSalud</div>
+                                            <small class="text-muted">@sugerencia.Comunidad - @sugerencia.NumeroResolucion</small>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            
+                            <!-- Sugerencias para Asociaciones -->
+                            @if (tipoSeleccionado == "Asociaciones" && sugerenciasAsociaciones?.Any() == true && !string.IsNullOrEmpty(textoBusqueda))
+                            {
+                                <div class="position-absolute w-100 bg-white border mt-1 rounded shadow-lg z-3" style="max-height: 250px; overflow-y: auto;">
+                                    @foreach (var sugerencia in sugerenciasAsociaciones)
+                                    {
+                                        <div class="p-2 border-bottom hover-bg"
+                                             @onclick="() => SeleccionarSugerenciaAsociacion(sugerencia)"
+                                             style="cursor: pointer;">
+                                            <div class="fw-semibold">@sugerencia.NombreAsociacion</div>
+                                            <small class="text-muted">Folio: @sugerencia.Folio - @sugerencia.NumeroResolucion</small>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    
+                    <!-- Contador de resultados -->
+                    <div class="col-md-6 d-flex align-items-end justify-content-end">
+                        @if (!string.IsNullOrEmpty(textoBusqueda))
+                        {
+                            <span class="badge bg-info fs-6">
+                                @GetResultCount() resultado(s) encontrado(s)
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+
             <!-- Tabla de Comités -->
-            @if (tipoSeleccionado == "Comites" && comites?.Any() == true)
+            @if (tipoSeleccionado == "Comites" && comitesFiltrados?.Any() == true)
             {
                 <h5 class="text-success mb-3">
                     <i class="bi bi-people-fill me-2"></i>Listado de Comités
+                    @if (!string.IsNullOrEmpty(textoBusqueda))
+                    {
+                        <span class="badge bg-secondary fs-6">(Filtrado)</span>
+                    }
                 </h5>
                 <div class="table-responsive">
                     <table class="table table-hover table-bordered align-middle bg-white">
                         <thead class="table-primary">
                         <tr>
                             <th>Nombre del Comité</th>
+                            <th>Comunidad</th>
                             <th>N° Resolución</th>
                             <th>Fecha de Creación</th>
                             <th class="text-center">Acción</th>
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach (var c in comites)
+                        @foreach (var c in comitesFiltrados)
                         {
                             <tr>
                                 <td>@c.NombreComiteSalud</td>
+                                <td>@c.Comunidad</td>
                                 <td>@c.NumeroResolucion</td>
-                                <td>@c.FechaRegistro</td>
+                                <td>@c.FechaRegistro?.ToString("dd/MM/yyyy")</td>
                                 <td class="text-center">
                                     <button class="btn btn-sm btn-outline-primary"
                                             title="Editar Comité"
@@ -90,18 +157,23 @@
                     </table>
                 </div>
             }
-            else if (tipoSeleccionado == "Comites" && !cargando && (comites == null || !comites.Any()))
+            else if (tipoSeleccionado == "Comites" && !cargando && (comitesFiltrados == null || !comitesFiltrados.Any()))
             {
                 <div class="alert alert-warning mt-3">
-                    <i class="bi bi-exclamation-triangle"></i> No hay comités registrados.
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    @(string.IsNullOrEmpty(textoBusqueda) ? "No hay comités registrados." : "No se encontraron comités con ese criterio de búsqueda.")
                 </div>
             }
 
             <!-- Tabla de Asociaciones -->
-            @if (tipoSeleccionado == "Asociaciones" && asociaciones?.Any() == true)
+            @if (tipoSeleccionado == "Asociaciones" && asociacionesFiltradas?.Any() == true)
             {
                 <h5 class="text-success mb-3">
                     <i class="bi bi-building-fill me-2"></i>Listado de Asociaciones
+                    @if (!string.IsNullOrEmpty(textoBusqueda))
+                    {
+                        <span class="badge bg-secondary fs-6">(Filtrado)</span>
+                    }
                 </h5>
                 <div class="table-responsive">
                     <table class="table table-hover table-bordered align-middle bg-white">
@@ -109,17 +181,19 @@
                         <tr>
                             <th>Nombre de la Asociación</th>
                             <th>Folio</th>
-                            <th>Fecha de Creación</th>
+                            <th>N° Resolución</th>
+                            <th>Fecha de Resolución</th>
                             <th class="text-center">Acción</th>
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach (var a in asociaciones)
+                        @foreach (var a in asociacionesFiltradas)
                         {
                             <tr>
                                 <td>@a.NombreAsociacion</td>
                                 <td>@a.Folio</td>
-                                <td>@a.FechaResolucion</td>
+                                <td>@a.NumeroResolucion</td>
+                                <td>@a.FechaResolucion?.ToString("dd/MM/yyyy")</td>
                                 <td class="text-center">
                                     <button class="btn btn-sm btn-outline-primary"
                                             title="Editar Asociación"
@@ -133,10 +207,11 @@
                     </table>
                 </div>
             }
-            else if (tipoSeleccionado == "Asociaciones" && !cargando && (asociaciones == null || !asociaciones.Any()))
+            else if (tipoSeleccionado == "Asociaciones" && !cargando && (asociacionesFiltradas == null || !asociacionesFiltradas.Any()))
             {
                 <div class="alert alert-warning mt-3">
-                    <i class="bi bi-exclamation-triangle"></i> No hay asociaciones registradas.
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    @(string.IsNullOrEmpty(textoBusqueda) ? "No hay asociaciones registradas." : "No se encontraron asociaciones con ese criterio de búsqueda.")
                 </div>
             }
 
@@ -160,18 +235,24 @@
 
 @code {
     private string? tipoSeleccionado;
+    private string textoBusqueda = string.Empty;
     private bool cargando = false;
+    
+    // Datos completos
     private List<TbComite>? comites;
     private List<TbAsociacion>? asociaciones;
+    
+    // Datos filtrados
+    private List<TbComite>? comitesFiltrados;
+    private List<TbAsociacion>? asociacionesFiltradas;
+    
+    // Sugerencias para autocomplete
+    private List<TbComite>? sugerenciasComites;
+    private List<TbAsociacion>? sugerenciasAsociaciones;
 
     protected override void OnInitialized()
     {
         tipoSeleccionado = null;
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        await CargarDatos();
     }
 
     private async Task CargarDatos()
@@ -180,6 +261,9 @@
         {
             comites = null;
             asociaciones = null;
+            comitesFiltrados = null;
+            asociacionesFiltradas = null;
+            textoBusqueda = string.Empty;
             return;
         }
 
@@ -193,21 +277,140 @@
                 comites = await _context.TbComite
                     .OrderByDescending(c => c.FechaRegistro)
                     .ToListAsync();
+                comitesFiltrados = comites;
                 asociaciones = null;
+                asociacionesFiltradas = null;
             }
             else if (tipoSeleccionado == "Asociaciones")
             {
                 asociaciones = await _context.TbAsociacion
                     .OrderByDescending(a => a.FechaResolucion)
                     .ToListAsync();
+                asociacionesFiltradas = asociaciones;
                 comites = null;
+                comitesFiltrados = null;
             }
+            
+            // Limpiar búsqueda anterior
+            textoBusqueda = string.Empty;
+            sugerenciasComites = null;
+            sugerenciasAsociaciones = null;
         }
         finally
         {
             cargando = false;
             StateHasChanged();
         }
+    }
+
+    private async Task HandleSearchKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            await FiltrarDatos();
+        }
+        else
+        {
+            await MostrarSugerencias();
+        }
+    }
+
+    private async Task MostrarSugerencias()
+    {
+        if (string.IsNullOrEmpty(textoBusqueda) || textoBusqueda.Length < 2)
+        {
+            sugerenciasComites = null;
+            sugerenciasAsociaciones = null;
+            return;
+        }
+
+        var searchTerm = textoBusqueda.ToLower();
+
+        if (tipoSeleccionado == "Comites" && comites != null)
+        {
+            sugerenciasComites = comites
+                .Where(c => (c.NombreComiteSalud?.ToLower().Contains(searchTerm) == true) ||
+                           (c.Comunidad?.ToLower().Contains(searchTerm) == true) ||
+                           (c.NumeroResolucion?.ToLower().Contains(searchTerm) == true))
+                .Take(10)
+                .ToList();
+        }
+        else if (tipoSeleccionado == "Asociaciones" && asociaciones != null)
+        {
+            sugerenciasAsociaciones = asociaciones
+                .Where(a => (a.NombreAsociacion?.ToLower().Contains(searchTerm) == true) ||
+                           (a.NumeroResolucion?.ToLower().Contains(searchTerm) == true) ||
+                           (a.Folio.ToString().Contains(searchTerm)))
+                .Take(10)
+                .ToList();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task FiltrarDatos()
+    {
+        if (string.IsNullOrEmpty(textoBusqueda))
+        {
+            // Si no hay texto de búsqueda, mostrar todos los datos
+            if (tipoSeleccionado == "Comites")
+                comitesFiltrados = comites;
+            else if (tipoSeleccionado == "Asociaciones")
+                asociacionesFiltradas = asociaciones;
+        }
+        else
+        {
+            var searchTerm = textoBusqueda.ToLower();
+
+            if (tipoSeleccionado == "Comites" && comites != null)
+            {
+                comitesFiltrados = comites
+                    .Where(c => (c.NombreComiteSalud?.ToLower().Contains(searchTerm) == true) ||
+                               (c.Comunidad?.ToLower().Contains(searchTerm) == true) ||
+                               (c.NumeroResolucion?.ToLower().Contains(searchTerm) == true) ||
+                               (c.NumeroNota?.ToLower().Contains(searchTerm) == true))
+                    .ToList();
+            }
+            else if (tipoSeleccionado == "Asociaciones" && asociaciones != null)
+            {
+                asociacionesFiltradas = asociaciones
+                    .Where(a => (a.NombreAsociacion?.ToLower().Contains(searchTerm) == true) ||
+                               (a.NumeroResolucion?.ToLower().Contains(searchTerm) == true) ||
+                               (a.Actividad?.ToLower().Contains(searchTerm) == true) ||
+                               (a.Folio.ToString().Contains(searchTerm)))
+                    .ToList();
+            }
+        }
+
+        sugerenciasComites = null;
+        sugerenciasAsociaciones = null;
+        StateHasChanged();
+    }
+
+    private void SeleccionarSugerenciaComite(TbComite comite)
+    {
+        textoBusqueda = comite.NombreComiteSalud ?? string.Empty;
+        comitesFiltrados = new List<TbComite> { comite };
+        sugerenciasComites = null;
+        StateHasChanged();
+    }
+
+    private void SeleccionarSugerenciaAsociacion(TbAsociacion asociacion)
+    {
+        textoBusqueda = asociacion.NombreAsociacion ?? string.Empty;
+        asociacionesFiltradas = new List<TbAsociacion> { asociacion };
+        sugerenciasAsociaciones = null;
+        StateHasChanged();
+    }
+
+    private string GetResultCount()
+    {
+        return tipoSeleccionado switch
+        {
+            "Comites" => comitesFiltrados?.Count.ToString() ?? "0",
+            "Asociaciones" => asociacionesFiltradas?.Count.ToString() ?? "0",
+            _ => "0"
+        };
     }
 
     private void IrARegistro()
@@ -217,7 +420,6 @@
         else if (tipoSeleccionado == "Asociaciones")
             NavigationManager.NavigateTo($"/formulario/registro-asociacion");
     }
-
 
     private void EditarComite(int id)
     {
@@ -229,3 +431,13 @@
         NavigationManager.NavigateTo($"/asociaciones/editasociacion/{id}");
     }
 }
+
+<style>
+    .hover-bg:hover {
+        background-color: #f8f9fa !important;
+    }
+    
+    .z-3 {
+        z-index: 1030;
+    }
+</style>

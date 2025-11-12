@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Forms;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
 
@@ -17,6 +18,10 @@ public partial class EditAsociacion : ComponentBase
     [Inject] private IRegistroAsociacion AsociacionService { get; set; } = default!;
     [Inject] private NavigationManager Navigation { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+    [Inject] private IArchivoLegalService ArchivoService { get; set; } = default!;
+
+    // Archivos
+    private List<IBrowserFile> nuevosArchivos = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,6 +43,9 @@ public partial class EditAsociacion : ComponentBase
                     aModel.CargoRepLegal = "Presidente";
                 }
 
+                // Cargar archivos existentes
+                await CargarArchivosExistentes();
+
                 // Obtener usuario autenticado
                 await ObtenerUsuarioActual();
                 Console.WriteLine($"[DEBUG] Asociación cargada: {aModel.NombreAsociacion}");
@@ -52,6 +60,23 @@ public partial class EditAsociacion : ComponentBase
         {
             cargando = false;
             StateHasChanged();
+        }
+    }
+
+    private async Task CargarArchivosExistentes()
+    {
+        try
+        {
+            if (aModel != null)
+            {
+                var archivos = await ArchivoService.ObtenerArchivosAsociacionAsync(aModel.AsociacionId, "DocumentosAsociacion");
+                aModel.Archivos = archivos ?? new List<AArchivoModel>();
+                Console.WriteLine($"[DEBUG] Cargados {aModel.Archivos.Count} archivos existentes");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] Error al cargar archivos: {ex.Message}");
         }
     }
 
@@ -85,6 +110,71 @@ public partial class EditAsociacion : ComponentBase
         }
     }
 
+    private async Task CargarNuevosArchivos(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            if (Path.GetExtension(file.Name).ToLower() == ".pdf" && file.Size <= 50 * 1024 * 1024)
+            {
+                nuevosArchivos.Add(file);
+            }
+            else
+            {
+                if (Path.GetExtension(file.Name).ToLower() != ".pdf")
+                {
+                    mensajeError = $"El archivo {file.Name} no es un PDF válido.";
+                }
+                else if (file.Size > 50 * 1024 * 1024)
+                {
+                    mensajeError = $"El archivo {file.Name} excede el tamaño máximo de 50MB.";
+                }
+            }
+        }
+        StateHasChanged();
+    }
+
+    private void RemoverNuevoArchivo(IBrowserFile archivo)
+    {
+        nuevosArchivos.Remove(archivo);
+        StateHasChanged();
+    }
+
+    private async Task EliminarArchivo(int archivoId)
+    {
+        try
+        {
+            var resultado = await ArchivoService.DesactivarArchivoAsociacionAsync(archivoId);
+            if (resultado)
+            {
+                // Remover de la lista local
+                aModel?.Archivos?.RemoveAll(a => a.AsociacionArchivoId == archivoId);
+                mensajeExito = "Archivo eliminado correctamente.";
+                StateHasChanged();
+            }
+            else
+            {
+                mensajeError = "Error al eliminar el archivo";
+            }
+        }
+        catch (Exception ex)
+        {
+            mensajeError = $"Error al eliminar archivo: {ex.Message}";
+        }
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        int order = 0;
+        double len = bytes;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+
     private async Task Guardar()
     {
         if (aModel == null)
@@ -115,6 +205,19 @@ public partial class EditAsociacion : ComponentBase
 
             if (resultado.Success)
             {
+                // Subir nuevos archivos si los hay
+                if (nuevosArchivos.Any())
+                {
+                    foreach (var archivo in nuevosArchivos)
+                    {
+                        await ArchivoService.GuardarArchivoAsociacionAsync(
+                            aModel.AsociacionId, 
+                            archivo, 
+                            "DocumentosAsociacion"
+                        );
+                    }
+                }
+
                 mensajeExito = "✅ Asociación actualizada correctamente.";
                 Console.WriteLine("✅ Asociación actualizada correctamente.");
                 
