@@ -1,0 +1,412 @@
+﻿@page "/asociaciones/cambio-miembros/{id:int}"
+@layout EmptyLayout
+@attribute [Authorize(Roles = "user_admin, user_estandar")]
+@using Microsoft.AspNetCore.Authorization
+@using REGISTROLEGAL.Components.Layout
+@using REGISTROLEGAL.Repositories.Interfaces
+@using REGISTROLEGAL.Models.LegalModels
+@using Microsoft.AspNetCore.Components.Forms
+
+<PageTitle>Cambio de Miembros - Asociación</PageTitle>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">
+                <i class="bi bi-people-fill me-2"></i>Cambio de Miembros - Asociación
+            </h4>
+        </div>
+        <div class="card-body">
+            @if (cargando)
+            {
+                <div class="text-center py-4">
+                    <div class="spinner-border text-warning" role="status"></div>
+                    <p class="mt-2 text-muted">Cargando datos de la asociación...</p>
+                </div>
+            }
+            else if (asociacionActual == null)
+            {
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>No se encontró la asociación solicitada.
+                </div>
+            }
+            else
+            {
+                <EditForm Model="nuevosDatos" OnValidSubmit="@ProcesarCambio">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary Class="alert alert-danger" />
+
+                    @if (!string.IsNullOrEmpty(mensajeExito))
+                    {
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle me-2"></i>@mensajeExito
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(mensajeError))
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>@mensajeError
+                        </div>
+                    }
+                    <!-- Información de la Asociación -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <h6 class="alert-heading">
+                                    <i class="bi bi-building me-2"></i>Asociación: @asociacionActual.NombreAsociacion
+                                </h6>
+                                <p class="mb-0">Folio: @asociacionActual.Folio</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Selección de Tipo de Cambio -->
+                    <div class="card mb-4 border-dark">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-gear me-2"></i>Tipo de Cambio a Realizar
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <InputCheckbox class="form-check-input" @bind-Value="cambiarRepresentante" />
+                                        <label class="form-check-label fw-semibold">
+                                            Cambiar Representante Legal
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <InputCheckbox class="form-check-input" @bind-Value="cambiarApoderado" />
+                                        <label class="form-check-label fw-semibold">
+                                            Cambiar Apoderado Legal
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (!cambiarRepresentante && !cambiarApoderado)
+                            {
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    Seleccione al menos un tipo de cambio a realizar.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <!-- REPRESENTANTE LEGAL -->
+                    @if (cambiarRepresentante)
+                    {
+                        <!-- Representante Legal Actual -->
+                        <div class="card mb-4 border-primary">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0 text-primary">
+                                    <i class="bi bi-person-badge me-2"></i>Representante Legal Actual
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Nombre Completo</label>
+                                        <p class="form-control-plaintext">@asociacionActual.NombreRepLegal @asociacionActual.ApellidoRepLegal</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold">Cédula</label>
+                                        <p class="form-control-plaintext">@asociacionActual.CedulaRepLegal</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold">Cargo</label>
+                                        <p class="form-control-plaintext">@asociacionActual.CargoRepLegal</p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-semibold">Teléfono</label>
+                                        <p class="form-control-plaintext">@asociacionActual.TelefonoRepLegal</p>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Dirección</label>
+                                        <p class="form-control-plaintext">@asociacionActual.DireccionRepLegal</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Nuevo Representante Legal -->
+                        <div class="card mb-4 border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-person-plus me-2"></i>Nuevo Representante Legal
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Nombre *</label>
+                                        <InputText class="form-control" @bind-Value="nuevosDatos.NombreRepLegal" />
+                                        <ValidationMessage For="@(() => nuevosDatos.NombreRepLegal)" class="text-danger small" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Apellido *</label>
+                                        <InputText class="form-control" @bind-Value="nuevosDatos.ApellidoRepLegal" />
+                                        <ValidationMessage For="@(() => nuevosDatos.ApellidoRepLegal)" class="text-danger small" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label fw-semibold">Cédula *</label>
+                                        <InputText class="form-control" @bind-Value="nuevosDatos.CedulaRepLegal" />
+                                        <ValidationMessage For="@(() => nuevosDatos.CedulaRepLegal)" class="text-danger small" />
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label fw-semibold">Teléfono *</label>
+                                        <InputText class="form-control" @bind-Value="nuevosDatos.TelefonoRepLegal" />
+                                        <ValidationMessage For="@(() => nuevosDatos.TelefonoRepLegal)" class="text-danger small" />
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label fw-semibold">Cargo</label>
+                                        <div class="form-control" style="background-color: #e9ecef; border: 1px solid #ced4da;">
+                                            <strong>Presidente</strong>
+                                        </div>
+                                        <small class="form-text text-muted">El cargo del representante legal siempre es "Presidente"</small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label fw-semibold">Dirección *</label>
+                                        <InputText class="form-control" @bind-Value="nuevosDatos.DireccionRepLegal" />
+                                        <ValidationMessage For="@(() => nuevosDatos.DireccionRepLegal)" class="text-danger small" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <!-- APODERADO LEGAL -->
+                    @if (cambiarApoderado)
+                    {
+                        <!-- Apoderado Legal Actual -->
+                        <div class="card mb-4 border-info">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0 text-info">
+                                    <i class="bi bi-person-gear me-2"></i>Apoderado Legal Actual
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                @if (!string.IsNullOrEmpty(asociacionActual.NombreApoAbogado))
+                                {
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label fw-semibold">Nombre Completo</label>
+                                            <p class="form-control-plaintext">@asociacionActual.NombreApoAbogado @asociacionActual.ApellidoApoAbogado</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-semibold">Cédula</label>
+                                            <p class="form-control-plaintext">@asociacionActual.CedulaApoAbogado</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-semibold">Teléfono</label>
+                                            <p class="form-control-plaintext">@asociacionActual.TelefonoApoAbogado</p>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label fw-semibold">Correo</label>
+                                            <p class="form-control-plaintext">@asociacionActual.CorreoApoAbogado</p>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Dirección</label>
+                                            <p class="form-control-plaintext">@asociacionActual.DireccionApoAbogado</p>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        Actualmente no hay apoderado legal registrado para esta asociación.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <!-- Nuevo Apoderado Legal -->
+                        <div class="card mb-4 border-success">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-person-plus me-2"></i>Nuevo Apoderado Legal
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Nombre *</label>
+                                        <InputText class="form-control" @bind-Value="nuevosDatos.NombreApoAbogado" />
+                                        <ValidationMessage For="@(() => nuevosDatos.NombreApoAbogado)" class="text-danger small" />
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Apellido *</label>
+                                        <InputText class="form-control" @bind-Value="nuevosDatos.ApellidoApoAbogado" />
+                                        <ValidationMessage For="@(() => nuevosDatos.ApellidoApoAbogado)" class="text-danger small" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label fw-semibold">Cédula *</label>
+                                        <InputText class="form-control" @bind-Value="nuevosDatos.CedulaApoAbogado" />
+                                        <ValidationMessage For="@(() => nuevosDatos.CedulaApoAbogado)" class="text-danger small" />
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label fw-semibold">Teléfono *</label>
+                                        <InputText class="form-control" @bind-Value="nuevosDatos.TelefonoApoAbogado" />
+                                        <ValidationMessage For="@(() => nuevosDatos.TelefonoApoAbogado)" class="text-danger small" />
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label fw-semibold">Correo *</label>
+                                        <InputText class="form-control" type="email" @bind-Value="nuevosDatos.CorreoApoAbogado" />
+                                        <ValidationMessage For="@(() => nuevosDatos.CorreoApoAbogado)" class="text-danger small" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label fw-semibold">Dirección *</label>
+                                        <InputText class="form-control" @bind-Value="nuevosDatos.DireccionApoAbogado" />
+                                        <ValidationMessage For="@(() => nuevosDatos.DireccionApoAbogado)" class="text-danger small" />
+                                    </div>
+                                </div>
+                                <!-- Información de Firma -->
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <InputCheckbox class="form-check-input" @bind-Value="nuevosDatos.PerteneceAFirma" />
+                                            <label class="form-check-label fw-semibold">
+                                                ¿El apoderado pertenece a una firma de abogados?
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (nuevosDatos.PerteneceAFirma)
+                                {
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-semibold">Nombre de la Firma *</label>
+                                            <InputText class="form-control" @bind-Value="nuevosDatos.NombreFirma" />
+                                            <ValidationMessage For="@(() => nuevosDatos.NombreFirma)" class="text-danger small" />
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-semibold">Correo de la Firma *</label>
+                                            <InputText class="form-control" type="email" @bind-Value="nuevosDatos.CorreoFirma" />
+                                            <ValidationMessage For="@(() => nuevosDatos.CorreoFirma)" class="text-danger small" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-semibold">Teléfono de la Firma *</label>
+                                            <InputText class="form-control" @bind-Value="nuevosDatos.TelefonoFirma" />
+                                            <ValidationMessage For="@(() => nuevosDatos.TelefonoFirma)" class="text-danger small" />
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label fw-semibold">Dirección de la Firma *</label>
+                                            <InputText class="form-control" @bind-Value="nuevosDatos.DireccionFirma" />
+                                            <ValidationMessage For="@(() => nuevosDatos.DireccionFirma)" class="text-danger small" />
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    <!-- Información del Cambio -->
+                    <div class="card mb-4 border-info">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-clipboard-data me-2"></i>Información del Cambio
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Motivo del Cambio *</label>
+                                    <InputTextArea class="form-control" @bind-Value="comentarioCambio" 
+                                                  placeholder="Describa detalladamente el motivo del cambio de miembros..."
+                                                  rows="4" />
+                                    <ValidationMessage For="@(() => comentarioCambio)" class="text-danger small" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Fecha del Cambio *</label>
+                                    <InputDate class="form-control" @bind-Value="fechaCambio" />
+                                    <ValidationMessage For="@(() => fechaCambio)" class="text-danger small" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Número de Resolución</label>
+                                    <InputText class="form-control" @bind-Value="numeroResolucionCambio" 
+                                              placeholder="Número de resolución que autoriza el cambio (opcional)" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Documentos de Soporte -->
+                    <div class="card mb-4 border-secondary">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-files me-2"></i>Documentos de Soporte
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Subir Documentos (PDF, máximo 50MB cada uno)</label>
+                                <InputFile OnChange="CargarDocumentosCambio" multiple accept=".pdf" class="form-control" />
+                                <small class="form-text text-muted">
+                                    Adjunte documentos que respalden el cambio (actas de asamblea, resoluciones, etc.)
+                                </small>
+                            </div>
+                            
+                            @if (documentosCambio?.Any() == true)
+                            {
+                                <div class="mt-3">
+                                    <h6>Documentos a subir:</h6>
+                                    <div class="list-group">
+                                        @foreach (var doc in documentosCambio)
+                                        {
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="bi bi-file-pdf text-danger me-2"></i>
+                                                    <span class="fw-semibold">@doc.Name</span>
+                                                    <small class="text-muted ms-2">(@FormatFileSize(doc.Size))</small>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                        @onclick="() => RemoverDocumentoCambio(doc)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <!-- Botones de Acción -->
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <button type="button" class="btn btn-outline-secondary" @onclick="Volver" disabled="@procesando">
+                            <i class="bi bi-arrow-left me-2"></i>Volver a Edición
+                        </button>
+                        
+                        <button type="submit" class="btn btn-warning px-4" disabled="@procesando || (!cambiarRepresentante && !cambiarApoderado)">
+                            @if (procesando)
+                            {
+                                <span>
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    Procesando Cambio...
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    <i class="bi bi-people-fill me-2"></i>Registrar Cambio de Miembros
+                                </span>
+                            }
+                        </button>
+                    </div>
+                </EditForm>
+            }
+        </div>
+    </div>
+</div>

@@ -194,6 +194,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxMaXN0YWRvLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Asociaciones/CambioMiembrosAsociacion.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBc29jaWFjaW9uZXNcQ2FtYmlvTWllbWJyb3NBc29jaWFjaW9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/cabernalo/Documents/PROJECT GIT/REGLEGAL/Components/Pages/Asociaciones/EditAsociacion.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBc29jaWFjaW9uZXNcRWRpdEFzb2NpYWNpb24ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
