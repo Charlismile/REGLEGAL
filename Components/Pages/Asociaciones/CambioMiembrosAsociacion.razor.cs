@@ -294,7 +294,6 @@ public partial class CambioMiembrosAsociacion : ComponentBase
             StateHasChanged();
         }
     }
-
     private string ConstruirComentarioHistorial()
     {
         var cambios = new List<string>();
@@ -304,7 +303,6 @@ public partial class CambioMiembrosAsociacion : ComponentBase
             cambios.Add($"REPRESENTANTE LEGAL - ANTERIOR: {asociacionActual.NombreRepLegal} {asociacionActual.ApellidoRepLegal} (Cédula: {asociacionActual.CedulaRepLegal}). " +
                        $"NUEVO: {nuevosDatos.NombreRepLegal} {nuevosDatos.ApellidoRepLegal} (Cédula: {nuevosDatos.CedulaRepLegal})");
         }
-
         if (cambiarApoderado)
         {
             var apoderadoAnterior = !string.IsNullOrEmpty(asociacionActual.NombreApoAbogado) 
@@ -314,16 +312,40 @@ public partial class CambioMiembrosAsociacion : ComponentBase
             cambios.Add($"APODERADO LEGAL - ANTERIOR: {apoderadoAnterior}. " +
                        $"NUEVO: {nuevosDatos.NombreApoAbogado} {nuevosDatos.ApellidoApoAbogado} (Cédula: {nuevosDatos.CedulaApoAbogado})");
         }
-
         return $"CAMBIOS REALIZADOS - " +
                $"Motivo: {comentarioCambio}. " +
                $"Fecha del cambio: {fechaCambio:dd/MM/yyyy}. " +
                $"Resolución: {(!string.IsNullOrEmpty(numeroResolucionCambio) ? numeroResolucionCambio : "No especificada")}. " +
                string.Join(" | ", cambios);
     }
+    
+    private EditForm? formulario;
 
+// Agregar este método para verificar el estado de validación
+    private bool FormularioEsValido()
+    {
+        return formulario?.EditContext?.Validate() == true;
+    }
+
+// Modificar el método PuedeGuardar
+    private bool PuedeGuardar()
+    {
+        if (!cambiarRepresentante && !cambiarApoderado)
+            return false;
+
+        // Verificar validación del formulario
+        if (!FormularioEsValido())
+            return false;
+
+        // Verificar campos adicionales que no están en el modelo
+        if (string.IsNullOrWhiteSpace(comentarioCambio) || fechaCambio == default)
+            return false;
+
+        return true;
+    }
+    
     private void Volver()
     {
-        Navigation.NavigateTo($"/asociaciones/editasociacion/{id}");
+        Navigation.NavigateTo($"/admin/listado");
     }
 }

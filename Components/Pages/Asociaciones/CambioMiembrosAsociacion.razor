@@ -32,7 +32,7 @@
             }
             else
             {
-                <EditForm Model="nuevosDatos" OnValidSubmit="@ProcesarCambio">
+                <EditForm Model="nuevosDatos" OnValidSubmit="@ProcesarCambio" @ref="formulario" OnFieldChanged="OnFieldChanged">
                     <DataAnnotationsValidator />
                     <ValidationSummary Class="alert alert-danger" />
 
@@ -389,7 +389,7 @@
                             <i class="bi bi-arrow-left me-2"></i>Volver a Edición
                         </button>
                         
-                        <button type="submit" class="btn btn-warning px-4" disabled="@procesando || (!cambiarRepresentante && !cambiarApoderado)">
+                        <button type="submit" class="btn btn-warning px-4" disabled="@(procesando || !PuedeGuardar())">
                             @if (procesando)
                             {
                                 <span>

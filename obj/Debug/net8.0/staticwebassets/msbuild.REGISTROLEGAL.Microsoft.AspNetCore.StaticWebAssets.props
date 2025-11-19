@@ -162,6 +162,24 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-asociacion\DocumentosAsociacion\2\e74d81a4-e08a-4afc-a6c3-82eafbefb75e.pdf'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-asociacion\DocumentosAsociacion\2\e8351ca8-ec20-4103-bef3-bba2a9c1acf5.pdf'))">
+      <SourceType>Package</SourceType>
+      <SourceId>REGISTROLEGAL</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/REGISTROLEGAL</BasePath>
+      <RelativePath>uploads/documentos-asociacion/DocumentosAsociacion/2/e8351ca8-ec20-4103-bef3-bba2a9c1acf5.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>jyqwyhqrb7</Fingerprint>
+      <Integrity>e/ZiCDYMeBARfHVvAyqNHJts6VxfAPkgkrbmrmZbc3Y=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-asociacion\DocumentosAsociacion\2\e8351ca8-ec20-4103-bef3-bba2a9c1acf5.pdf'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-asociacion\DocumentosAsociacion\3\0c0f413f-d8eb-4d01-bdef-e2c01feae9cb.pdf'))">
       <SourceType>Package</SourceType>
       <SourceId>REGISTROLEGAL</SourceId>
