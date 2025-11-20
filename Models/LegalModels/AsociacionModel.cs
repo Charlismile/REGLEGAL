@@ -128,15 +128,6 @@ public class AsociacionModel : IValidatableObject
         }
     }
 
-
-    // ===============================
-    // DETALLE REGISTRO (TbDetalleRegAsociacion)
-    // ===============================
-    public int NumRegAsecuencia { get; set; }
-    public int NomRegAanio { get; set; }
-    public int NumRegAmes { get; set; }
-    public string? NumRegAcompleta { get; set; }
-
     // ===============================
     // TRÁMITE / ESTADO / AUDITORÍA
     // ===============================

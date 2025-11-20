@@ -32,7 +32,7 @@
             }
             else
             {
-                <EditForm Model="nuevosDatos" OnValidSubmit="@ProcesarCambio" @ref="formulario" OnFieldChanged="OnFieldChanged">
+                <EditForm Model="nuevosDatos" OnValidSubmit="@ProcesarCambio" @ref="formulario">
                     <DataAnnotationsValidator />
                     <ValidationSummary Class="alert alert-danger" />
 

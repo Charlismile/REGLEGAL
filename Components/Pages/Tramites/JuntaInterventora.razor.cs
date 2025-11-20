@@ -9,15 +9,16 @@ namespace REGISTROLEGAL.Components.Pages.Tramites;
 public partial class JuntaInterventora : ComponentBase
 {
     [Parameter] public int ComiteId { get; set; }
-    
+
     [Inject] IRegistroComite RegistroComiteService { get; set; }
     [Inject] NavigationManager Navigation { get; set; }
     [Inject] IArchivoLegalService ArchivoLegalService { get; set; }
     [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; }
     [Inject] ICommon CommonService { get; set; }
 
-    private ComiteModel CModel { get; set; } = new();
+    private JuntaInterventoraModel CModel { get; set; } = new();
     private EditContext editContext = default!;
+    private ValidationMessageStore messageStore = default!;
     private string MensajeExito = "";
     private string MensajeError = "";
     private string MensajeBusqueda = "";
@@ -51,8 +52,11 @@ public partial class JuntaInterventora : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        CModel.TipoTramiteEnum = TipoTramite.JuntaInterventora;
+        CModel = new JuntaInterventoraModel(); // 🔹 Usar modelo específico
         editContext = new EditContext(CModel);
+        messageStore = new ValidationMessageStore(editContext);
+        editContext.OnValidationRequested += OnValidationRequested;
+
         await CargarListasIniciales();
         await ObtenerUsuarioActual();
 
@@ -60,16 +64,53 @@ public partial class JuntaInterventora : ComponentBase
         {
             await CargarComiteExistente();
         }
+    }
+
+    private void OnValidationRequested(object? sender, ValidationRequestedEventArgs e)
+    {
+        messageStore.Clear();
+
+        // Validaciones específicas para Junta Interventora
+        if (ComiteSeleccionadoId == null)
+            messageStore.Add(() => CModel.NombreComiteSalud, "Debe seleccionar un comité con personería.");
+
+        if (string.IsNullOrWhiteSpace(CModel.NumeroResolucion))
+            messageStore.Add(() => CModel.NumeroResolucion, "El número de resolución es obligatorio.");
+
+        if (CModel.FechaEleccion == default)
+            messageStore.Add(() => CModel.FechaEleccion, "La fecha de elección es obligatoria.");
+
+        // Validar interventores - 🔹 CAMBIAR A Interventores
+        if (CModel.Interventores.Count != NUMERO_INTERVENTORES_FIJO)
+        {
+            messageStore.Add(() => CModel.Interventores, $"Debe haber exactamente {NUMERO_INTERVENTORES_FIJO} interventores.");
+        }
         else
         {
-            CModel = new ComiteModel { TipoTramiteEnum = TipoTramite.JuntaInterventora };
+            for (int i = 0; i < CModel.Interventores.Count; i++)
+            {
+                var miembro = CModel.Interventores[i];
+                if (string.IsNullOrWhiteSpace(miembro.NombreMiembro))
+                    messageStore.Add(() => CModel.Interventores, $"El interventor {i + 1} debe tener un nombre.");
+            
+                if (string.IsNullOrWhiteSpace(miembro.ApellidoMiembro))
+                    messageStore.Add(() => CModel.Interventores, $"El interventor {i + 1} debe tener un apellido.");
+            
+                if (string.IsNullOrWhiteSpace(miembro.CedulaMiembro))
+                    messageStore.Add(() => CModel.Interventores, $"El interventor {i + 1} debe tener una cédula.");
+            
+                if (miembro.CargoId == 0)
+                    messageStore.Add(() => CModel.Interventores, $"El interventor {i + 1} debe tener un cargo.");
+            }
         }
+
+        editContext.NotifyValidationStateChanged();
     }
 
     private async Task CargarListasIniciales()
     {
         Regiones = await CommonService.GetRegiones();
-    
+
         // Cargar SOLO Presidente y Tesorero
         var todosLosCargos = await CommonService.GetCargos();
         CargosInterventores = todosLosCargos
@@ -104,6 +145,9 @@ public partial class JuntaInterventora : ComponentBase
         var comiteCompleto = await RegistroComiteService.ObtenerComiteCompletoAsync(seleccionado.ComiteId);
         if (comiteCompleto != null)
         {
+            // Asignar ComiteBaseId al modelo específico
+            CModel.ComiteBaseId = comiteCompleto.ComiteId;
+            
             // Copiar datos heredables
             CModel.NombreComiteSalud = comiteCompleto.NombreComiteSalud;
             CModel.Comunidad = comiteCompleto.Comunidad;
@@ -133,17 +177,17 @@ public partial class JuntaInterventora : ComponentBase
 
     private void DesplegarInterventores()
     {
-        if (CModel.MiembrosInterventores.Count >= NUMERO_INTERVENTORES_FIJO)
+        if (CModel.Interventores.Count >= NUMERO_INTERVENTORES_FIJO) // 🔹 CAMBIAR A Interventores
         {
             interventoresDesplegados = true;
         }
         else
         {
             interventoresDesplegados = true;
-            int faltantes = NUMERO_INTERVENTORES_FIJO - CModel.MiembrosInterventores.Count;
+            int faltantes = NUMERO_INTERVENTORES_FIJO - CModel.Interventores.Count; // 🔹 CAMBIAR A Interventores
             for (int i = 0; i < faltantes; i++)
             {
-                CModel.MiembrosInterventores.Add(new MiembroComiteModel());
+                CModel.Interventores.Add(new MiembroComiteModel()); // 🔹 CAMBIAR A Interventores
             }
         }
         StateHasChanged();
@@ -187,13 +231,24 @@ public partial class JuntaInterventora : ComponentBase
         var comite = await RegistroComiteService.ObtenerComiteCompletoAsync(ComiteId);
         if (comite != null && comite.TipoTramiteEnum == TipoTramite.JuntaInterventora)
         {
-            CModel = comite;
+            // Convertir ComiteModel a JuntaInterventoraModel
+            CModel.ComiteId = comite.ComiteId;
+            CModel.ComiteBaseId = comite.ComiteBaseId ?? 0;
+            CModel.NombreComiteSalud = comite.NombreComiteSalud;
+            CModel.Comunidad = comite.Comunidad;
+            CModel.RegionSaludId = comite.RegionSaludId;
+            CModel.ProvinciaId = comite.ProvinciaId;
+            CModel.DistritoId = comite.DistritoId;
+            CModel.CorregimientoId = comite.CorregimientoId;
+            CModel.NumeroResolucion = comite.NumeroResolucion;
+            CModel.FechaResolucion = comite.FechaResolucion;
+            CModel.FechaEleccion = comite.FechaEleccion ?? DateTime.Now;
+            CModel.CreadaPor = comite.CreadaPor;
+            CModel.Interventores = comite.MiembrosInterventores; // 🔹 Asignar interventores
+
             interventoresDesplegados = true;
             ComiteSeleccionadoId = comite.ComiteId;
-
-           
-            miembrosActuales = comite.Miembros; 
-
+            miembrosActuales = comite.Miembros;
             await CargarListasIniciales();
         }
     }
@@ -224,7 +279,8 @@ public partial class JuntaInterventora : ComponentBase
 
         try
         {
-            if (CModel.MiembrosInterventores.Count != NUMERO_INTERVENTORES_FIJO)
+            // 🔹 CAMBIAR A Interventores
+            if (CModel.Interventores.Count != NUMERO_INTERVENTORES_FIJO)
             {
                 MensajeError = "Debe registrar exactamente 2 interventores: Presidente y Tesorero.";
                 IsSubmitting = false;
@@ -232,7 +288,8 @@ public partial class JuntaInterventora : ComponentBase
             }
 
             var cargosValidos = new HashSet<int>(CargosInterventores.Select(c => c.Id));
-            foreach (var m in CModel.MiembrosInterventores)
+            // 🔹 CAMBIAR A Interventores
+            foreach (var m in CModel.Interventores)
             {
                 if (string.IsNullOrWhiteSpace(m.NombreMiembro) ||
                     string.IsNullOrWhiteSpace(m.ApellidoMiembro) ||
@@ -245,7 +302,8 @@ public partial class JuntaInterventora : ComponentBase
                 }
             }
             
-            var cargosAsignados = CModel.MiembrosInterventores.Select(m => m.CargoId).ToList();
+            // 🔹 CAMBIAR A Interventores
+            var cargosAsignados = CModel.Interventores.Select(m => m.CargoId).ToList();
             if (cargosAsignados.Distinct().Count() != cargosAsignados.Count)
             {
                 MensajeError = "No se permiten cargos duplicados. Debe haber un Presidente y un Tesorero.";
@@ -263,9 +321,9 @@ public partial class JuntaInterventora : ComponentBase
             if (string.IsNullOrEmpty(CModel.CreadaPor))
                 await ObtenerUsuarioActual();
 
-            CModel.FechaCreacion = DateTime.Now;
-
-            var result = await RegistroComiteService.CrearComite(CModel);
+            // 🔹 USAR EL MÉTODO ESPECÍFICO PARA JUNTA INTERVENTORA
+            var result = await RegistroComiteService.RegistrarJuntaInterventora(CModel);
+            
             if (!result.Success)
             {
                 MensajeError = $"Error al registrar junta interventora: {result.Message}";

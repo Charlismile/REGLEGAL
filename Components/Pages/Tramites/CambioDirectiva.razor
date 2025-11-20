@@ -5,8 +5,7 @@
 @using REGISTROLEGAL.Components.Layout
 @layout EmptyLayout
 
-<EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit" class="formulario-comite shadow-sm rounded p-4 bg-white">
-    @* <DataAnnotationsValidator /> *@
+<EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
     @if (erroresFormulario.Any())
     {
         <ul class="alert alert-danger">

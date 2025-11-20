@@ -19,7 +19,7 @@ public partial class CambioMiembrosAsociacion : ComponentBase
 
     // Modelos y estado
     private AsociacionModel? asociacionActual;
-    private AsociacionModel nuevosDatos = new();
+    private CambioMiembrosModel nuevosDatos = new();
     private bool cargando = true;
     private bool procesando = false;
     private string mensajeExito = "";
@@ -33,6 +33,9 @@ public partial class CambioMiembrosAsociacion : ComponentBase
     // Controles de tipo de cambio
     private bool cambiarRepresentante = true;
     private bool cambiarApoderado = false;
+
+    // 🔹 AGREGAR ESTA DECLARACIÓN
+    private EditForm? formulario;
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,17 +58,6 @@ public partial class CambioMiembrosAsociacion : ComponentBase
                 nuevosDatos.CargoRepLegal = "Presidente";
                 nuevosDatos.Folio = asociacionActual.Folio;
                 nuevosDatos.NombreAsociacion = asociacionActual.NombreAsociacion;
-                
-                // Si ya existe apoderado, cargar sus datos para referencia
-                if (!string.IsNullOrEmpty(asociacionActual.NombreApoAbogado))
-                {
-                    nuevosDatos.NombreApoAbogado = asociacionActual.NombreApoAbogado;
-                    nuevosDatos.ApellidoApoAbogado = asociacionActual.ApellidoApoAbogado;
-                    nuevosDatos.CedulaApoAbogado = asociacionActual.CedulaApoAbogado;
-                    nuevosDatos.TelefonoApoAbogado = asociacionActual.TelefonoApoAbogado;
-                    nuevosDatos.CorreoApoAbogado = asociacionActual.CorreoApoAbogado;
-                    nuevosDatos.DireccionApoAbogado = asociacionActual.DireccionApoAbogado;
-                }
             }
             else
             {
@@ -105,6 +97,8 @@ public partial class CambioMiembrosAsociacion : ComponentBase
             Console.WriteLine($"[ERROR] Obteniendo usuario: {ex.Message}");
         }
     }
+
+    // 🔹 AGREGAR ESTOS MÉTODOS FALTANTES
 
     private async Task CargarDocumentosCambio(InputFileChangeEventArgs e)
     {
@@ -160,6 +154,13 @@ public partial class CambioMiembrosAsociacion : ComponentBase
             return;
         }
 
+        // Validación personalizada
+        if (!EsFormularioValido())
+        {
+            mensajeError = "Por favor, complete todos los campos requeridos correctamente.";
+            return;
+        }
+
         procesando = true;
         mensajeError = "";
         mensajeExito = "";
@@ -167,7 +168,7 @@ public partial class CambioMiembrosAsociacion : ComponentBase
 
         try
         {
-            // Validaciones
+            // Validaciones adicionales
             if (string.IsNullOrWhiteSpace(comentarioCambio))
             {
                 mensajeError = "Debe especificar el motivo del cambio.";
@@ -176,7 +177,7 @@ public partial class CambioMiembrosAsociacion : ComponentBase
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(nuevosDatos.CreadaPor))
+            if (string.IsNullOrWhiteSpace(usuarioId))
             {
                 mensajeError = "Usuario no autenticado. Por favor, inicie sesión.";
                 procesando = false;
@@ -186,47 +187,18 @@ public partial class CambioMiembrosAsociacion : ComponentBase
 
             Console.WriteLine($"[INFO] Iniciando cambio de miembros para asociación ID: {asociacionActual.AsociacionId}");
 
-            // 1. Preparar modelo para actualización
-            var modeloActualizado = new AsociacionModel
-            {
-                AsociacionId = asociacionActual.AsociacionId,
-                CreadaPor = nuevosDatos.CreadaPor,
-                UsuarioId = nuevosDatos.UsuarioId
-            };
-
-            // Solo actualizar los campos que se están cambiando
-            if (cambiarRepresentante)
-            {
-                modeloActualizado.NombreRepLegal = nuevosDatos.NombreRepLegal?.Trim();
-                modeloActualizado.ApellidoRepLegal = nuevosDatos.ApellidoRepLegal?.Trim();
-                modeloActualizado.CedulaRepLegal = nuevosDatos.CedulaRepLegal?.Trim();
-                modeloActualizado.CargoRepLegal = nuevosDatos.CargoRepLegal?.Trim();
-                modeloActualizado.TelefonoRepLegal = nuevosDatos.TelefonoRepLegal?.Trim();
-                modeloActualizado.DireccionRepLegal = nuevosDatos.DireccionRepLegal?.Trim();
-            }
-
-            if (cambiarApoderado)
-            {
-                modeloActualizado.NombreApoAbogado = nuevosDatos.NombreApoAbogado?.Trim();
-                modeloActualizado.ApellidoApoAbogado = nuevosDatos.ApellidoApoAbogado?.Trim();
-                modeloActualizado.CedulaApoAbogado = nuevosDatos.CedulaApoAbogado?.Trim();
-                modeloActualizado.TelefonoApoAbogado = nuevosDatos.TelefonoApoAbogado?.Trim();
-                modeloActualizado.CorreoApoAbogado = nuevosDatos.CorreoApoAbogado?.Trim();
-                modeloActualizado.DireccionApoAbogado = nuevosDatos.DireccionApoAbogado?.Trim();
-                modeloActualizado.PerteneceAFirma = nuevosDatos.PerteneceAFirma;
-                modeloActualizado.NombreFirma = nuevosDatos.NombreFirma?.Trim();
-                modeloActualizado.TelefonoFirma = nuevosDatos.TelefonoFirma?.Trim();
-                modeloActualizado.CorreoFirma = nuevosDatos.CorreoFirma?.Trim();
-                modeloActualizado.DireccionFirma = nuevosDatos.DireccionFirma?.Trim();
-            }
-
-            var resultado = await AsociacionService.ActualizarAsociacion(modeloActualizado);
+            // USAR EL NUEVO MÉTODO ESPECÍFICO PARA MIEMBROS
+            var resultado = await AsociacionService.ActualizarMiembrosAsociacionAsync(
+                asociacionActual.AsociacionId, 
+                nuevosDatos, 
+                usuarioId
+            );
 
             if (resultado.Success && resultado.RegistroId > 0)
             {
-                Console.WriteLine($"[SUCCESS] Asociación actualizada. Registro ID: {resultado.RegistroId}");
+                Console.WriteLine($"[SUCCESS] Miembros actualizados. Registro ID: {resultado.RegistroId}");
 
-                // 2. Registrar en el historial específico de cambios de miembros
+                // Registrar en el historial con comentario específico
                 var historialComentario = ConstruirComentarioHistorial();
                 
                 await HistorialService.RegistrarHistorialAsociacionAsync(
@@ -234,12 +206,10 @@ public partial class CambioMiembrosAsociacion : ComponentBase
                     asociacionId: asociacionActual.AsociacionId,
                     accion: "CAMBIOS_MIEMBROS",
                     comentario: historialComentario,
-                    usuarioId: nuevosDatos.CreadaPor
+                    usuarioId: usuarioId
                 );
 
-                Console.WriteLine($"[SUCCESS] Historial registrado para asociación {asociacionActual.AsociacionId}");
-
-                // 3. Subir documentos de soporte si los hay
+                // Subir documentos de soporte si los hay
                 if (documentosCambio.Any())
                 {
                     Console.WriteLine($"[INFO] Subiendo {documentosCambio.Count} documentos de soporte");
@@ -258,10 +228,6 @@ public partial class CambioMiembrosAsociacion : ComponentBase
                             {
                                 Console.WriteLine($"[SUCCESS] Documento '{archivo.Name}' subido exitosamente");
                             }
-                            else
-                            {
-                                Console.WriteLine($"[WARNING] Error al subir documento '{archivo.Name}': {resultadoArchivo?.Message}");
-                            }
                         }
                         catch (Exception exArchivo)
                         {
@@ -279,8 +245,8 @@ public partial class CambioMiembrosAsociacion : ComponentBase
             }
             else
             {
-                mensajeError = $"❌ Error al actualizar la asociación: {resultado.Message}";
-                Console.WriteLine($"[ERROR] Error actualizando asociación: {resultado.Message}");
+                mensajeError = $"❌ Error al actualizar los miembros: {resultado.Message}";
+                Console.WriteLine($"[ERROR] Error actualizando miembros: {resultado.Message}");
             }
         }
         catch (Exception ex)
@@ -294,6 +260,43 @@ public partial class CambioMiembrosAsociacion : ComponentBase
             StateHasChanged();
         }
     }
+
+    private bool EsFormularioValido()
+    {
+        // Validación condicional basada en qué campos se están cambiando
+        if (cambiarRepresentante)
+        {
+            if (string.IsNullOrWhiteSpace(nuevosDatos.NombreRepLegal) ||
+                string.IsNullOrWhiteSpace(nuevosDatos.ApellidoRepLegal) ||
+                string.IsNullOrWhiteSpace(nuevosDatos.CedulaRepLegal) ||
+                string.IsNullOrWhiteSpace(nuevosDatos.TelefonoRepLegal) ||
+                string.IsNullOrWhiteSpace(nuevosDatos.DireccionRepLegal))
+                return false;
+        }
+
+        if (cambiarApoderado)
+        {
+            if (string.IsNullOrWhiteSpace(nuevosDatos.NombreApoAbogado) ||
+                string.IsNullOrWhiteSpace(nuevosDatos.ApellidoApoAbogado) ||
+                string.IsNullOrWhiteSpace(nuevosDatos.CedulaApoAbogado) ||
+                string.IsNullOrWhiteSpace(nuevosDatos.TelefonoApoAbogado) ||
+                string.IsNullOrWhiteSpace(nuevosDatos.CorreoApoAbogado) ||
+                string.IsNullOrWhiteSpace(nuevosDatos.DireccionApoAbogado))
+                return false;
+
+            if (nuevosDatos.PerteneceAFirma)
+            {
+                if (string.IsNullOrWhiteSpace(nuevosDatos.NombreFirma) ||
+                    string.IsNullOrWhiteSpace(nuevosDatos.CorreoFirma) ||
+                    string.IsNullOrWhiteSpace(nuevosDatos.TelefonoFirma) ||
+                    string.IsNullOrWhiteSpace(nuevosDatos.DireccionFirma))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
     private string ConstruirComentarioHistorial()
     {
         var cambios = new List<string>();
@@ -312,40 +315,26 @@ public partial class CambioMiembrosAsociacion : ComponentBase
             cambios.Add($"APODERADO LEGAL - ANTERIOR: {apoderadoAnterior}. " +
                        $"NUEVO: {nuevosDatos.NombreApoAbogado} {nuevosDatos.ApellidoApoAbogado} (Cédula: {nuevosDatos.CedulaApoAbogado})");
         }
-        return $"CAMBIOS REALIZADOS - " +
-               $"Motivo: {comentarioCambio}. " +
-               $"Fecha del cambio: {fechaCambio:dd/MM/yyyy}. " +
+        
+        return $"CAMBIOS REALIZADOS - Motivo: {comentarioCambio}. " +
+               $"Fecha: {fechaCambio:dd/MM/yyyy}. " +
                $"Resolución: {(!string.IsNullOrEmpty(numeroResolucionCambio) ? numeroResolucionCambio : "No especificada")}. " +
                string.Join(" | ", cambios);
     }
-    
-    private EditForm? formulario;
 
-// Agregar este método para verificar el estado de validación
-    private bool FormularioEsValido()
-    {
-        return formulario?.EditContext?.Validate() == true;
-    }
-
-// Modificar el método PuedeGuardar
     private bool PuedeGuardar()
     {
         if (!cambiarRepresentante && !cambiarApoderado)
             return false;
 
-        // Verificar validación del formulario
-        if (!FormularioEsValido())
-            return false;
-
-        // Verificar campos adicionales que no están en el modelo
         if (string.IsNullOrWhiteSpace(comentarioCambio) || fechaCambio == default)
             return false;
 
-        return true;
+        return EsFormularioValido();
     }
     
     private void Volver()
     {
-        Navigation.NavigateTo($"/admin/listado");
+        Navigation.NavigateTo("/admin/listado");
     }
 }

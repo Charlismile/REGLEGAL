@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Components.Forms;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
 
-
 namespace REGISTROLEGAL.Components.Pages.Tramites;
 
 public partial class CambioDirectiva : ComponentBase
@@ -16,7 +15,7 @@ public partial class CambioDirectiva : ComponentBase
     [Inject] ICommon CommonService { get; set; }
     [Parameter] public int ComiteId { get; set; }
 
-    private ComiteModel CModel { get; set; } = new();
+    private CambioDirectivaModel CModel { get; set; } = new(); // 🔹 Usar modelo específico
     private EditContext editContext = default!;
     private string MensajeExito = "";
     private string MensajeError = "";
@@ -33,7 +32,6 @@ public partial class CambioDirectiva : ComponentBase
     private string searchText = "";
     private List<ComiteModel> sugerencias = new();
     private int? ComiteSeleccionadoId;
-    private string? ComiteSeleccionadoNombre;
 
     // Nombres para mostrar ubicación (solo lectura)
     private string RegionNombre => Regiones.FirstOrDefault(r => r.Id == CModel.RegionSaludId)?.Name ?? "";
@@ -50,7 +48,7 @@ public partial class CambioDirectiva : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        CModel.TipoTramiteEnum = TipoTramite.CambioDirectiva;
+        CModel = new CambioDirectivaModel(); // 🔹 Usar modelo específico
         editContext = new EditContext(CModel);
         await CargarListasIniciales();
         await ObtenerUsuarioActual();
@@ -58,10 +56,6 @@ public partial class CambioDirectiva : ComponentBase
         if (ComiteId > 0)
         {
             await CargarComiteExistente();
-        }
-        else
-        {
-            CModel = new ComiteModel { TipoTramiteEnum = TipoTramite.CambioDirectiva };
         }
     }
 
@@ -95,8 +89,12 @@ public partial class CambioDirectiva : ComponentBase
         sugerencias.Clear();
         searchText = seleccionado.NombreComiteSalud;
         var comiteCompleto = await RegistroComiteService.ObtenerComiteCompletoAsync(seleccionado.ComiteId);
+
         if (comiteCompleto != null)
         {
+            // Asignar ComiteBaseId al modelo específico
+            CModel.ComiteBaseId = comiteCompleto.ComiteId;
+
             // Copiar datos heredables
             CModel.NombreComiteSalud = comiteCompleto.NombreComiteSalud;
             CModel.Comunidad = comiteCompleto.Comunidad;
@@ -110,7 +108,82 @@ public partial class CambioDirectiva : ComponentBase
         StateHasChanged();
     }
 
-    // Propiedad para enlazar el input de búsqueda
+    private async Task HandleValidSubmit()
+    {
+        IsSubmitting = true;
+        MensajeError = "";
+        MensajeExito = "";
+        MostrarErrores = true;
+
+        // Validación específica para Cambio de Directiva
+        if (ComiteSeleccionadoId == null)
+        {
+            MensajeError = "Debe seleccionar un comité con personería.";
+            IsSubmitting = false;
+            return;
+        }
+
+        try
+        {
+            // Validar miembros
+            if (CModel.Miembros.Count != NUMERO_MIEMBROS_FIJO)
+            {
+                MensajeError = $"Debe haber exactamente {NUMERO_MIEMBROS_FIJO} miembros.";
+                IsSubmitting = false;
+                return;
+            }
+
+            foreach (var m in CModel.Miembros)
+            {
+                if (string.IsNullOrWhiteSpace(m.NombreMiembro) ||
+                    string.IsNullOrWhiteSpace(m.ApellidoMiembro) ||
+                    string.IsNullOrWhiteSpace(m.CedulaMiembro) ||
+                    m.CargoId == 0)
+                {
+                    MensajeError = "Todos los miembros deben tener nombre, apellido, cédula y cargo.";
+                    IsSubmitting = false;
+                    return;
+                }
+            }
+
+            if (!ArchivosSeleccionados.Any())
+            {
+                MensajeError = "Debe adjuntar al menos un archivo de resolución.";
+                IsSubmitting = false;
+                return;
+            }
+
+            if (string.IsNullOrEmpty(CModel.CreadaPor))
+                await ObtenerUsuarioActual();
+
+            // 🔹 USAR EL MÉTODO ESPECÍFICO PARA CAMBIO DE DIRECTIVA
+            var result = await RegistroComiteService.RegistrarCambioDirectiva(CModel);
+
+            if (!result.Success)
+            {
+                MensajeError = $"Error al registrar cambio: {result.Message}";
+                IsSubmitting = false;
+                return;
+            }
+
+            foreach (var archivo in ArchivosSeleccionados)
+            {
+                await ArchivoLegalService.GuardarArchivoComiteAsync(result.Id, archivo, "RESOLUCION CAMBIO DIRECTIVA");
+            }
+
+            MensajeExito = "✅ Cambio de Junta Directiva registrado exitosamente!";
+            StateHasChanged();
+            await Task.Delay(2000);
+            Navigation.NavigateTo("/admin/listado");
+        }
+        catch (Exception ex)
+        {
+            MensajeError = $"Error: {ex.Message}";
+            IsSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
     private string SearchText
     {
         get => searchText;
@@ -149,11 +222,13 @@ public partial class CambioDirectiva : ComponentBase
                 MensajeError = $"El archivo {file.Name} debe ser PDF.";
                 continue;
             }
+
             if (file.Size > 50 * 1024 * 1024)
             {
                 MensajeError = $"El archivo {file.Name} excede el límite de 50 MB.";
                 continue;
             }
+
             ArchivosSeleccionados.Add(file);
         }
         StateHasChanged();
@@ -174,99 +249,27 @@ public partial class CambioDirectiva : ComponentBase
 
     private async Task CargarComiteExistente()
     {
-        // En edición, se espera que sea un cambio de junta ya registrado
         var comite = await RegistroComiteService.ObtenerComiteCompletoAsync(ComiteId);
         if (comite != null && comite.TipoTramiteEnum == TipoTramite.CambioDirectiva)
         {
-            CModel = comite;
+            // Convertir ComiteModel a CambioDirectivaModel
+            CModel.ComiteId = comite.ComiteId;
+            CModel.ComiteBaseId = comite.ComiteBaseId ?? 0;
+            CModel.NombreComiteSalud = comite.NombreComiteSalud;
+            CModel.Comunidad = comite.Comunidad;
+            CModel.RegionSaludId = comite.RegionSaludId;
+            CModel.ProvinciaId = comite.ProvinciaId;
+            CModel.DistritoId = comite.DistritoId;
+            CModel.CorregimientoId = comite.CorregimientoId;
+            CModel.NumeroResolucion = comite.NumeroResolucion;
+            CModel.FechaResolucion = comite.FechaResolucion;
+            CModel.FechaEleccion = comite.FechaEleccion ?? DateTime.Now;
+            CModel.CreadaPor = comite.CreadaPor;
+            CModel.Miembros = comite.Miembros;
+
             miembrosDesplegados = true;
             ComiteSeleccionadoId = comite.ComiteId;
-            // Recargar listas para ubicación
             await CargarListasIniciales();
-        }
-    }
-
-    private void HandleInvalidSubmit(EditContext context)
-    {
-        erroresFormulario.Clear();
-        var mensajes = context.GetValidationMessages();
-        foreach (var msg in mensajes)
-        {
-            erroresFormulario.Add(msg);
-        }
-    }
-    private async Task HandleValidSubmit()
-    {
-        IsSubmitting = true;
-        MensajeError = "";
-        MensajeExito = "";
-        MostrarErrores = true;
-
-        if (ComiteSeleccionadoId == null)
-        {
-            MensajeError = "Debe seleccionar un comité con personería.";
-            IsSubmitting = false;
-            return;
-        }
-
-        try
-        {
-            if (CModel.Miembros.Count != NUMERO_MIEMBROS_FIJO)
-            {
-                MensajeError = $"Debe haber exactamente {NUMERO_MIEMBROS_FIJO} miembros.";
-                IsSubmitting = false;
-                return;
-            }
-
-            foreach (var m in CModel.Miembros)
-            {
-                if (string.IsNullOrWhiteSpace(m.NombreMiembro) ||
-                    string.IsNullOrWhiteSpace(m.ApellidoMiembro) ||
-                    string.IsNullOrWhiteSpace(m.CedulaMiembro) ||
-                    m.CargoId == 0)
-                {
-                    MensajeError = "Todos los miembros deben tener nombre, apellido, cédula y cargo.";
-                    IsSubmitting = false;
-                    return;
-                }
-            }
-
-            if (!ArchivosSeleccionados.Any())
-            {
-                MensajeError = "Debe adjuntar al menos un archivo de resolución.";
-                IsSubmitting = false;
-                return;
-            }
-
-            if (string.IsNullOrEmpty(CModel.CreadaPor))
-                await ObtenerUsuarioActual();
-
-            // Asignar fecha de creación = hoy (no se usa en UI, pero puede ser útil en BD)
-            CModel.FechaCreacion = DateTime.Now;
-
-            var result = await RegistroComiteService.CrearComite(CModel);
-            if (!result.Success)
-            {
-                MensajeError = $"Error al registrar cambio: {result.Message}";
-                IsSubmitting = false;
-                return;
-            }
-
-            foreach (var archivo in ArchivosSeleccionados)
-            {
-                await ArchivoLegalService.GuardarArchivoComiteAsync(result.Id, archivo, "RESOLUCION CAMBIO DIRECTIVA");
-            }
-
-            MensajeExito = "✅ Cambio de Junta Directiva registrado exitosamente!";
-            StateHasChanged();
-            await Task.Delay(2000);
-            Navigation.NavigateTo("/admin/listado");
-        }
-        catch (Exception ex)
-        {
-            MensajeError = $"Error: {ex.Message}";
-            IsSubmitting = false;
-            StateHasChanged();
         }
     }
 

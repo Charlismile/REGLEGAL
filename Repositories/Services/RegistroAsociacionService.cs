@@ -324,7 +324,8 @@ namespace REGISTROLEGAL.Repositories.Services
                             var archivoEntity = new TbArchivosAsociacion
                             {
                                 AsociacionId = asociacion.AsociacionId,
-                                Categoria = string.IsNullOrWhiteSpace(archivo.Categoria) ? "General" : archivo.Categoria,
+                                Categoria =
+                                    string.IsNullOrWhiteSpace(archivo.Categoria) ? "General" : archivo.Categoria,
                                 NombreOriginal = archivo.NombreArchivo ?? "archivo",
                                 NombreArchivoGuardado = nombreGuardado,
                                 Url = archivo.RutaArchivo ?? string.Empty,
@@ -358,6 +359,143 @@ namespace REGISTROLEGAL.Repositories.Services
                 {
                     Success = false,
                     Message = $"Error al actualizar la asociación: {ex.Message}"
+                };
+            }
+        }
+
+        // ===============================
+        // 🔹 ACTUALIZAR SOLO MIEMBROS (Cambio de Representante/Apoderado)
+        // ===============================
+        public async Task<ResultModel> ActualizarMiembrosAsociacionAsync(int asociacionId, CambioMiembrosModel miembros,
+            string usuarioId)
+        {
+            if (asociacionId <= 0)
+                return new ResultModel { Success = false, Message = "ID de asociación inválido." };
+
+            if (string.IsNullOrWhiteSpace(usuarioId))
+                return new ResultModel { Success = false, Message = "Usuario no autenticado." };
+
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // =============== 1. Cargar asociación con relaciones ===============
+                var asociacion = await context.TbAsociacion
+                    .Include(a => a.RepLegal)
+                    .Include(a => a.ApoAbogado)
+                    .FirstOrDefaultAsync(a => a.AsociacionId == asociacionId);
+
+                if (asociacion == null)
+                    return new ResultModel { Success = false, Message = "Asociación no encontrada." };
+
+                // =============== 2. Cargar el registro formal (detalle) ===============
+                var detalleRegistro = await context.TbDetalleRegAsociacion
+                    .FirstOrDefaultAsync(d => d.AsociacionId == asociacionId);
+
+                if (detalleRegistro == null)
+                    return new ResultModel { Success = false, Message = "Registro formal no encontrado." };
+
+                // =============== 3. Actualizar SOLO campos de representante legal ===============
+                if (!string.IsNullOrWhiteSpace(miembros.NombreRepLegal))
+                {
+                    if (asociacion.RepLegal != null)
+                    {
+                        // Actualizar representante existente
+                        asociacion.RepLegal.NombreRepLegal = miembros.NombreRepLegal.Trim();
+                        asociacion.RepLegal.ApellidoRepLegal = miembros.ApellidoRepLegal?.Trim() ?? string.Empty;
+                        asociacion.RepLegal.CedulaRepLegal = miembros.CedulaRepLegal?.Trim() ?? string.Empty;
+                        asociacion.RepLegal.CargoRepLegal = "Presidente"; // Siempre es Presidente
+                        asociacion.RepLegal.TelefonoRepLegal = miembros.TelefonoRepLegal?.Trim() ?? string.Empty;
+                        asociacion.RepLegal.DireccionRepLegal = miembros.DireccionRepLegal?.Trim() ?? string.Empty;
+                    }
+                    else
+                    {
+                        // Crear nuevo representante
+                        asociacion.RepLegal = new TbRepresentanteLegal
+                        {
+                            NombreRepLegal = miembros.NombreRepLegal.Trim(),
+                            ApellidoRepLegal = miembros.ApellidoRepLegal?.Trim() ?? string.Empty,
+                            CedulaRepLegal = miembros.CedulaRepLegal?.Trim() ?? string.Empty,
+                            CargoRepLegal = "Presidente",
+                            TelefonoRepLegal = miembros.TelefonoRepLegal?.Trim() ?? string.Empty,
+                            DireccionRepLegal = miembros.DireccionRepLegal?.Trim() ?? string.Empty
+                        };
+                    }
+                }
+
+                // =============== 4. Actualizar SOLO campos de apoderado legal ===============
+                if (!string.IsNullOrWhiteSpace(miembros.NombreApoAbogado))
+                {
+                    if (asociacion.ApoAbogado != null)
+                    {
+                        // Actualizar apoderado existente
+                        asociacion.ApoAbogado.NombreApoAbogado = miembros.NombreApoAbogado.Trim();
+                        asociacion.ApoAbogado.ApellidoApoAbogado = miembros.ApellidoApoAbogado?.Trim() ?? string.Empty;
+                        asociacion.ApoAbogado.CedulaApoAbogado = miembros.CedulaApoAbogado?.Trim() ?? string.Empty;
+                        asociacion.ApoAbogado.TelefonoApoAbogado = miembros.TelefonoApoAbogado?.Trim() ?? string.Empty;
+                        asociacion.ApoAbogado.CorreoApoAbogado = miembros.CorreoApoAbogado?.Trim() ?? string.Empty;
+                        asociacion.ApoAbogado.DireccionApoAbogado =
+                            miembros.DireccionApoAbogado?.Trim() ?? string.Empty;
+                    }
+                    else
+                    {
+                        // Crear nuevo apoderado
+                        asociacion.ApoAbogado = new TbApoderadoLegal
+                        {
+                            NombreApoAbogado = miembros.NombreApoAbogado.Trim(),
+                            ApellidoApoAbogado = miembros.ApellidoApoAbogado?.Trim() ?? string.Empty,
+                            CedulaApoAbogado = miembros.CedulaApoAbogado?.Trim() ?? string.Empty,
+                            TelefonoApoAbogado = miembros.TelefonoApoAbogado?.Trim() ?? string.Empty,
+                            CorreoApoAbogado = miembros.CorreoApoAbogado?.Trim() ?? string.Empty,
+                            DireccionApoAbogado = miembros.DireccionApoAbogado?.Trim() ?? string.Empty
+                        };
+                    }
+                }
+
+                // =============== 5. Actualizar información de firma si aplica ===============
+                if (!string.IsNullOrWhiteSpace(miembros.NombreApoAbogado) && miembros.PerteneceAFirma)
+                {
+                    // Aquí puedes agregar lógica para manejar la firma si es necesario
+                    // Por ahora, solo actualizamos los campos básicos del apoderado
+                }
+
+                // =============== 6. Actualizar auditoría del registro formal ===============
+                detalleRegistro.CreadaPor = usuarioId;
+                detalleRegistro.CreadaEn = DateTime.UtcNow;
+
+                // =============== 7. Guardar cambios ===============
+                context.TbAsociacion.Update(asociacion);
+                context.TbDetalleRegAsociacion.Update(detalleRegistro);
+                await context.SaveChangesAsync();
+
+                // =============== 8. Registrar en historial ===============
+                await _historialRegistro.RegistrarHistorialAsociacionAsync(
+                    detRegAsociacionId: detalleRegistro.DetRegAsociacionId,
+                    asociacionId: asociacion.AsociacionId,
+                    accion: "CAMBIOS_MIEMBROS",
+                    comentario: "Cambio de miembros realizado - Representante y/o Apoderado Legal",
+                    usuarioId: usuarioId
+                );
+
+                await transaction.CommitAsync();
+
+                return new ResultModel
+                {
+                    Success = true,
+                    Message = "Cambio de miembros realizado exitosamente.",
+                    AsociacionId = asociacion.AsociacionId,
+                    RegistroId = detalleRegistro.DetRegAsociacionId,
+                    NumeroRegistro = detalleRegistro.NumRegAcompleta
+                };
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return new ResultModel
+                {
+                    Success = false,
+                    Message = $"Error al actualizar los miembros: {ex.Message}"
                 };
             }
         }

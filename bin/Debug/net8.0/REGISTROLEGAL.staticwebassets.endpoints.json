@@ -1241,6 +1241,88 @@
       ]
     },
     {
+      "Route": "uploads/documentos-asociacion/CAMBIOS_MIEMBROS/2/94c83ce0-3664-46f3-877a-f283683c50fd.om77y22mqq.pdf",
+      "AssetFile": "uploads/documentos-asociacion/CAMBIOS_MIEMBROS/2/94c83ce0-3664-46f3-877a-f283683c50fd.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "59337"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 20 Nov 2025 15:38:01 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "om77y22mqq"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-asociacion/CAMBIOS_MIEMBROS/2/94c83ce0-3664-46f3-877a-f283683c50fd.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-asociacion/CAMBIOS_MIEMBROS/2/94c83ce0-3664-46f3-877a-f283683c50fd.pdf",
+      "AssetFile": "uploads/documentos-asociacion/CAMBIOS_MIEMBROS/2/94c83ce0-3664-46f3-877a-f283683c50fd.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "59337"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 20 Nov 2025 15:38:01 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY="
+        }
+      ]
+    },
+    {
       "Route": "uploads/documentos-asociacion/DocumentosAsociacion/0/9a3fd551-09cc-419d-9c0f-c73723d01fa9.8aqhuamaeh.pdf",
       "AssetFile": "uploads/documentos-asociacion/DocumentosAsociacion/0/9a3fd551-09cc-419d-9c0f-c73723d01fa9.pdf",
       "Selectors": [],

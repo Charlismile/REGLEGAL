@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using REGISTROLEGAL.Models.LegalModels;
 using REGISTROLEGAL.Repositories.Interfaces;
 using REGISTROLEGAL.Repositories.Services;
@@ -16,7 +15,7 @@ public partial class Personeria : ComponentBase
     [Inject] IArchivoLegalService ArchivoLegalService { get; set; }
     [Inject] AuthenticationStateProvider AuthenticationStateProvider { get; set; }
     [Inject] ICommon CommonService { get; set; }
-    private ComiteModel CModel { get; set; } = new();
+    private PersoneriaModel CModel { get; set; } = new();
     private EditContext editContext = default!;
     private string MensajeExito = "";
     private string MensajeError = "";
@@ -27,8 +26,7 @@ public partial class Personeria : ComponentBase
     private string? _archivoResolucionUrl;
     private bool MostrarErrores = false;
     private List<string> erroresFormulario = new();
-    private ValidationMessageStore messageStore;
-   
+    private ValidationMessageStore messageStore = default!;
 
     // Listas
     private List<ListModel> Regiones = new();
@@ -39,14 +37,14 @@ public partial class Personeria : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        CModel.TipoTramiteEnum = TipoTramite.Personeria;
+        CModel = new PersoneriaModel();
         editContext = new EditContext(CModel);
         messageStore = new ValidationMessageStore(editContext);
         editContext.OnValidationRequested += OnValidationRequested;
-        
+
         await CargarListasIniciales();
         await ObtenerUsuarioActual();
-        
+
         if (ComiteId > 0)
         {
             await CargarComiteExistente();
@@ -61,6 +59,7 @@ public partial class Personeria : ComponentBase
     {
         messageStore.Clear();
 
+        // Validaciones específicas para Personería
         if (string.IsNullOrWhiteSpace(CModel.NombreComiteSalud))
             messageStore.Add(() => CModel.NombreComiteSalud, "El nombre del comité es obligatorio.");
 
@@ -69,6 +68,43 @@ public partial class Personeria : ComponentBase
 
         if (string.IsNullOrWhiteSpace(CModel.NumeroResolucion))
             messageStore.Add(() => CModel.NumeroResolucion, "Debe indicar el número de resolución.");
+
+        if (string.IsNullOrWhiteSpace(CModel.NumeroNota))
+            messageStore.Add(() => CModel.NumeroNota, "Debe indicar el número de nota.");
+
+        if (CModel.FechaCreacion == default)
+            messageStore.Add(() => CModel.FechaCreacion, "La fecha de creación es obligatoria.");
+
+        // Validar ubicación para Personería
+        if (!CModel.RegionSaludId.HasValue)
+            messageStore.Add(() => CModel.RegionSaludId, "La región es obligatoria.");
+
+        if (!CModel.ProvinciaId.HasValue)
+            messageStore.Add(() => CModel.ProvinciaId, "La provincia es obligatoria.");
+
+        // Validar miembros manualmente
+        if (CModel.Miembros.Count != NUMERO_MIEMBROS_FIJO)
+        {
+            messageStore.Add(() => CModel.Miembros, $"Debe haber exactamente {NUMERO_MIEMBROS_FIJO} miembros.");
+        }
+        else
+        {
+            for (int i = 0; i < CModel.Miembros.Count; i++)
+            {
+                var miembro = CModel.Miembros[i];
+                if (string.IsNullOrWhiteSpace(miembro.NombreMiembro))
+                    messageStore.Add(() => CModel.Miembros, $"El miembro {i + 1} debe tener un nombre.");
+
+                if (string.IsNullOrWhiteSpace(miembro.ApellidoMiembro))
+                    messageStore.Add(() => CModel.Miembros, $"El miembro {i + 1} debe tener un apellido.");
+
+                if (string.IsNullOrWhiteSpace(miembro.CedulaMiembro))
+                    messageStore.Add(() => CModel.Miembros, $"El miembro {i + 1} debe tener una cédula.");
+
+                if (miembro.CargoId == 0)
+                    messageStore.Add(() => CModel.Miembros, $"El miembro {i + 1} debe tener un cargo.");
+            }
+        }
 
         editContext.NotifyValidationStateChanged();
     }
@@ -88,6 +124,7 @@ public partial class Personeria : ComponentBase
         CModel.ProvinciaId = null;
         CModel.DistritoId = null;
         CModel.CorregimientoId = null;
+        StateHasChanged();
     }
 
     private async Task ProvinciaChanged(int? provinciaId)
@@ -97,6 +134,7 @@ public partial class Personeria : ComponentBase
         Corregimientos = new();
         CModel.DistritoId = null;
         CModel.CorregimientoId = null;
+        StateHasChanged();
     }
 
     private async Task DistritoChanged(int? distritoId)
@@ -104,6 +142,7 @@ public partial class Personeria : ComponentBase
         CModel.DistritoId = distritoId;
         Corregimientos = distritoId.HasValue ? await CommonService.GetCorregimientos(distritoId.Value) : new();
         CModel.CorregimientoId = null;
+        StateHasChanged();
     }
 
     private void DesplegarMiembros()
@@ -121,6 +160,7 @@ public partial class Personeria : ComponentBase
                 CModel.Miembros.Add(new MiembroComiteModel());
             }
         }
+
         StateHasChanged();
     }
 
@@ -134,13 +174,16 @@ public partial class Personeria : ComponentBase
                 MensajeError = $"El archivo {file.Name} debe ser PDF.";
                 continue;
             }
+
             if (file.Size > 50 * 1024 * 1024)
             {
                 MensajeError = $"El archivo {file.Name} excede el límite de 50 MB.";
                 continue;
             }
+
             ArchivosSeleccionados.Add(file);
         }
+
         StateHasChanged();
     }
 
@@ -187,6 +230,7 @@ public partial class Personeria : ComponentBase
             erroresFormulario.Add(msg);
         }
     }
+
     private async Task HandleValidSubmit()
     {
         IsSubmitting = true;
@@ -200,7 +244,7 @@ public partial class Personeria : ComponentBase
             MensajeError = "Por favor, complete todos los campos obligatorios antes de enviar.";
             return;
         }
-        
+
         try
         {
             if (CModel.Miembros.Count != NUMERO_MIEMBROS_FIJO)
@@ -233,7 +277,9 @@ public partial class Personeria : ComponentBase
             if (string.IsNullOrEmpty(CModel.CreadaPor))
                 await ObtenerUsuarioActual();
 
-            var result = await RegistroComiteService.CrearComite(CModel);
+            // 🔹 USAR EL MÉTODO ESPECÍFICO PARA PERSONERÍA
+            var result = await RegistroComiteService.CrearPersoneria(CModel);
+
             if (!result.Success)
             {
                 MensajeError = $"Error al crear comité: {result.Message}";

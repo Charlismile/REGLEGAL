@@ -72,6 +72,18 @@
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"xx1pdzb8px"},{"Name":"integrity","Value":"sha256-6\u002BDHv9T2\u002BfbO/m6npoRip/DK3OQzmLoS0uajMKpgx1U="},{"Name":"label","Value":"_content/REGISTROLEGAL/REGISTROLEGAL.bundle.scp.css"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"8197"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u00226\u002BDHv9T2\u002BfbO/m6npoRip/DK3OQzmLoS0uajMKpgx1U=\u0022"},{"Name":"Last-Modified","Value":"Tue, 11 Nov 2025 16:47:50 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-asociacion/CAMBIOS_MIEMBROS/2/94c83ce0-3664-46f3-877a-f283683c50fd.om77y22mqq.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-asociacion\CAMBIOS_MIEMBROS\2\94c83ce0-3664-46f3-877a-f283683c50fd.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"om77y22mqq"},{"Name":"integrity","Value":"sha256-oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY="},{"Name":"label","Value":"_content/REGISTROLEGAL/uploads/documentos-asociacion/CAMBIOS_MIEMBROS/2/94c83ce0-3664-46f3-877a-f283683c50fd.pdf"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"59337"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=\u0022"},{"Name":"Last-Modified","Value":"Thu, 20 Nov 2025 15:38:01 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-asociacion/CAMBIOS_MIEMBROS/2/94c83ce0-3664-46f3-877a-f283683c50fd.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-asociacion\CAMBIOS_MIEMBROS\2\94c83ce0-3664-46f3-877a-f283683c50fd.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"59337"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022oJM0d1P2OjPb4lH29qBfJ7az1WAWNF4gu8aQnga3YjY=\u0022"},{"Name":"Last-Modified","Value":"Thu, 20 Nov 2025 15:38:01 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-asociacion/DocumentosAsociacion/0/9a3fd551-09cc-419d-9c0f-c73723d01fa9.8aqhuamaeh.pdf">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-asociacion\DocumentosAsociacion\0\9a3fd551-09cc-419d-9c0f-c73723d01fa9.pdf'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>

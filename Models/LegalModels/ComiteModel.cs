@@ -10,71 +10,41 @@ public enum TipoTramite
     JuntaInterventora = 3 
 }
 
+// 🔹 MODELO BASE (para datos comunes) - NO abstract
 public class ComiteModel
 {
     public int ComiteId { get; set; }
-    
     public string? UsuarioId { get; set; }
-
-    [Required(ErrorMessage = "El tipo de trámite es obligatorio")]
-    public TipoTramite TipoTramiteEnum { get; set; }
     public string CreadaPor { get; set; } = "";
-
-    [Required(ErrorMessage = "El nombre del comité es obligatorio")]
-    [StringLength(200)]
-    public string NombreComiteSalud { get; set; } = "";
-    
     public int EstadoId { get; set; }
-
-    [Required(ErrorMessage = "El nombre de la comunidad es obligatorio")]
-    [StringLength(150)]
-    public string Comunidad { get; set; }
-
-    // 📌 Fechas y resolución
     
-    public DateTime? FechaRegistro { get; set; } = DateTime.Now;
-
-    [Required(ErrorMessage = "La fecha de creación es obligatoria")]
-    public DateTime FechaCreacion { get; set; } = DateTime.Now;
-
-    [Required(ErrorMessage = "La fecha de elección es obligatoria")]
-    public DateTime FechaEleccion { get; set; } = DateTime.Now;
-
     [Required(ErrorMessage = "El número de resolución es obligatorio")]
     [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
     public string NumeroResolucion { get; set; } = "";
 
-    [Required(ErrorMessage = "El número de nota es obligatorio")]
-    [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
-    public string NumeroNota { get; set; } = "";
-
-
     [Required(ErrorMessage = "La fecha de resolución es obligatoria")]
     public DateTime FechaResolucion { get; set; } = DateTime.Now;
 
-    // 📌 Ubicación
+    public List<IBrowserFile> DocumentosSubir { get; set; } = new();
+    public List<CArchivoModel> Archivos { get; set; } = new();
+    
+    // Campos comunes para todos los trámites
+    public TipoTramite TipoTramiteEnum { get; set; }
+    public string NombreComiteSalud { get; set; } = "";
+    public string Comunidad { get; set; } = "";
+    public DateTime? FechaCreacion { get; set; }
+    public DateTime? FechaEleccion { get; set; }
+    public string NumeroNota { get; set; } = "";
     public int? RegionSaludId { get; set; }
     public int? ProvinciaId { get; set; }
     public int? DistritoId { get; set; }
     public int? CorregimientoId { get; set; }
-
-    // 📌 Miembros
-    [MinLength(1, ErrorMessage = "Debe agregar al menos 1 miembro")]
     public List<MiembroComiteModel> Miembros { get; set; } = new();
-
     public List<MiembroComiteModel> MiembrosInterventores { get; set; } = new();
-
-    // 📌 Archivos
-    public List<CArchivoModel> Archivos { get; set; } = new();
-    public List<IBrowserFile> DocumentosSubir { get; set; } = new();
-
-    // 📌 Historial
     public List<DetalleRegComiteModel> Historial { get; set; } = new();
-    
     public IBrowserFile? CedulaFile { get; set; }
     public string? CedulaPreviewUrl { get; set; }
-
     public IBrowserFile? PasaporteFile { get; set; }
     public string? PasaportePreviewUrl { get; set; }
-
+    public int? ComiteBaseId { get; set; }
 }

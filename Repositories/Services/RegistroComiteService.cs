@@ -22,9 +22,9 @@ namespace REGISTROLEGAL.Repositories.Services
         }
 
         // ===============================
-        // 🔹 CREAR COMITÉ (VERSIÓN SIMPLIFICADA)
+        // 🔹 CREAR PERSONERÍA
         // ===============================
-        public async Task<ResultModel> CrearComite(ComiteModel model)
+        public async Task<ResultModel> CrearPersoneria(PersoneriaModel model)
         {
             if (string.IsNullOrWhiteSpace(model.CreadaPor))
             {
@@ -32,26 +32,23 @@ namespace REGISTROLEGAL.Repositories.Services
             }
 
             await using var context = await _contextFactory.CreateDbContextAsync();
-
-            // Aumentar timeout para esta operación específica
-            context.Database.SetCommandTimeout(120); // 2 minutos
-
+            context.Database.SetCommandTimeout(120);
             await using var transaction = await context.Database.BeginTransactionAsync();
 
             try
             {
-                // 1. Crear comité
+                // Crear comité de Personería
                 var comite = new TbComite
                 {
                     TipoTramite = (int)model.TipoTramiteEnum,
                     CreadaPor = model.CreadaPor,
-                    NombreComiteSalud = model.NombreComiteSalud?.Trim() ?? string.Empty,
-                    Comunidad = model.Comunidad?.Trim(),
                     FechaRegistro = DateTime.UtcNow,
-                    FechaEleccion = model.FechaEleccion,
                     NumeroResolucion = model.NumeroResolucion?.Trim(),
-                    NumeroNota = model.NumeroNota?.Trim(),
                     FechaResolucion = model.FechaResolucion,
+                    NombreComiteSalud = model.NombreComiteSalud?.Trim() ?? string.Empty,
+                    Comunidad = model.Comunidad?.Trim() ?? string.Empty,
+                    NumeroNota = model.NumeroNota?.Trim() ?? string.Empty,
+                    FechaEleccion = model.FechaCreacion ?? DateTime.UtcNow, 
                     RegionSaludId = model.RegionSaludId,
                     ProvinciaId = model.ProvinciaId,
                     DistritoId = model.DistritoId,
@@ -61,7 +58,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 context.TbComite.Add(comite);
                 await context.SaveChangesAsync();
 
-                // 2. Crear miembros
+                // Crear miembros
                 if (model.Miembros?.Any() == true)
                 {
                     var miembrosEntities = model.Miembros.Select(miembro => new TbMiembrosComite
@@ -77,7 +74,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     await context.SaveChangesAsync();
                 }
 
-                // 3. Crear registro formal
+                // Crear registro formal
                 var detalleRegistro = new TbDetalleRegComite
                 {
                     ComiteId = comite.ComiteId,
@@ -91,7 +88,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 context.TbDetalleRegComite.Add(detalleRegistro);
                 await context.SaveChangesAsync();
 
-                // 4. Historial - ejecutar en segundo plano sin esperar
+                // Historial en segundo plano
                 _ = Task.Run(async () =>
                 {
                     try
@@ -104,7 +101,7 @@ namespace REGISTROLEGAL.Repositories.Services
                             DetRegComiteId = detalleRegistro.DetRegComiteId,
                             ComiteId = comite.ComiteId,
                             CoEstadoSolicitudId = 1,
-                            ComentarioCo = "Solicitud de comité creada",
+                            ComentarioCo = "Personería creada",
                             UsuarioRevisorCo = model.CreadaPor,
                             FechaCambioCo = DateTime.UtcNow
                         });
@@ -113,8 +110,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     }
                     catch (Exception histEx)
                     {
-                        _logger.LogWarning(histEx, "No se pudo registrar historial para comité {ComiteId}",
-                            comite.ComiteId);
+                        _logger.LogWarning(histEx, "No se pudo registrar historial para personería {ComiteId}", comite.ComiteId);
                     }
                 });
 
@@ -124,27 +120,212 @@ namespace REGISTROLEGAL.Repositories.Services
                 {
                     Success = true,
                     Id = comite.ComiteId,
-                    Message = "Comité creado correctamente.",
+                    Message = "Personería registrada correctamente.",
                     RegistroId = detalleRegistro.DetRegComiteId
                 };
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "Error al crear comité para usuario {Usuario}", model.CreadaPor);
-                return new ResultModel { Success = false, Message = $"Error al crear comité: {ex.Message}" };
+                _logger.LogError(ex, "Error al crear personería para usuario {Usuario}", model.CreadaPor);
+                return new ResultModel { Success = false, Message = $"Error al crear personería: {ex.Message}" };
             }
         }
 
         // ===============================
-        // 🔹 ACTUALIZAR COMITÉ
+        // 🔹 REGISTRAR CAMBIO DE DIRECTIVA
+        // ===============================
+        public async Task<ResultModel> RegistrarCambioDirectiva(CambioDirectivaModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.CreadaPor))
+            {
+                return new ResultModel { Success = false, Message = "Usuario no autenticado." };
+            }
+
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            context.Database.SetCommandTimeout(120);
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Verificar que el comité base existe
+                var comiteBase = await context.TbComite.FindAsync(model.ComiteBaseId);
+                if (comiteBase == null)
+                    return new ResultModel { Success = false, Message = "Comité base no encontrado." };
+
+                // Crear registro de Cambio de Directiva
+                var cambioDirectiva = new TbComite
+                {
+                    TipoTramite = (int)model.TipoTramiteEnum,
+                    CreadaPor = model.CreadaPor,
+                    FechaRegistro = DateTime.UtcNow,
+                    NumeroResolucion = model.NumeroResolucion?.Trim(),
+                    FechaResolucion = model.FechaResolucion,
+                    FechaEleccion = model.FechaEleccion ?? DateTime.UtcNow, // Fixed: Now using nullable DateTime?
+                    
+                    // Heredar datos del comité base
+                    NombreComiteSalud = comiteBase.NombreComiteSalud,
+                    Comunidad = comiteBase.Comunidad,
+                    RegionSaludId = comiteBase.RegionSaludId,
+                    ProvinciaId = comiteBase.ProvinciaId,
+                    DistritoId = comiteBase.DistritoId,
+                    CorregimientoId = comiteBase.CorregimientoId,
+                    
+                    NumeroNota = "N/A" // No aplica
+                };
+
+                context.TbComite.Add(cambioDirectiva);
+                await context.SaveChangesAsync();
+
+                // Crear nuevos miembros
+                if (model.Miembros?.Any() == true)
+                {
+                    var miembrosEntities = model.Miembros.Select(miembro => new TbMiembrosComite
+                    {
+                        ComiteId = cambioDirectiva.ComiteId,
+                        NombreMiembro = miembro.NombreMiembro?.Trim() ?? string.Empty,
+                        ApellidoMiembro = miembro.ApellidoMiembro?.Trim() ?? string.Empty,
+                        CedulaMiembro = miembro.CedulaMiembro?.Trim() ?? string.Empty,
+                        CargoId = miembro.CargoId
+                    }).ToList();
+
+                    context.TbMiembrosComite.AddRange(miembrosEntities);
+                    await context.SaveChangesAsync();
+                }
+
+                // Crear registro formal
+                var detalleRegistro = new TbDetalleRegComite
+                {
+                    ComiteId = cambioDirectiva.ComiteId,
+                    CreadaPor = model.CreadaPor,
+                    CreadaEn = DateTime.UtcNow,
+                    NumeroRegistro = model.NumeroResolucion?.Trim(),
+                    CoEstadoSolicitudId = 1,
+                    FechaResolucion = model.FechaResolucion
+                };
+
+                context.TbDetalleRegComite.Add(detalleRegistro);
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return new ResultModel
+                {
+                    Success = true,
+                    Id = cambioDirectiva.ComiteId,
+                    Message = "Cambio de directiva registrado correctamente.",
+                    RegistroId = detalleRegistro.DetRegComiteId
+                };
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error al registrar cambio de directiva para comité base {ComiteBaseId}", model.ComiteBaseId);
+                return new ResultModel { Success = false, Message = $"Error al registrar cambio de directiva: {ex.Message}" };
+            }
+        }
+
+        // ===============================
+        // 🔹 REGISTRAR JUNTA INTERVENTORA
+        // ===============================
+        public async Task<ResultModel> RegistrarJuntaInterventora(JuntaInterventoraModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.CreadaPor))
+            {
+                return new ResultModel { Success = false, Message = "Usuario no autenticado." };
+            }
+
+            await using var context = await _contextFactory.CreateDbContextAsync();
+            context.Database.SetCommandTimeout(120);
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Verificar que el comité base existe
+                var comiteBase = await context.TbComite.FindAsync(model.ComiteBaseId);
+                if (comiteBase == null)
+                    return new ResultModel { Success = false, Message = "Comité base no encontrado." };
+
+                // Crear registro de Junta Interventora
+                var juntaInterventora = new TbComite
+                {
+                    TipoTramite = (int)model.TipoTramiteEnum,
+                    CreadaPor = model.CreadaPor,
+                    FechaRegistro = DateTime.UtcNow,
+                    NumeroResolucion = model.NumeroResolucion?.Trim(),
+                    FechaResolucion = model.FechaResolucion,
+                    FechaEleccion = model.FechaEleccion ?? DateTime.UtcNow, // Fixed: Now using nullable DateTime?
+                    
+                    // Heredar datos del comité base
+                    NombreComiteSalud = comiteBase.NombreComiteSalud,
+                    Comunidad = comiteBase.Comunidad,
+                    RegionSaludId = comiteBase.RegionSaludId,
+                    ProvinciaId = comiteBase.ProvinciaId,
+                    DistritoId = comiteBase.DistritoId,
+                    CorregimientoId = comiteBase.CorregimientoId,
+                    
+                    NumeroNota = "N/A" // No aplica
+                };
+
+                context.TbComite.Add(juntaInterventora);
+                await context.SaveChangesAsync();
+
+                // Crear interventores
+                if (model.Interventores?.Any() == true)
+                {
+                    var interventoresEntities = model.Interventores.Select(miembro => new TbMiembrosComite
+                    {
+                        ComiteId = juntaInterventora.ComiteId,
+                        NombreMiembro = miembro.NombreMiembro?.Trim() ?? string.Empty,
+                        ApellidoMiembro = miembro.ApellidoMiembro?.Trim() ?? string.Empty,
+                        CedulaMiembro = miembro.CedulaMiembro?.Trim() ?? string.Empty,
+                        CargoId = miembro.CargoId
+                    }).ToList();
+
+                    context.TbMiembrosComite.AddRange(interventoresEntities);
+                    await context.SaveChangesAsync();
+                }
+
+                // Crear registro formal
+                var detalleRegistro = new TbDetalleRegComite
+                {
+                    ComiteId = juntaInterventora.ComiteId,
+                    CreadaPor = model.CreadaPor,
+                    CreadaEn = DateTime.UtcNow,
+                    NumeroRegistro = model.NumeroResolucion?.Trim(),
+                    CoEstadoSolicitudId = 1,
+                    FechaResolucion = model.FechaResolucion
+                };
+
+                context.TbDetalleRegComite.Add(detalleRegistro);
+                await context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return new ResultModel
+                {
+                    Success = true,
+                    Id = juntaInterventora.ComiteId,
+                    Message = "Junta interventora registrada correctamente.",
+                    RegistroId = detalleRegistro.DetRegComiteId
+                };
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error al registrar junta interventora para comité base {ComiteBaseId}", model.ComiteBaseId);
+                return new ResultModel { Success = false, Message = $"Error al registrar junta interventora: {ex.Message}" };
+            }
+        }
+
+        // ===============================
+        // 🔹 ACTUALIZAR COMITÉ (para compatibilidad)
         // ===============================
         public async Task<ResultModel> ActualizarComite(ComiteModel model)
         {
             if (model.ComiteId <= 0)
                 return new ResultModel { Success = false, Message = "ID de comité inválido." };
 
-            // Cambiar esta validación:
             if (string.IsNullOrWhiteSpace(model.CreadaPor))
                 return new ResultModel { Success = false, Message = "Usuario no autenticado." };
 
@@ -153,7 +334,7 @@ namespace REGISTROLEGAL.Repositories.Services
 
             try
             {
-                // =============== 1. Cargar comité con miembros ===============
+                // Cargar comité con miembros
                 var comite = await context.TbComite
                     .Include(c => c.TbMiembrosComite)
                     .FirstOrDefaultAsync(c => c.ComiteId == model.ComiteId);
@@ -161,14 +342,14 @@ namespace REGISTROLEGAL.Repositories.Services
                 if (comite == null)
                     return new ResultModel { Success = false, Message = "Comité no encontrado." };
 
-                // =============== 2. Cargar registro formal ===============
+                // Cargar registro formal
                 var detalleRegistro = await context.TbDetalleRegComite
                     .FirstOrDefaultAsync(d => d.ComiteId == model.ComiteId);
 
                 if (detalleRegistro == null)
                     return new ResultModel { Success = false, Message = "Registro formal no encontrado." };
 
-                // =============== 3. Actualizar comité ===============
+                // Actualizar comité
                 comite.NombreComiteSalud = model.NombreComiteSalud?.Trim() ?? comite.NombreComiteSalud;
                 comite.Comunidad = model.Comunidad?.Trim() ?? comite.Comunidad;
                 comite.NumeroResolucion = model.NumeroResolucion?.Trim() ?? comite.NumeroResolucion;
@@ -180,7 +361,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 comite.DistritoId = model.DistritoId;
                 comite.CorregimientoId = model.CorregimientoId;
 
-                // =============== 4. Actualizar miembros (reemplazar) ===============
+                // Actualizar miembros (reemplazar)
                 context.TbMiembrosComite.RemoveRange(comite.TbMiembrosComite);
                 if (model.Miembros?.Any() == true)
                 {
@@ -197,7 +378,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     }
                 }
 
-                // =============== 5. Actualizar registro formal ===============
+                // Actualizar registro formal
                 detalleRegistro.ModificadaPor = model.UsuarioId;
                 detalleRegistro.ModificadaEn = DateTime.UtcNow;
                 detalleRegistro.CoEstadoSolicitudId = model.EstadoId;
@@ -207,12 +388,12 @@ namespace REGISTROLEGAL.Repositories.Services
 
                 await context.SaveChangesAsync();
 
-                // =============== 6. Registrar en historial ===============
+                // Registrar en historial
                 await _historialRegistro.RegistrarHistorialComiteAsync(
                     detRegComiteId: detalleRegistro.DetRegComiteId,
                     comiteId: comite.ComiteId,
                     estadoId: 1,
-                    comentario: "Solicitud de comité creada",
+                    comentario: "Comité actualizado",
                     usuarioId: model.CreadaPor
                 );
 
@@ -268,7 +449,7 @@ namespace REGISTROLEGAL.Repositories.Services
         }
 
         // ===============================
-        // 🔹 OBTENER TODOS LOS COMITÉS (CORREGIDO)
+        // 🔹 OBTENER TODOS LOS COMITÉS
         // ===============================
         public async Task<List<ComiteModel>> ObtenerComites()
         {
@@ -279,7 +460,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 {
                     ComiteId = c.ComiteId,
                     NombreComiteSalud = c.NombreComiteSalud,
-                    TipoTramiteEnum = (TipoTramite)c.TipoTramite // ✅ INCLUIR ESTO
+                    TipoTramiteEnum = (TipoTramite)c.TipoTramite
                 })
                 .OrderBy(c => c.NombreComiteSalud)
                 .ToListAsync();
@@ -324,11 +505,11 @@ namespace REGISTROLEGAL.Repositories.Services
                 TipoTramiteEnum = (TipoTramite)entity.TipoTramite,
                 NombreComiteSalud = entity.NombreComiteSalud,
                 Comunidad = entity.Comunidad,
-                FechaCreacion = entity.FechaRegistro ?? DateTime.Today,
-                FechaEleccion = entity.FechaEleccion ?? DateTime.Today,
+                FechaCreacion = entity.FechaRegistro,
+                FechaEleccion = entity.FechaEleccion,
                 NumeroResolucion = entity.NumeroResolucion,
                 NumeroNota = entity.NumeroNota,
-                FechaResolucion = entity.FechaResolucion ?? DateTime.Today,
+                FechaResolucion = entity.FechaResolucion,
                 RegionSaludId = entity.RegionSaludId,
                 ProvinciaId = entity.ProvinciaId,
                 DistritoId = entity.DistritoId,
@@ -344,6 +525,9 @@ namespace REGISTROLEGAL.Repositories.Services
             };
         }
 
+        // ===============================
+        // 🔹 OBTENER HISTORIAL DE COMITÉ
+        // ===============================
         public async Task<List<HistorialComiteModel>> ObtenerHistorialComite(int comiteId)
         {
             await using var context = await _contextFactory.CreateDbContextAsync();
@@ -355,14 +539,13 @@ namespace REGISTROLEGAL.Repositories.Services
                 {
                     HistorialId = h.RegComiteSolId,
                     ComiteId = h.ComiteId,
-                    Accion = h.CoEstadoSolicitudId.ToString(), // Convertir a string temporalmente
+                    Accion = h.CoEstadoSolicitudId.ToString(),
                     Comentario = h.ComentarioCo,
                     Usuario = h.UsuarioRevisorCo,
                     Fecha = h.FechaCambioCo ?? DateTime.Today,
                 })
                 .ToListAsync();
 
-            // Si tienes la tabla de estados, puedes mapear los nombres aquí
             foreach (var item in historial)
             {
                 item.Accion = MapEstadoAccion(int.Parse(item.Accion));
@@ -370,21 +553,6 @@ namespace REGISTROLEGAL.Repositories.Services
 
             return historial;
         }
-
-        // Método auxiliar para convertir estado numérico a texto
-        private string MapEstadoAccion(int estadoId)
-        {
-            return estadoId switch
-            {
-                1 => "Creado",
-                2 => "En revisión", 
-                3 => "Aprobado",
-                4 => "Rechazado",
-                5 => "Actualizado",
-                _ => $"Estado {estadoId}"
-            };
-        }
-
 
         // ===============================
         // 🔹 GUARDAR ARCHIVO DE RESOLUCIÓN
@@ -432,6 +600,158 @@ namespace REGISTROLEGAL.Repositories.Services
             }
 
             return result;
+        }
+
+        // ===============================
+        // 🔹 MÉTODO AUXILIAR PARA MAPEAR ESTADOS
+        // ===============================
+        private string MapEstadoAccion(int estadoId)
+        {
+            return estadoId switch
+            {
+                1 => "Creado",
+                2 => "En revisión",
+                3 => "Aprobado",
+                4 => "Rechazado",
+                5 => "Actualizado",
+                _ => $"Estado {estadoId}"
+            };
+        }
+
+        // ===============================
+        // 🔹 MÉTODOS OBSOLETOS (para compatibilidad temporal)
+        // ===============================
+        
+        [Obsolete("Usar CrearPersoneria en su lugar")]
+        public async Task<ResultModel> CrearComite(ComiteModel model)
+        {
+            // Redirigir al método específico según el tipo
+            return model.TipoTramiteEnum switch
+            {
+                TipoTramite.Personeria => await CrearPersoneria(ConvertToPersoneria(model)),
+                TipoTramite.CambioDirectiva => await RegistrarCambioDirectiva(ConvertToCambioDirectiva(model)),
+                TipoTramite.JuntaInterventora => await RegistrarJuntaInterventora(ConvertToJuntaInterventora(model)),
+                _ => new ResultModel { Success = false, Message = "Tipo de trámite no válido" }
+            };
+        }
+
+        [Obsolete("Usar RegistrarCambioDirectiva en su lugar")]
+        public async Task<ResultModel> RegistrarCambioDirectiva(ComiteModel model, int comiteBaseId)
+        {
+            var cambioDirectivaModel = ConvertToCambioDirectiva(model);
+            cambioDirectivaModel.ComiteBaseId = comiteBaseId;
+            return await RegistrarCambioDirectiva(cambioDirectivaModel);
+        }
+
+        [Obsolete("Usar RegistrarJuntaInterventora en su lugar")]
+        public async Task<ResultModel> RegistrarJuntaInterventora(ComiteModel model, int comiteBaseId)
+        {
+            var juntaInterventoraModel = ConvertToJuntaInterventora(model);
+            juntaInterventoraModel.ComiteBaseId = comiteBaseId;
+            return await RegistrarJuntaInterventora(juntaInterventoraModel);
+        }
+
+        // ===============================
+        // 🔹 MÉTODOS DE CONVERSIÓN (para compatibilidad)
+        // ===============================
+        private PersoneriaModel ConvertToPersoneria(ComiteModel model)
+        {
+            return new PersoneriaModel
+            {
+                ComiteId = model.ComiteId,
+                UsuarioId = model.UsuarioId,
+                CreadaPor = model.CreadaPor,
+                EstadoId = model.EstadoId,
+                NumeroResolucion = model.NumeroResolucion,
+                FechaResolucion = model.FechaResolucion,
+                DocumentosSubir = model.DocumentosSubir,
+                Archivos = model.Archivos,
+                TipoTramiteEnum = model.TipoTramiteEnum,
+                NombreComiteSalud = model.NombreComiteSalud,
+                Comunidad = model.Comunidad,
+                FechaCreacion = model.FechaCreacion ?? DateTime.Now, // Fixed: Handle nullable DateTime?
+                FechaEleccion = model.FechaEleccion,
+                NumeroNota = model.NumeroNota,
+                RegionSaludId = model.RegionSaludId,
+                ProvinciaId = model.ProvinciaId,
+                DistritoId = model.DistritoId,
+                CorregimientoId = model.CorregimientoId,
+                Miembros = model.Miembros,
+                MiembrosInterventores = model.MiembrosInterventores,
+                Historial = model.Historial,
+                CedulaFile = model.CedulaFile,
+                CedulaPreviewUrl = model.CedulaPreviewUrl,
+                PasaporteFile = model.PasaporteFile,
+                PasaportePreviewUrl = model.PasaportePreviewUrl,
+                ComiteBaseId = model.ComiteBaseId
+            };
+        }
+
+        private CambioDirectivaModel ConvertToCambioDirectiva(ComiteModel model)
+        {
+            return new CambioDirectivaModel
+            {
+                ComiteId = model.ComiteId,
+                UsuarioId = model.UsuarioId,
+                CreadaPor = model.CreadaPor,
+                EstadoId = model.EstadoId,
+                NumeroResolucion = model.NumeroResolucion,
+                FechaResolucion = model.FechaResolucion,
+                DocumentosSubir = model.DocumentosSubir,
+                Archivos = model.Archivos,
+                TipoTramiteEnum = model.TipoTramiteEnum,
+                NombreComiteSalud = model.NombreComiteSalud,
+                Comunidad = model.Comunidad,
+                FechaCreacion = model.FechaCreacion,
+                FechaEleccion = model.FechaEleccion ?? DateTime.Now, // Fixed: Handle nullable DateTime?
+                NumeroNota = model.NumeroNota,
+                RegionSaludId = model.RegionSaludId,
+                ProvinciaId = model.ProvinciaId,
+                DistritoId = model.DistritoId,
+                CorregimientoId = model.CorregimientoId,
+                Miembros = model.Miembros,
+                MiembrosInterventores = model.MiembrosInterventores,
+                Historial = model.Historial,
+                CedulaFile = model.CedulaFile,
+                CedulaPreviewUrl = model.CedulaPreviewUrl,
+                PasaporteFile = model.PasaporteFile,
+                PasaportePreviewUrl = model.PasaportePreviewUrl,
+                ComiteBaseId = model.ComiteBaseId ?? 0
+            };
+        }
+
+        private JuntaInterventoraModel ConvertToJuntaInterventora(ComiteModel model)
+        {
+            return new JuntaInterventoraModel
+            {
+                ComiteId = model.ComiteId,
+                UsuarioId = model.UsuarioId,
+                CreadaPor = model.CreadaPor,
+                EstadoId = model.EstadoId,
+                NumeroResolucion = model.NumeroResolucion,
+                FechaResolucion = model.FechaResolucion,
+                DocumentosSubir = model.DocumentosSubir,
+                Archivos = model.Archivos,
+                TipoTramiteEnum = model.TipoTramiteEnum,
+                NombreComiteSalud = model.NombreComiteSalud,
+                Comunidad = model.Comunidad,
+                FechaCreacion = model.FechaCreacion,
+                FechaEleccion = model.FechaEleccion ?? DateTime.Now, // Fixed: Handle nullable DateTime?
+                NumeroNota = model.NumeroNota,
+                RegionSaludId = model.RegionSaludId,
+                ProvinciaId = model.ProvinciaId,
+                DistritoId = model.DistritoId,
+                CorregimientoId = model.CorregimientoId,
+                Miembros = model.Miembros,
+                MiembrosInterventores = model.MiembrosInterventores,
+                Historial = model.Historial,
+                CedulaFile = model.CedulaFile,
+                CedulaPreviewUrl = model.CedulaPreviewUrl,
+                PasaporteFile = model.PasaporteFile,
+                PasaportePreviewUrl = model.PasaportePreviewUrl,
+                ComiteBaseId = model.ComiteBaseId ?? 0,
+                Interventores = model.MiembrosInterventores
+            };
         }
     }
 }
