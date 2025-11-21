@@ -9,6 +9,9 @@ public interface IRegistroComite
     Task<ResultModel> CrearPersoneria(PersoneriaModel model);
     Task<ResultModel> RegistrarCambioDirectiva(CambioDirectivaModel model);
     Task<ResultModel> RegistrarJuntaInterventora(JuntaInterventoraModel model);
+    
+    // === ACTUALIZACIÓN ===
+    Task<ResultModel> ActualizarComite(ComiteModel model);
 
     // === Consultas (mantienen ComiteModel para compatibilidad) ===
     Task<List<ComiteModel>> ObtenerComites();

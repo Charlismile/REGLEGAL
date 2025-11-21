@@ -7,36 +7,52 @@ public class PersoneriaModel : ComiteModel
     public PersoneriaModel()
     {
         TipoTramiteEnum = TipoTramite.Personeria;
+        
     }
-    [Required(ErrorMessage = "El nombre del comité es obligatorio")]
-    [StringLength(200)]
-    public string NombreComiteSalud { get; set; } = "";
-
-    [Required(ErrorMessage = "El nombre de la comunidad es obligatorio")]
-    [StringLength(150)]
-    public string Comunidad { get; set; } = "";
-
+    
     [Required(ErrorMessage = "La fecha de creación es obligatoria")]
-    public DateTime FechaCreacion { get; set; } = DateTime.Now;
+    public new DateTime? FechaCreacion 
+    { 
+        get => base.FechaCreacion; 
+        set => base.FechaCreacion = value; 
+    }
 
     [Required(ErrorMessage = "El número de nota es obligatorio")]
     [StringLength(50, ErrorMessage = "Máximo 50 caracteres")]
-    public string NumeroNota { get; set; } = "";
+    public new string NumeroNota 
+    { 
+        get => base.NumeroNota; 
+        set => base.NumeroNota = value; 
+    }
 
-    // Ubicación
+    // Ubicación - validaciones específicas
     [Required(ErrorMessage = "La región es obligatoria")]
-    public int? RegionSaludId { get; set; }
+    public new int? RegionSaludId 
+    { 
+        get => base.RegionSaludId; 
+        set => base.RegionSaludId = value; 
+    }
 
     [Required(ErrorMessage = "La provincia es obligatoria")]
-    public int? ProvinciaId { get; set; }
+    public new int? ProvinciaId 
+    { 
+        get => base.ProvinciaId; 
+        set => base.ProvinciaId = value; 
+    }
 
     [Required(ErrorMessage = "El distrito es obligatorio")]
-    public int? DistritoId { get; set; }
+    public new int? DistritoId 
+    { 
+        get => base.DistritoId; 
+        set => base.DistritoId = value; 
+    }
 
-    public int? CorregimientoId { get; set; }
-
-    // Miembros
+    // Miembros - validación específica para Personería
     [MinLength(7, ErrorMessage = "Debe haber exactamente 7 miembros")]
     [MaxLength(7, ErrorMessage = "Debe haber exactamente 7 miembros")]
-    public List<MiembroComiteModel> Miembros { get; set; } = new();
+    public new List<MiembroComiteModel> Miembros 
+    { 
+        get => base.Miembros; 
+        set => base.Miembros = value; 
+    }
 }

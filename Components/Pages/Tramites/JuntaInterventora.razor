@@ -46,49 +46,12 @@
         }
     </div>
 
-    <!-- Nombre del Comité (solo lectura) -->
-    <div class="mb-3">
-        <label class="form-label fw-semibold">Nombre del Comité de Salud</label>
-        <InputText @bind-Value="CModel.NombreComiteSalud" class="form-control"
-                   readonly="true" disabled="true" />
-    </div>
-
-    <!-- Comunidad (solo lectura) -->
-    <div class="mb-3">
-        <label class="form-label">Comunidad</label>
-        <InputText @bind-Value="CModel.Comunidad" class="form-control"
-                   readonly="true" disabled="true" />
-    </div>
-
     <!-- Fecha de Elección -->
     <div class="mb-3">
         <label>Fecha de Elección:</label>
         <InputDate @bind-Value="CModel.FechaEleccion" class="form-control" />
         <ValidationMessage For="() => CModel.FechaEleccion" />
     </div>
-
-    <!-- Ubicación (solo lectura) -->
-    <fieldset class="bloque-form">
-        <legend>Ubicación (heredada)</legend>
-        <div class="row g-3 mb-2">
-            <div class="col-sm-3">
-                <label class="form-label">Región</label>
-                <input type="text" class="form-control" value="@RegionNombre" readonly disabled />
-            </div>
-            <div class="col-sm-3">
-                <label class="form-label">Provincia</label>
-                <input type="text" class="form-control" value="@ProvinciaNombre" readonly disabled />
-            </div>
-            <div class="col-sm-3">
-                <label class="form-label">Distrito</label>
-                <input type="text" class="form-control" value="@DistritoNombre" readonly disabled />
-            </div>
-            <div class="col-sm-3">
-                <label class="form-label">Corregimiento</label>
-                <input type="text" class="form-control" value="@CorregimientoNombre" readonly disabled />
-            </div>
-        </div>
-    </fieldset>
 
     <!-- Miembros actuales (solo lectura) -->
     <hr />
@@ -165,13 +128,7 @@
     </div>
 
     <hr />
-    <!-- Resolución -->
     <fieldset class="bloque-form">
-        <div class="mb-3">
-            <label>Número de Nota:</label>
-            <InputText @bind-Value="CModel.NumeroNota" class="form-control" disabled="true" readonly="true" />
-            <small class="text-muted">No aplica en Junta Interventora</small>
-        </div>
         <div class="mb-3">
             <label>Número de Resolución:</label>
             <InputText @bind-Value="CModel.NumeroResolucion" class="form-control" />
@@ -205,7 +162,7 @@
     </fieldset>
 
     <div class="mt-4 d-flex gap-2">
-        <button type="submit" class="btn btn-primary px-4" disabled="@IsSubmitting || ComiteSeleccionadoId == null">
+        <button type="submit" class="btn btn-primary px-4" disabled="@(!PuedeGuardar())">
             @(IsSubmitting ? "Registrando..." : "Registrar Junta Interventora")
         </button>
         <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancelar" disabled="@IsSubmitting">
@@ -220,7 +177,3 @@
         </div>
     }
 </EditForm>
-
-@code {
-
-}

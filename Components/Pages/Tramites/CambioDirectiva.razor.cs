@@ -15,7 +15,7 @@ public partial class CambioDirectiva : ComponentBase
     [Inject] ICommon CommonService { get; set; }
     [Parameter] public int ComiteId { get; set; }
 
-    private CambioDirectivaModel CModel { get; set; } = new(); // 🔹 Usar modelo específico
+    private CambioDirectivaModel CModel { get; set; } = new();
     private EditContext editContext = default!;
     private string MensajeExito = "";
     private string MensajeError = "";
@@ -33,36 +33,52 @@ public partial class CambioDirectiva : ComponentBase
     private List<ComiteModel> sugerencias = new();
     private int? ComiteSeleccionadoId;
 
-    // Nombres para mostrar ubicación (solo lectura)
-    private string RegionNombre => Regiones.FirstOrDefault(r => r.Id == CModel.RegionSaludId)?.Name ?? "";
-    private string ProvinciaNombre => Provincias.FirstOrDefault(r => r.Id == CModel.ProvinciaId)?.Name ?? "";
-    private string DistritoNombre => Distritos.FirstOrDefault(r => r.Id == CModel.DistritoId)?.Name ?? "";
-    private string CorregimientoNombre => Corregimientos.FirstOrDefault(r => r.Id == CModel.CorregimientoId)?.Name ?? "";
-
-    // Listas
-    private List<ListModel> Regiones = new();
-    private List<ListModel> Provincias = new();
-    private List<ListModel> Distritos = new();
-    private List<ListModel> Corregimientos = new();
     private List<ListModel> Cargos = new();
 
     protected override async Task OnInitializedAsync()
     {
-        CModel = new CambioDirectivaModel(); // 🔹 Usar modelo específico
-        editContext = new EditContext(CModel);
-        await CargarListasIniciales();
-        await ObtenerUsuarioActual();
-
-        if (ComiteId > 0)
+        try
         {
-            await CargarComiteExistente();
+            CModel = new CambioDirectivaModel();
+            editContext = new EditContext(CModel);
+        
+            // 🔹 CORRECCIÓN: Inicializar listas antes de usarlas
+            Cargos = new List<ListModel>();
+        
+            await CargarListasIniciales();
+            await ObtenerUsuarioActual();
+
+            if (ComiteId > 0)
+            {
+                await CargarComiteExistente();
+            }
+        }
+        catch (Exception ex)
+        {
+            // 🔹 CORRECCIÓN: Manejar la excepción
+            Console.WriteLine($"Error en OnInitializedAsync: {ex.Message}");
+            MensajeError = "Error al inicializar el formulario";
         }
     }
 
     private async Task CargarListasIniciales()
     {
-        Regiones = await CommonService.GetRegiones();
-        Cargos = await CommonService.GetCargos();
+        try
+        {
+            // 🔹 CORRECCIÓN: Validar que el servicio esté inyectado
+            if (CommonService == null)
+            {
+                throw new InvalidOperationException("CommonService no está disponible");
+            }
+        
+            Cargos = await CommonService.GetCargos() ?? new List<ListModel>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar listas: {ex.Message}");
+            Cargos = new List<ListModel>();
+            MensajeError = "Error al cargar la lista de cargos";
+        }
     }
 
     private async Task BuscarComitesAsync()
@@ -92,19 +108,14 @@ public partial class CambioDirectiva : ComponentBase
 
         if (comiteCompleto != null)
         {
-            // Asignar ComiteBaseId al modelo específico
+            // 🔹 CORRECCIÓN CRÍTICA: Asignar el NombreComiteSalud al modelo
             CModel.ComiteBaseId = comiteCompleto.ComiteId;
-
-            // Copiar datos heredables
-            CModel.NombreComiteSalud = comiteCompleto.NombreComiteSalud;
-            CModel.Comunidad = comiteCompleto.Comunidad;
-            CModel.RegionSaludId = comiteCompleto.RegionSaludId;
-            CModel.ProvinciaId = comiteCompleto.ProvinciaId;
-            CModel.DistritoId = comiteCompleto.DistritoId;
-            CModel.CorregimientoId = comiteCompleto.CorregimientoId;
+            CModel.NombreComiteSalud = comiteCompleto.NombreComiteSalud; // ¡ESTA LÍNEA FALTABA!
+        
             ComiteSeleccionadoId = comiteCompleto.ComiteId;
             MensajeBusqueda = "✅ Comité seleccionado. Ahora agregue la nueva junta directiva.";
         }
+
         StateHasChanged();
     }
 
@@ -114,6 +125,14 @@ public partial class CambioDirectiva : ComponentBase
         MensajeError = "";
         MensajeExito = "";
         MostrarErrores = true;
+        
+        // 🔹 CORRECCIÓN: Validación adicional para NombreComiteSalud
+        if (string.IsNullOrWhiteSpace(CModel.NombreComiteSalud))
+        {
+            MensajeError = "Error: El nombre del comité no se asignó correctamente.";
+            IsSubmitting = false;
+            return;
+        }
 
         // Validación específica para Cambio de Directiva
         if (ComiteSeleccionadoId == null)
@@ -156,7 +175,6 @@ public partial class CambioDirectiva : ComponentBase
             if (string.IsNullOrEmpty(CModel.CreadaPor))
                 await ObtenerUsuarioActual();
 
-            // 🔹 USAR EL MÉTODO ESPECÍFICO PARA CAMBIO DE DIRECTIVA
             var result = await RegistroComiteService.RegistrarCambioDirectiva(CModel);
 
             if (!result.Success)
@@ -209,6 +227,7 @@ public partial class CambioDirectiva : ComponentBase
                 CModel.Miembros.Add(new MiembroComiteModel());
             }
         }
+
         StateHasChanged();
     }
 
@@ -231,6 +250,7 @@ public partial class CambioDirectiva : ComponentBase
 
             ArchivosSeleccionados.Add(file);
         }
+
         StateHasChanged();
     }
 
@@ -255,12 +275,6 @@ public partial class CambioDirectiva : ComponentBase
             // Convertir ComiteModel a CambioDirectivaModel
             CModel.ComiteId = comite.ComiteId;
             CModel.ComiteBaseId = comite.ComiteBaseId ?? 0;
-            CModel.NombreComiteSalud = comite.NombreComiteSalud;
-            CModel.Comunidad = comite.Comunidad;
-            CModel.RegionSaludId = comite.RegionSaludId;
-            CModel.ProvinciaId = comite.ProvinciaId;
-            CModel.DistritoId = comite.DistritoId;
-            CModel.CorregimientoId = comite.CorregimientoId;
             CModel.NumeroResolucion = comite.NumeroResolucion;
             CModel.FechaResolucion = comite.FechaResolucion;
             CModel.FechaEleccion = comite.FechaEleccion ?? DateTime.Now;
@@ -272,6 +286,49 @@ public partial class CambioDirectiva : ComponentBase
             await CargarListasIniciales();
         }
     }
+    
+    private bool PuedeGuardar()
+    {
+        // 1. Verificar que no esté en proceso
+        if (IsSubmitting)
+            return false;
 
-    private void Cancelar() => Navigation.NavigateTo("/Dashboard");
+        // 2. Validar comité seleccionado
+        if (ComiteSeleccionadoId == null || CModel.ComiteBaseId <= 0)
+            return false;
+
+        // 3. 🔹 CORRECCIÓN: Validar que el nombre del comité no sea NULL
+        if (string.IsNullOrWhiteSpace(CModel.NombreComiteSalud))
+            return false;
+
+        // 4. Validaciones básicas
+        if (string.IsNullOrWhiteSpace(CModel.NumeroResolucion) ||
+            CModel.FechaEleccion == default)
+            return false;
+
+        // 5. Validar miembros
+        if (CModel.Miembros.Count != NUMERO_MIEMBROS_FIJO)
+            return false;
+
+        // 6. Validar que todos los miembros tengan datos
+        if (CModel.Miembros.Any(m => 
+                string.IsNullOrWhiteSpace(m.NombreMiembro) ||
+                string.IsNullOrWhiteSpace(m.ApellidoMiembro) ||
+                string.IsNullOrWhiteSpace(m.CedulaMiembro) ||
+                m.CargoId == 0))
+            return false;
+
+        // 7. Validar archivos
+        if (!ArchivosSeleccionados.Any())
+            return false;
+
+        return true;
+    }
+    
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        StateHasChanged(); // Fuerza la actualización del botón
+    }
+
+private void Cancelar() => Navigation.NavigateTo("/Dashboard");
 }

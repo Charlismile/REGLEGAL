@@ -8,22 +8,35 @@ public class CambioDirectivaModel : ComiteModel
     {
         TipoTramiteEnum = TipoTramite.CambioDirectiva;
     }
+
     [Required(ErrorMessage = "Debe seleccionar un comité existente")]
-    public int ComiteBaseId { get; set; }
-    
-    // Datos heredados (solo lectura)
-    public string NombreComiteSalud { get; set; } = "";
-    public string Comunidad { get; set; } = "";
-    public int? RegionSaludId { get; set; }
-    public int? ProvinciaId { get; set; }
-    public int? DistritoId { get; set; }
-    public int? CorregimientoId { get; set; }
+    public new int ComiteBaseId 
+    { 
+        get => base.ComiteBaseId ?? 0; 
+        set => base.ComiteBaseId = value; 
+    }
+
+    // Datos heredados (propiedades de solo lectura para mostrar información del comité base)
+    public string NombreComiteBase { get; set; } = "";
+    public string ComunidadBase { get; set; } = "";
+    public string RegionBase { get; set; } = "";
+    public string ProvinciaBase { get; set; } = "";
+    public string DistritoBase { get; set; } = "";
+    public string CorregimientoBase { get; set; } = "";
 
     [Required(ErrorMessage = "La fecha de elección es obligatoria")]
-    public DateTime FechaEleccion { get; set; } = DateTime.Now;
+    public new DateTime? FechaEleccion 
+    { 
+        get => base.FechaEleccion; 
+        set => base.FechaEleccion = value; 
+    }
 
-    // Nueva junta directiva
+    // Nueva junta directiva - validación específica
     [MinLength(7, ErrorMessage = "Debe haber exactamente 7 miembros")]
     [MaxLength(7, ErrorMessage = "Debe haber exactamente 7 miembros")]
-    public List<MiembroComiteModel> Miembros { get; set; } = new();
+    public new List<MiembroComiteModel> Miembros 
+    { 
+        get => base.Miembros; 
+        set => base.Miembros = value; 
+    }
 }

@@ -37,21 +37,27 @@ public partial class Personeria : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        CModel = new PersoneriaModel();
-        editContext = new EditContext(CModel);
-        messageStore = new ValidationMessageStore(editContext);
-        editContext.OnValidationRequested += OnValidationRequested;
-
-        await CargarListasIniciales();
-        await ObtenerUsuarioActual();
-
-        if (ComiteId > 0)
+        try
         {
-            await CargarComiteExistente();
+            CModel = new PersoneriaModel();
+            editContext = new EditContext(CModel);
+        
+            // 🔹 CORRECCIÓN: Inicializar listas antes de usarlas
+            Cargos = new List<ListModel>();
+        
+            await CargarListasIniciales();
+            await ObtenerUsuarioActual();
+
+            if (ComiteId > 0)
+            {
+                await CargarComiteExistente();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            CModel = new ComiteModel { TipoTramiteEnum = TipoTramite.Personeria };
+            // 🔹 CORRECCIÓN: Manejar la excepción
+            Console.WriteLine($"Error en OnInitializedAsync: {ex.Message}");
+            MensajeError = "Error al inicializar el formulario";
         }
     }
 
@@ -205,13 +211,45 @@ public partial class Personeria : ComponentBase
         var comite = await RegistroComiteService.ObtenerComiteCompletoAsync(ComiteId);
         if (comite != null && comite.TipoTramiteEnum == TipoTramite.Personeria)
         {
-            CModel = comite;
+            // CORRECCIÓN: Mapear las propiedades del ComiteModel al PersoneriaModel existente
+            MapearComiteAPersoneria(comite, CModel);
             miembrosDesplegados = true;
             // Recargar listas para ubicación
             await RegionChanged(CModel.RegionSaludId);
             if (CModel.ProvinciaId.HasValue) await ProvinciaChanged(CModel.ProvinciaId);
             if (CModel.DistritoId.HasValue) await DistritoChanged(CModel.DistritoId);
         }
+    }
+
+    // CORRECCIÓN: Método para mapear ComiteModel a PersoneriaModel existente
+    private void MapearComiteAPersoneria(ComiteModel comite, PersoneriaModel personeria)
+    {
+        personeria.ComiteId = comite.ComiteId;
+        personeria.UsuarioId = comite.UsuarioId;
+        personeria.CreadaPor = comite.CreadaPor;
+        personeria.EstadoId = comite.EstadoId;
+        personeria.NumeroResolucion = comite.NumeroResolucion;
+        personeria.FechaResolucion = comite.FechaResolucion;
+        personeria.DocumentosSubir = comite.DocumentosSubir;
+        personeria.Archivos = comite.Archivos;
+        personeria.TipoTramiteEnum = comite.TipoTramiteEnum;
+        personeria.NombreComiteSalud = comite.NombreComiteSalud;
+        personeria.Comunidad = comite.Comunidad;
+        personeria.FechaCreacion = comite.FechaCreacion ?? DateTime.Now;
+        personeria.FechaEleccion = comite.FechaEleccion;
+        personeria.NumeroNota = comite.NumeroNota;
+        personeria.RegionSaludId = comite.RegionSaludId;
+        personeria.ProvinciaId = comite.ProvinciaId;
+        personeria.DistritoId = comite.DistritoId;
+        personeria.CorregimientoId = comite.CorregimientoId;
+        personeria.Miembros = comite.Miembros;
+        personeria.MiembrosInterventores = comite.MiembrosInterventores;
+        personeria.Historial = comite.Historial;
+        personeria.CedulaFile = comite.CedulaFile;
+        personeria.CedulaPreviewUrl = comite.CedulaPreviewUrl;
+        personeria.PasaporteFile = comite.PasaporteFile;
+        personeria.PasaportePreviewUrl = comite.PasaportePreviewUrl;
+        personeria.ComiteBaseId = comite.ComiteBaseId;
     }
 
     private async Task OnSubmit()
@@ -305,5 +343,44 @@ public partial class Personeria : ComponentBase
         }
     }
 
+    private bool PuedeGuardar()
+    {
+        // 1. Verificar que no esté en proceso
+        if (IsSubmitting)
+            return false;
+
+        // 2. Validaciones básicas del formulario
+        if (string.IsNullOrWhiteSpace(CModel.NombreComiteSalud) ||
+            string.IsNullOrWhiteSpace(CModel.Comunidad) ||
+            string.IsNullOrWhiteSpace(CModel.NumeroResolucion) ||
+            string.IsNullOrWhiteSpace(CModel.NumeroNota) ||
+            CModel.FechaCreacion == default ||
+            !CModel.RegionSaludId.HasValue ||
+            !CModel.ProvinciaId.HasValue)
+            return false;
+
+        // 3. Validar miembros
+        if (CModel.Miembros.Count != NUMERO_MIEMBROS_FIJO)
+            return false;
+
+        // 4. Validar que todos los miembros tengan datos
+        if (CModel.Miembros.Any(m => 
+                string.IsNullOrWhiteSpace(m.NombreMiembro) ||
+                string.IsNullOrWhiteSpace(m.ApellidoMiembro) ||
+                string.IsNullOrWhiteSpace(m.CedulaMiembro) ||
+                m.CargoId == 0))
+            return false;
+
+        // 5. Validar archivos
+        if (!ArchivosSeleccionados.Any())
+            return false;
+
+        return true;
+    }
+    
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        StateHasChanged(); // Fuerza la actualización del botón
+    }
     private void Cancelar() => Navigation.NavigateTo("/Dashboard");
 }

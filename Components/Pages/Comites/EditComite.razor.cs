@@ -225,8 +225,9 @@ public partial class EditComite : ComponentBase
                 await ObtenerUsuarioActual();
             }
 
-            // Actualizar el comité
+            // CORRECCIÓN: Usar directamente ActualizarComite (sin la 'r' extra)
             var resultado = await ComiteService.ActualizarComite(cModel);
+            
             if (resultado.Success)
             {
                 // Subir nuevos archivos si los hay

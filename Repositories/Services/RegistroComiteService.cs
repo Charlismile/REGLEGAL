@@ -48,7 +48,7 @@ namespace REGISTROLEGAL.Repositories.Services
                     NombreComiteSalud = model.NombreComiteSalud?.Trim() ?? string.Empty,
                     Comunidad = model.Comunidad?.Trim() ?? string.Empty,
                     NumeroNota = model.NumeroNota?.Trim() ?? string.Empty,
-                    FechaEleccion = model.FechaCreacion ?? DateTime.UtcNow, 
+                    FechaEleccion = model.FechaCreacion,
                     RegionSaludId = model.RegionSaludId,
                     ProvinciaId = model.ProvinciaId,
                     DistritoId = model.DistritoId,
@@ -110,7 +110,8 @@ namespace REGISTROLEGAL.Repositories.Services
                     }
                     catch (Exception histEx)
                     {
-                        _logger.LogWarning(histEx, "No se pudo registrar historial para personería {ComiteId}", comite.ComiteId);
+                        _logger.LogWarning(histEx, "No se pudo registrar historial para personería {ComiteId}",
+                            comite.ComiteId);
                     }
                 });
 
@@ -161,17 +162,8 @@ namespace REGISTROLEGAL.Repositories.Services
                     FechaRegistro = DateTime.UtcNow,
                     NumeroResolucion = model.NumeroResolucion?.Trim(),
                     FechaResolucion = model.FechaResolucion,
-                    FechaEleccion = model.FechaEleccion ?? DateTime.UtcNow, // Fixed: Now using nullable DateTime?
-                    
-                    // Heredar datos del comité base
-                    NombreComiteSalud = comiteBase.NombreComiteSalud,
-                    Comunidad = comiteBase.Comunidad,
-                    RegionSaludId = comiteBase.RegionSaludId,
-                    ProvinciaId = comiteBase.ProvinciaId,
-                    DistritoId = comiteBase.DistritoId,
-                    CorregimientoId = comiteBase.CorregimientoId,
-                    
-                    NumeroNota = "N/A" // No aplica
+                    FechaEleccion = model.FechaEleccion,
+                    NombreComiteSalud = model.NombreComiteSalud?.Trim() ?? "COMITÉ BASE"
                 };
 
                 context.TbComite.Add(cambioDirectiva);
@@ -207,6 +199,25 @@ namespace REGISTROLEGAL.Repositories.Services
                 context.TbDetalleRegComite.Add(detalleRegistro);
                 await context.SaveChangesAsync();
 
+                // 🔹 REGISTRAR HISTORIAL DE MIEMBROS (EN SEGUNDO PLANO)
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await _historialRegistro.RegistrarHistorialMiembrosCambioDirectivaAsync(
+                            comiteBaseId: model.ComiteBaseId,
+                            nuevosMiembros: model.Miembros ?? new List<MiembroComiteModel>(),
+                            usuarioId: model.CreadaPor
+                        );
+                    }
+                    catch (Exception histEx)
+                    {
+                        _logger.LogWarning(histEx,
+                            "No se pudo registrar historial de cambio de directiva para comité base {ComiteBaseId}",
+                            model.ComiteBaseId);
+                    }
+                });
+
                 await transaction.CommitAsync();
 
                 return new ResultModel
@@ -220,8 +231,10 @@ namespace REGISTROLEGAL.Repositories.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "Error al registrar cambio de directiva para comité base {ComiteBaseId}", model.ComiteBaseId);
-                return new ResultModel { Success = false, Message = $"Error al registrar cambio de directiva: {ex.Message}" };
+                _logger.LogError(ex, "Error al registrar cambio de directiva para comité base {ComiteBaseId}",
+                    model.ComiteBaseId);
+                return new ResultModel
+                    { Success = false, Message = $"Error al registrar cambio de directiva: {ex.Message}" };
             }
         }
 
@@ -246,7 +259,6 @@ namespace REGISTROLEGAL.Repositories.Services
                 if (comiteBase == null)
                     return new ResultModel { Success = false, Message = "Comité base no encontrado." };
 
-                // Crear registro de Junta Interventora
                 var juntaInterventora = new TbComite
                 {
                     TipoTramite = (int)model.TipoTramiteEnum,
@@ -254,26 +266,21 @@ namespace REGISTROLEGAL.Repositories.Services
                     FechaRegistro = DateTime.UtcNow,
                     NumeroResolucion = model.NumeroResolucion?.Trim(),
                     FechaResolucion = model.FechaResolucion,
-                    FechaEleccion = model.FechaEleccion ?? DateTime.UtcNow, // Fixed: Now using nullable DateTime?
-                    
-                    // Heredar datos del comité base
-                    NombreComiteSalud = comiteBase.NombreComiteSalud,
-                    Comunidad = comiteBase.Comunidad,
+                    FechaEleccion = model.FechaEleccion,
+                    NombreComiteSalud = comiteBase.NombreComiteSalud ?? "COMITÉ BASE",
+                    Comunidad = comiteBase.Comunidad ?? string.Empty,
                     RegionSaludId = comiteBase.RegionSaludId,
                     ProvinciaId = comiteBase.ProvinciaId,
                     DistritoId = comiteBase.DistritoId,
-                    CorregimientoId = comiteBase.CorregimientoId,
-                    
-                    NumeroNota = "N/A" // No aplica
+                    CorregimientoId = comiteBase.CorregimientoId
                 };
 
                 context.TbComite.Add(juntaInterventora);
                 await context.SaveChangesAsync();
 
-                // Crear interventores
-                if (model.Interventores?.Any() == true)
+                if (model.MiembrosInterventores?.Any() == true)
                 {
-                    var interventoresEntities = model.Interventores.Select(miembro => new TbMiembrosComite
+                    var interventoresEntities = model.MiembrosInterventores.Select(miembro => new TbMiembrosComite
                     {
                         ComiteId = juntaInterventora.ComiteId,
                         NombreMiembro = miembro.NombreMiembro?.Trim() ?? string.Empty,
@@ -300,6 +307,25 @@ namespace REGISTROLEGAL.Repositories.Services
                 context.TbDetalleRegComite.Add(detalleRegistro);
                 await context.SaveChangesAsync();
 
+                // 🔹 REGISTRAR HISTORIAL DE JUNTA INTERVENTORA (EN SEGUNDO PLANO)
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await _historialRegistro.RegistrarHistorialMiembrosJuntaInterventoraAsync(
+                            comiteBaseId: model.ComiteBaseId,
+                            interventores: model.MiembrosInterventores ?? new List<MiembroComiteModel>(),
+                            usuarioId: model.CreadaPor
+                        );
+                    }
+                    catch (Exception histEx)
+                    {
+                        _logger.LogWarning(histEx,
+                            "No se pudo registrar historial de junta interventora para comité base {ComiteBaseId}",
+                            model.ComiteBaseId);
+                    }
+                });
+
                 await transaction.CommitAsync();
 
                 return new ResultModel
@@ -313,8 +339,10 @@ namespace REGISTROLEGAL.Repositories.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "Error al registrar junta interventora para comité base {ComiteBaseId}", model.ComiteBaseId);
-                return new ResultModel { Success = false, Message = $"Error al registrar junta interventora: {ex.Message}" };
+                _logger.LogError(ex, "Error al registrar junta interventora para comité base {ComiteBaseId}",
+                    model.ComiteBaseId);
+                return new ResultModel
+                    { Success = false, Message = $"Error al registrar junta interventora: {ex.Message}" };
             }
         }
 
@@ -341,6 +369,9 @@ namespace REGISTROLEGAL.Repositories.Services
 
                 if (comite == null)
                     return new ResultModel { Success = false, Message = "Comité no encontrado." };
+
+                // 🔹 GUARDAR MIEMBROS ANTIGUOS PARA EL HISTORIAL
+                var miembrosAntiguos = comite.TbMiembrosComite.ToList();
 
                 // Cargar registro formal
                 var detalleRegistro = await context.TbDetalleRegComite
@@ -388,7 +419,26 @@ namespace REGISTROLEGAL.Repositories.Services
 
                 await context.SaveChangesAsync();
 
-                // Registrar en historial
+                // 🔹 REGISTRAR HISTORIAL DE MIEMBROS (en segundo plano)
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await _historialRegistro.RegistrarHistorialMiembrosAsync(
+                            miembrosAntiguos: miembrosAntiguos,
+                            comiteId: comite.ComiteId,
+                            usuarioId: model.CreadaPor,
+                            accion: "Actualización de miembros"
+                        );
+                    }
+                    catch (Exception histEx)
+                    {
+                        _logger.LogWarning(histEx, "No se pudo registrar historial de miembros para comité {ComiteId}",
+                            comite.ComiteId);
+                    }
+                });
+
+                // Registrar en historial del comité
                 await _historialRegistro.RegistrarHistorialComiteAsync(
                     detRegComiteId: detalleRegistro.DetRegComiteId,
                     comiteId: comite.ComiteId,
@@ -509,7 +559,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 FechaEleccion = entity.FechaEleccion,
                 NumeroResolucion = entity.NumeroResolucion,
                 NumeroNota = entity.NumeroNota,
-                FechaResolucion = entity.FechaResolucion,
+                FechaResolucion = entity.FechaResolucion ?? DateTime.UtcNow,
                 RegionSaludId = entity.RegionSaludId,
                 ProvinciaId = entity.ProvinciaId,
                 DistritoId = entity.DistritoId,
@@ -621,7 +671,7 @@ namespace REGISTROLEGAL.Repositories.Services
         // ===============================
         // 🔹 MÉTODOS OBSOLETOS (para compatibilidad temporal)
         // ===============================
-        
+
         [Obsolete("Usar CrearPersoneria en su lugar")]
         public async Task<ResultModel> CrearComite(ComiteModel model)
         {
@@ -669,7 +719,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 TipoTramiteEnum = model.TipoTramiteEnum,
                 NombreComiteSalud = model.NombreComiteSalud,
                 Comunidad = model.Comunidad,
-                FechaCreacion = model.FechaCreacion ?? DateTime.Now, // Fixed: Handle nullable DateTime?
+                FechaCreacion = model.FechaCreacion ?? DateTime.Now,
                 FechaEleccion = model.FechaEleccion,
                 NumeroNota = model.NumeroNota,
                 RegionSaludId = model.RegionSaludId,
@@ -703,7 +753,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 NombreComiteSalud = model.NombreComiteSalud,
                 Comunidad = model.Comunidad,
                 FechaCreacion = model.FechaCreacion,
-                FechaEleccion = model.FechaEleccion ?? DateTime.Now, // Fixed: Handle nullable DateTime?
+                FechaEleccion = model.FechaEleccion ?? DateTime.Now, 
                 NumeroNota = model.NumeroNota,
                 RegionSaludId = model.RegionSaludId,
                 ProvinciaId = model.ProvinciaId,
@@ -736,7 +786,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 NombreComiteSalud = model.NombreComiteSalud,
                 Comunidad = model.Comunidad,
                 FechaCreacion = model.FechaCreacion,
-                FechaEleccion = model.FechaEleccion ?? DateTime.Now, // Fixed: Handle nullable DateTime?
+                FechaEleccion = model.FechaEleccion ?? DateTime.Now,
                 NumeroNota = model.NumeroNota,
                 RegionSaludId = model.RegionSaludId,
                 ProvinciaId = model.ProvinciaId,
@@ -749,8 +799,7 @@ namespace REGISTROLEGAL.Repositories.Services
                 CedulaPreviewUrl = model.CedulaPreviewUrl,
                 PasaporteFile = model.PasaporteFile,
                 PasaportePreviewUrl = model.PasaportePreviewUrl,
-                ComiteBaseId = model.ComiteBaseId ?? 0,
-                Interventores = model.MiembrosInterventores
+                ComiteBaseId = model.ComiteBaseId ?? 0
             };
         }
     }

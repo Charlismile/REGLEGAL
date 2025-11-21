@@ -2061,6 +2061,88 @@
       ]
     },
     {
+      "Route": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/8/0c893979-f300-4000-80ba-236c904fc4e6.b9g4hfkdme.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/8/0c893979-f300-4000-80ba-236c904fc4e6.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1065375"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 18:37:44 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b9g4hfkdme"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/8/0c893979-f300-4000-80ba-236c904fc4e6.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/8/0c893979-f300-4000-80ba-236c904fc4e6.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/8/0c893979-f300-4000-80ba-236c904fc4e6.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1065375"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 18:37:44 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo="
+        }
+      ]
+    },
+    {
       "Route": "uploads/documentos-comite/RESOLUCION COMITE/0/5bd45195-c6bc-4545-bd56-86c6caf219a4.om77y22mqq.pdf",
       "AssetFile": "uploads/documentos-comite/RESOLUCION COMITE/0/5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf",
       "Selectors": [],

@@ -288,6 +288,24 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-asociacion\DocumentosAsociacion\5\272cfea1-c54a-4944-88fd-bb7a2d17837e.pdf'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION CAMBIO DIRECTIVA\8\0c893979-f300-4000-80ba-236c904fc4e6.pdf'))">
+      <SourceType>Package</SourceType>
+      <SourceId>REGISTROLEGAL</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/REGISTROLEGAL</BasePath>
+      <RelativePath>uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/8/0c893979-f300-4000-80ba-236c904fc4e6.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>b9g4hfkdme</Fingerprint>
+      <Integrity>sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION CAMBIO DIRECTIVA\8\0c893979-f300-4000-80ba-236c904fc4e6.pdf'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION COMITE\0\5bd45195-c6bc-4545-bd56-86c6caf219a4.pdf'))">
       <SourceType>Package</SourceType>
       <SourceId>REGISTROLEGAL</SourceId>

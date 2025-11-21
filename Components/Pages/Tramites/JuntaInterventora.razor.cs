@@ -36,33 +36,37 @@ public partial class JuntaInterventora : ComponentBase
     private List<ComiteModel> sugerencias = new();
     private int? ComiteSeleccionadoId;
     private List<MiembroComiteModel> miembrosActuales = new();
-
-    // Nombres para mostrar ubicación (solo lectura)
-    private string RegionNombre => Regiones.FirstOrDefault(r => r.Id == CModel.RegionSaludId)?.Name ?? "";
-    private string ProvinciaNombre => Provincias.FirstOrDefault(r => r.Id == CModel.ProvinciaId)?.Name ?? "";
-    private string DistritoNombre => Distritos.FirstOrDefault(r => r.Id == CModel.DistritoId)?.Name ?? "";
-    private string CorregimientoNombre => Corregimientos.FirstOrDefault(r => r.Id == CModel.CorregimientoId)?.Name ?? "";
-
-    // Listas
-    private List<ListModel> Regiones = new();
-    private List<ListModel> Provincias = new();
-    private List<ListModel> Distritos = new();
-    private List<ListModel> Corregimientos = new();
+    
     private List<ListModel> Cargos = new();
 
     protected override async Task OnInitializedAsync()
     {
-        CModel = new JuntaInterventoraModel(); // 🔹 Usar modelo específico
-        editContext = new EditContext(CModel);
-        messageStore = new ValidationMessageStore(editContext);
-        editContext.OnValidationRequested += OnValidationRequested;
-
-        await CargarListasIniciales();
-        await ObtenerUsuarioActual();
-
-        if (ComiteId > 0)
+        try
         {
-            await CargarComiteExistente();
+            // 🔹 CORRECCIÓN: Inicializar la lista de interventores
+            CModel = new JuntaInterventoraModel 
+            { 
+                MiembrosInterventores = new List<MiembroComiteModel>() 
+            };
+            
+            editContext = new EditContext(CModel);
+            editContext.OnFieldChanged += OnFieldChanged;
+            messageStore = new ValidationMessageStore(editContext);
+        
+            Cargos = new List<ListModel>();
+        
+            await CargarListasIniciales();
+            await ObtenerUsuarioActual();
+
+            if (ComiteId > 0)
+            {
+                await CargarComiteExistente();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error en OnInitializedAsync: {ex.Message}");
+            MensajeError = "Error al inicializar el formulario";
         }
     }
 
@@ -80,27 +84,27 @@ public partial class JuntaInterventora : ComponentBase
         if (CModel.FechaEleccion == default)
             messageStore.Add(() => CModel.FechaEleccion, "La fecha de elección es obligatoria.");
 
-        // Validar interventores - 🔹 CAMBIAR A Interventores
-        if (CModel.Interventores.Count != NUMERO_INTERVENTORES_FIJO)
+        // 🔹 CORRECCIÓN: Usar MiembrosInterventores en lugar de MiembrosActuales
+        if (CModel.MiembrosInterventores.Count != NUMERO_INTERVENTORES_FIJO)
         {
-            messageStore.Add(() => CModel.Interventores, $"Debe haber exactamente {NUMERO_INTERVENTORES_FIJO} interventores.");
+            messageStore.Add(() => CModel.MiembrosInterventores, $"Debe haber exactamente {NUMERO_INTERVENTORES_FIJO} interventores.");
         }
         else
         {
-            for (int i = 0; i < CModel.Interventores.Count; i++)
+            for (int i = 0; i < CModel.MiembrosInterventores.Count; i++)
             {
-                var miembro = CModel.Interventores[i];
+                var miembro = CModel.MiembrosInterventores[i];
                 if (string.IsNullOrWhiteSpace(miembro.NombreMiembro))
-                    messageStore.Add(() => CModel.Interventores, $"El interventor {i + 1} debe tener un nombre.");
+                    messageStore.Add(() => CModel.MiembrosInterventores, $"El interventor {i + 1} debe tener un nombre.");
             
                 if (string.IsNullOrWhiteSpace(miembro.ApellidoMiembro))
-                    messageStore.Add(() => CModel.Interventores, $"El interventor {i + 1} debe tener un apellido.");
+                    messageStore.Add(() => CModel.MiembrosInterventores, $"El interventor {i + 1} debe tener un apellido.");
             
                 if (string.IsNullOrWhiteSpace(miembro.CedulaMiembro))
-                    messageStore.Add(() => CModel.Interventores, $"El interventor {i + 1} debe tener una cédula.");
+                    messageStore.Add(() => CModel.MiembrosInterventores, $"El interventor {i + 1} debe tener una cédula.");
             
                 if (miembro.CargoId == 0)
-                    messageStore.Add(() => CModel.Interventores, $"El interventor {i + 1} debe tener un cargo.");
+                    messageStore.Add(() => CModel.MiembrosInterventores, $"El interventor {i + 1} debe tener un cargo.");
             }
         }
 
@@ -109,9 +113,6 @@ public partial class JuntaInterventora : ComponentBase
 
     private async Task CargarListasIniciales()
     {
-        Regiones = await CommonService.GetRegiones();
-
-        // Cargar SOLO Presidente y Tesorero
         var todosLosCargos = await CommonService.GetCargos();
         CargosInterventores = todosLosCargos
             .Where(c => c.Name.Equals("Presidente", StringComparison.OrdinalIgnoreCase) ||
@@ -147,14 +148,6 @@ public partial class JuntaInterventora : ComponentBase
         {
             // Asignar ComiteBaseId al modelo específico
             CModel.ComiteBaseId = comiteCompleto.ComiteId;
-            
-            // Copiar datos heredables
-            CModel.NombreComiteSalud = comiteCompleto.NombreComiteSalud;
-            CModel.Comunidad = comiteCompleto.Comunidad;
-            CModel.RegionSaludId = comiteCompleto.RegionSaludId;
-            CModel.ProvinciaId = comiteCompleto.ProvinciaId;
-            CModel.DistritoId = comiteCompleto.DistritoId;
-            CModel.CorregimientoId = comiteCompleto.CorregimientoId;
 
             // Guardar miembros actuales para mostrarlos
             miembrosActuales = comiteCompleto.Miembros;
@@ -177,19 +170,21 @@ public partial class JuntaInterventora : ComponentBase
 
     private void DesplegarInterventores()
     {
-        if (CModel.Interventores.Count >= NUMERO_INTERVENTORES_FIJO) // 🔹 CAMBIAR A Interventores
+        // 🔹 CORRECCIÓN: Usar MiembrosInterventores y asegurar que esté inicializada
+        if (CModel.MiembrosInterventores == null)
         {
-            interventoresDesplegados = true;
+            CModel.MiembrosInterventores = new List<MiembroComiteModel>();
         }
-        else
+
+        interventoresDesplegados = true;
+        
+        // Agregar los 2 interventores requeridos si no existen
+        int faltantes = NUMERO_INTERVENTORES_FIJO - CModel.MiembrosInterventores.Count; 
+        for (int i = 0; i < faltantes; i++)
         {
-            interventoresDesplegados = true;
-            int faltantes = NUMERO_INTERVENTORES_FIJO - CModel.Interventores.Count; // 🔹 CAMBIAR A Interventores
-            for (int i = 0; i < faltantes; i++)
-            {
-                CModel.Interventores.Add(new MiembroComiteModel()); // 🔹 CAMBIAR A Interventores
-            }
+            CModel.MiembrosInterventores.Add(new MiembroComiteModel()); 
         }
+        
         StateHasChanged();
     }
 
@@ -234,19 +229,15 @@ public partial class JuntaInterventora : ComponentBase
             // Convertir ComiteModel a JuntaInterventoraModel
             CModel.ComiteId = comite.ComiteId;
             CModel.ComiteBaseId = comite.ComiteBaseId ?? 0;
-            CModel.NombreComiteSalud = comite.NombreComiteSalud;
-            CModel.Comunidad = comite.Comunidad;
-            CModel.RegionSaludId = comite.RegionSaludId;
-            CModel.ProvinciaId = comite.ProvinciaId;
-            CModel.DistritoId = comite.DistritoId;
-            CModel.CorregimientoId = comite.CorregimientoId;
             CModel.NumeroResolucion = comite.NumeroResolucion;
             CModel.FechaResolucion = comite.FechaResolucion;
             CModel.FechaEleccion = comite.FechaEleccion ?? DateTime.Now;
             CModel.CreadaPor = comite.CreadaPor;
-            CModel.Interventores = comite.MiembrosInterventores; // 🔹 Asignar interventores
+        
+            // 🔹 CORRECCIÓN: Asignar correctamente los interventores
+            CModel.MiembrosInterventores = comite.MiembrosInterventores ?? new List<MiembroComiteModel>();
 
-            interventoresDesplegados = true;
+            interventoresDesplegados = CModel.MiembrosInterventores.Any();
             ComiteSeleccionadoId = comite.ComiteId;
             miembrosActuales = comite.Miembros;
             await CargarListasIniciales();
@@ -279,8 +270,8 @@ public partial class JuntaInterventora : ComponentBase
 
         try
         {
-            // 🔹 CAMBIAR A Interventores
-            if (CModel.Interventores.Count != NUMERO_INTERVENTORES_FIJO)
+            // 🔹 CORRECCIÓN: Usar MiembrosInterventores
+            if (CModel.MiembrosInterventores.Count != NUMERO_INTERVENTORES_FIJO)
             {
                 MensajeError = "Debe registrar exactamente 2 interventores: Presidente y Tesorero.";
                 IsSubmitting = false;
@@ -288,8 +279,8 @@ public partial class JuntaInterventora : ComponentBase
             }
 
             var cargosValidos = new HashSet<int>(CargosInterventores.Select(c => c.Id));
-            // 🔹 CAMBIAR A Interventores
-            foreach (var m in CModel.Interventores)
+            
+            foreach (var m in CModel.MiembrosInterventores)
             {
                 if (string.IsNullOrWhiteSpace(m.NombreMiembro) ||
                     string.IsNullOrWhiteSpace(m.ApellidoMiembro) ||
@@ -302,8 +293,7 @@ public partial class JuntaInterventora : ComponentBase
                 }
             }
             
-            // 🔹 CAMBIAR A Interventores
-            var cargosAsignados = CModel.Interventores.Select(m => m.CargoId).ToList();
+            var cargosAsignados = CModel.MiembrosInterventores.Select(m => m.CargoId).ToList();
             if (cargosAsignados.Distinct().Count() != cargosAsignados.Count)
             {
                 MensajeError = "No se permiten cargos duplicados. Debe haber un Presidente y un Tesorero.";
@@ -320,8 +310,7 @@ public partial class JuntaInterventora : ComponentBase
 
             if (string.IsNullOrEmpty(CModel.CreadaPor))
                 await ObtenerUsuarioActual();
-
-            // 🔹 USAR EL MÉTODO ESPECÍFICO PARA JUNTA INTERVENTORA
+            
             var result = await RegistroComiteService.RegistrarJuntaInterventora(CModel);
             
             if (!result.Success)
@@ -347,6 +336,50 @@ public partial class JuntaInterventora : ComponentBase
             IsSubmitting = false;
             StateHasChanged();
         }
+    }
+    
+    private bool PuedeGuardar()
+    {
+        // 1. Verificar que no esté en proceso
+        if (IsSubmitting)
+            return false;
+
+        // 2. Validar comité seleccionado
+        if (ComiteSeleccionadoId == null || CModel.ComiteBaseId <= 0)
+            return false;
+
+        // 3. Validaciones básicas
+        if (string.IsNullOrWhiteSpace(CModel.NumeroResolucion) ||
+            CModel.FechaEleccion == default)
+            return false;
+
+        // 4. Validar interventores - 🔹 CORRECCIÓN: Usar MiembrosInterventores
+        if (CModel.MiembrosInterventores?.Count != NUMERO_INTERVENTORES_FIJO)
+            return false;
+
+        // 5. Validar que todos los interventores tengan datos
+        if (CModel.MiembrosInterventores.Any(m => 
+                string.IsNullOrWhiteSpace(m.NombreMiembro) ||
+                string.IsNullOrWhiteSpace(m.ApellidoMiembro) ||
+                string.IsNullOrWhiteSpace(m.CedulaMiembro) ||
+                m.CargoId == 0))
+            return false;
+
+        // 6. Validar cargos únicos (Presidente y Tesorero)
+        var cargosAsignados = CModel.MiembrosInterventores.Select(m => m.CargoId).ToList();
+        if (cargosAsignados.Distinct().Count() != cargosAsignados.Count)
+            return false;
+
+        // 7. Validar archivos
+        if (!ArchivosSeleccionados.Any())
+            return false;
+
+        return true;
+    }
+    
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        StateHasChanged(); // Fuerza la actualización del botón
     }
 
     private void Cancelar() => Navigation.NavigateTo("/Dashboard");

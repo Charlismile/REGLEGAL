@@ -178,8 +178,8 @@
     </fieldset>
 
     <div class="mt-4 d-flex gap-2">
-        <button type="submit" class="btn btn-primary px-4" disabled="@IsSubmitting">
-            @(IsSubmitting ? "Registrando..." : "Registrar Comité")
+        <button type="submit" class="btn btn-primary px-4" disabled="@(!PuedeGuardar())">
+            @(IsSubmitting ? "Registrando..." : "Registrar Personería")
         </button>
         <button type="button" class="btn btn-outline-secondary px-4" @onclick="Cancelar" disabled="@IsSubmitting">
             Cancelar
