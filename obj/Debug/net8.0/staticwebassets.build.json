@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "L4KACPrTzzu7QJ+Cj01WcBiejzeiP9E8tgneFzHHG3o=",
+  "Hash": "MdkVO01jJ6Q4WSsivCGIEFyZT8kSEcBBm5Z6F3jlZ3s=",
   "Source": "REGISTROLEGAL",
   "BasePath": "_content/REGISTROLEGAL",
   "Mode": "Default",
@@ -563,6 +563,27 @@
       "OriginalItemSpec": "wwwroot\\uploads\\documentos-asociacion\\DocumentosAsociacion\\5\\272cfea1-c54a-4944-88fd-bb7a2d17837e.pdf"
     },
     {
+      "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION CAMBIO DIRECTIVA\\11\\153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf",
+      "SourceId": "REGISTROLEGAL",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\",
+      "BasePath": "_content/REGISTROLEGAL",
+      "RelativePath": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "gjrngunfms",
+      "Integrity": "1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION CAMBIO DIRECTIVA\\11\\153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf"
+    },
+    {
       "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION CAMBIO DIRECTIVA\\8\\0c893979-f300-4000-80ba-236c904fc4e6.pdf",
       "SourceId": "REGISTROLEGAL",
       "SourceType": "Discovered",
@@ -708,6 +729,48 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION COMITE\\4\\3fe577b5-54ea-4711-8664-534526543a1e.pdf"
+    },
+    {
+      "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION JUNTA INTERVENTORA\\10\\e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf",
+      "SourceId": "REGISTROLEGAL",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\",
+      "BasePath": "_content/REGISTROLEGAL",
+      "RelativePath": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "b9g4hfkdme",
+      "Integrity": "sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION JUNTA INTERVENTORA\\10\\e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf"
+    },
+    {
+      "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION JUNTA INTERVENTORA\\12\\a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf",
+      "SourceId": "REGISTROLEGAL",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\",
+      "BasePath": "_content/REGISTROLEGAL",
+      "RelativePath": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "fqslsb9m8d",
+      "Integrity": "ScOwu+l/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\documentos-comite\\RESOLUCION JUNTA INTERVENTORA\\12\\a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf"
     },
     {
       "Identity": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION\\0\\0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf",
@@ -2894,6 +2957,88 @@
       ]
     },
     {
+      "Route": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.gjrngunfms.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION CAMBIO DIRECTIVA\\11\\153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1079014"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 24 Nov 2025 13:31:51 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "gjrngunfms"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION CAMBIO DIRECTIVA\\11\\153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1079014"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 24 Nov 2025 13:31:51 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g="
+        }
+      ]
+    },
+    {
       "Route": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/8/0c893979-f300-4000-80ba-236c904fc4e6.b9g4hfkdme.pdf",
       "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION CAMBIO DIRECTIVA\\8\\0c893979-f300-4000-80ba-236c904fc4e6.pdf",
       "Selectors": [],
@@ -3464,6 +3609,170 @@
         {
           "Name": "integrity",
           "Value": "sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.b9g4hfkdme.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION JUNTA INTERVENTORA\\10\\e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1065375"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 19:44:41 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b9g4hfkdme"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION JUNTA INTERVENTORA\\10\\e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1065375"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 19:44:41 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.fqslsb9m8d.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION JUNTA INTERVENTORA\\12\\a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "986532"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ScOwu+l/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 24 Nov 2025 13:32:51 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "fqslsb9m8d"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ScOwu+l/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf",
+      "AssetFile": "C:\\Users\\cabernalo\\Documents\\PROJECT GIT\\REGLEGAL\\wwwroot\\uploads\\documentos-comite\\RESOLUCION JUNTA INTERVENTORA\\12\\a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "986532"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ScOwu+l/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 24 Nov 2025 13:32:51 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-ScOwu+l/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU="
         }
       ]
     },

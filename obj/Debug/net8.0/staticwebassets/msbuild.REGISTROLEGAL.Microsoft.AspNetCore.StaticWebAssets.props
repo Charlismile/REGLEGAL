@@ -288,6 +288,24 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-asociacion\DocumentosAsociacion\5\272cfea1-c54a-4944-88fd-bb7a2d17837e.pdf'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION CAMBIO DIRECTIVA\11\153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf'))">
+      <SourceType>Package</SourceType>
+      <SourceId>REGISTROLEGAL</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/REGISTROLEGAL</BasePath>
+      <RelativePath>uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>gjrngunfms</Fingerprint>
+      <Integrity>1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION CAMBIO DIRECTIVA\11\153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION CAMBIO DIRECTIVA\8\0c893979-f300-4000-80ba-236c904fc4e6.pdf'))">
       <SourceType>Package</SourceType>
       <SourceId>REGISTROLEGAL</SourceId>
@@ -413,6 +431,42 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION COMITE\4\3fe577b5-54ea-4711-8664-534526543a1e.pdf'))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION JUNTA INTERVENTORA\10\e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf'))">
+      <SourceType>Package</SourceType>
+      <SourceId>REGISTROLEGAL</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/REGISTROLEGAL</BasePath>
+      <RelativePath>uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>b9g4hfkdme</Fingerprint>
+      <Integrity>sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION JUNTA INTERVENTORA\10\e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf'))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION JUNTA INTERVENTORA\12\a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf'))">
+      <SourceType>Package</SourceType>
+      <SourceId>REGISTROLEGAL</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/REGISTROLEGAL</BasePath>
+      <RelativePath>uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>fqslsb9m8d</Fingerprint>
+      <Integrity>ScOwu+l/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION JUNTA INTERVENTORA\12\a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION\0\0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf'))">
       <SourceType>Package</SourceType>

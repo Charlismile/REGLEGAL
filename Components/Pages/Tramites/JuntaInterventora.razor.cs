@@ -54,6 +54,7 @@ public partial class JuntaInterventora : ComponentBase
             messageStore = new ValidationMessageStore(editContext);
         
             Cargos = new List<ListModel>();
+            CargosInterventores = new List<ListModel>();
         
             await CargarListasIniciales();
             await ObtenerUsuarioActual();
@@ -113,11 +114,34 @@ public partial class JuntaInterventora : ComponentBase
 
     private async Task CargarListasIniciales()
     {
-        var todosLosCargos = await CommonService.GetCargos();
-        CargosInterventores = todosLosCargos
-            .Where(c => c.Name.Equals("Presidente", StringComparison.OrdinalIgnoreCase) ||
-                        c.Name.Equals("Tesorero", StringComparison.OrdinalIgnoreCase))
-            .ToList();
+        try
+        {
+            // 🔹 CARGAR TODOS LOS CARGOS primero
+            var todosLosCargos = await CommonService.GetCargos();
+        
+            if (todosLosCargos != null && todosLosCargos.Any())
+            {
+                // Asignar todos los cargos para mostrar en la tabla
+                Cargos = todosLosCargos.ToList();
+            
+                // Filtrar solo los cargos para interventores
+                CargosInterventores = todosLosCargos
+                    .Where(c => c.Name.Equals("Presidente", StringComparison.OrdinalIgnoreCase) ||
+                                c.Name.Equals("Tesorero", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+            else
+            {
+                Console.WriteLine("No se pudieron cargar los cargos");
+                Cargos = new List<ListModel>();
+                CargosInterventores = new List<ListModel>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar listas: {ex.Message}");
+            MensajeError = "Error al cargar la lista de cargos";
+        }
     }
 
     private async Task BuscarComitesAsync()

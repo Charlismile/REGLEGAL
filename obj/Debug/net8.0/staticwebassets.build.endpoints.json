@@ -2061,6 +2061,88 @@
       ]
     },
     {
+      "Route": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.gjrngunfms.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1079014"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 24 Nov 2025 13:31:51 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "gjrngunfms"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1079014"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 24 Nov 2025 13:31:51 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g="
+        }
+      ]
+    },
+    {
       "Route": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/8/0c893979-f300-4000-80ba-236c904fc4e6.b9g4hfkdme.pdf",
       "AssetFile": "uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/8/0c893979-f300-4000-80ba-236c904fc4e6.pdf",
       "Selectors": [],
@@ -2631,6 +2713,170 @@
         {
           "Name": "integrity",
           "Value": "sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.b9g4hfkdme.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1065375"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 19:44:41 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b9g4hfkdme"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1065375"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 21 Nov 2025 19:44:41 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX+JjQo="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.fqslsb9m8d.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "986532"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ScOwu+l/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 24 Nov 2025 13:32:51 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "fqslsb9m8d"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-ScOwu+l/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf",
+      "AssetFile": "uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "986532"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"ScOwu+l/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 24 Nov 2025 13:32:51 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-ScOwu+l/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU="
         }
       ]
     },

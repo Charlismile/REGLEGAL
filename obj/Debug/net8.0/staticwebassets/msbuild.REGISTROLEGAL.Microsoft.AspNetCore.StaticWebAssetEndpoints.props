@@ -192,6 +192,18 @@
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-h/dsKHTP1cYEkNJxLRuEKkVTsMqMbg4bL2HTM64mPio="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"2338072"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022h/dsKHTP1cYEkNJxLRuEKkVTsMqMbg4bL2HTM64mPio=\u0022"},{"Name":"Last-Modified","Value":"Tue, 11 Nov 2025 16:47:50 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.gjrngunfms.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION CAMBIO DIRECTIVA\11\153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"gjrngunfms"},{"Name":"integrity","Value":"sha256-1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g="},{"Name":"label","Value":"_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1079014"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u00221Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g=\u0022"},{"Name":"Last-Modified","Value":"Mon, 24 Nov 2025 13:31:51 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/11/153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION CAMBIO DIRECTIVA\11\153c5b05-3c0c-4016-b981-8d89cbe10b3b.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-1Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"1079014"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u00221Jwv6AZcyyW5NHW35Ouw/RTL/zkQls0pjOCRkGuFF0g=\u0022"},{"Name":"Last-Modified","Value":"Mon, 24 Nov 2025 13:31:51 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION CAMBIO DIRECTIVA/8/0c893979-f300-4000-80ba-236c904fc4e6.b9g4hfkdme.pdf">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION CAMBIO DIRECTIVA\8\0c893979-f300-4000-80ba-236c904fc4e6.pdf'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
@@ -275,6 +287,30 @@
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"304280"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022wb1X0XVuqYArQsV5DyTHe331vKClA6HtmQZFV46GUl0=\u0022"},{"Name":"Last-Modified","Value":"Tue, 11 Nov 2025 18:05:58 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.b9g4hfkdme.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION JUNTA INTERVENTORA\10\e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"b9g4hfkdme"},{"Name":"integrity","Value":"sha256-sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX\u002BJjQo="},{"Name":"label","Value":"_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1065375"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX\u002BJjQo=\u0022"},{"Name":"Last-Modified","Value":"Fri, 21 Nov 2025 19:44:41 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/10/e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION JUNTA INTERVENTORA\10\e9c13cd8-2a0e-406b-a25b-4454672389bb.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX\u002BJjQo="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"1065375"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022sQd1MjVLSTj57KmveyPMt68djhHeznvOfsmtKX\u002BJjQo=\u0022"},{"Name":"Last-Modified","Value":"Fri, 21 Nov 2025 19:44:41 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.fqslsb9m8d.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION JUNTA INTERVENTORA\12\a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"fqslsb9m8d"},{"Name":"integrity","Value":"sha256-ScOwu\u002Bl/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU="},{"Name":"label","Value":"_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"986532"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022ScOwu\u002Bl/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU=\u0022"},{"Name":"Last-Modified","Value":"Mon, 24 Nov 2025 13:32:51 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION JUNTA INTERVENTORA/12/a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION JUNTA INTERVENTORA\12\a77ff8da-bac6-45ed-8d0e-31c8762e29a3.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-ScOwu\u002Bl/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"986532"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022ScOwu\u002Bl/o3avNeqMSI/IUEpZzOELAt463r0laBdfNWU=\u0022"},{"Name":"Last-Modified","Value":"Mon, 24 Nov 2025 13:32:51 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/REGISTROLEGAL/uploads/documentos-comite/RESOLUCION/0/0e420ea7-ad63-4c07-bf18-41d8235a4ad5.8aqhuamaeh.pdf">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\documentos-comite\RESOLUCION\0\0e420ea7-ad63-4c07-bf18-41d8235a4ad5.pdf'))</AssetFile>
