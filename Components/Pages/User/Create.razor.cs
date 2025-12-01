@@ -67,7 +67,7 @@ public partial class Create : ComponentBase
                 {
                     var roles = await _UserManager.GetRolesAsync(IdentityUserData);
                     FormData.IsAdminUser = roles.Contains("user_admin");
-                    FormData.IsEstandarUser = roles.Contains("user_estandar");
+                    FormData.IsEstandarUser = roles.Contains("UsuarioEstandar");
                 }
                 UpdatingUser = true;
             }
@@ -124,7 +124,7 @@ public partial class Create : ComponentBase
         if (FormData.IsAdminUser)
             Roles.Add("user_admin");
         if (FormData.IsEstandarUser)
-            Roles.Add("user_estandar");
+            Roles.Add("UsuarioEstandar");
 
         ResultModel Resultado;
         if (UpdatingUser)
@@ -223,7 +223,7 @@ public partial class Create : ComponentBase
     //     if (FormData.IsAdminUser)
     //     {
     //         Roles.Add("user_admin");
-    //         Roles.Add("user_estandar");
+    //         Roles.Add("UsuarioEstandar");
     //     }
     //
     //     ResultModel Resultado;
