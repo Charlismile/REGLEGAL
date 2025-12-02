@@ -5,7 +5,7 @@
 @using REGISTROLEGAL.Components.Layout
 @layout EmptyLayout
 
-<EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+<EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit" class="formulario-comite shadow-sm rounded p-4 bg-white">
     @if (erroresFormulario.Any())
     {
         <ul class="alert alert-danger">
